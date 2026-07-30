@@ -439,13 +439,10 @@ input[type=number]{-moz-appearance:textfield}
         <div style="height:1px;background:var(--border);margin:12px 0"></div>
         <div class="comm-row">
           <span class="comm-label" style="color:var(--green)">ACR</span>
-          <div class="fg"><label>% (calculat)</label><input type="text" id="m-acr-pc" readonly class="bv"></div>
+          <div class="fg"><label>%</label><input type="number" id="m-acr-pc" step="0.01" value="0" oninput="recalcComm()"></div>
           <span style="color:var(--muted);font-size:12px;text-align:center">→</span>
           <div class="fg"><label>P&amp;L (Import)</label><input type="text" id="m-acr-imp" readonly class="bv"></div>
         </div>
-      </div>
-      <div style="margin-top:14px;font-size:12px;color:var(--muted)">
-        ℹ️ L'import ACR = Import projecte − EN − DG − CB
       </div>
     </div>
 
@@ -472,8 +469,16 @@ input[type=number]{-moz-appearance:textfield}
 const PIN='1234';
 
 // PK d'aquesta taula és "IdPJ" (no "id"), per això aquestes dues no fan servir el sbPatch/sbDel genèrics.
-async function sbPatch(t,id,d){const r=await fetch(`${NEON_DATA_API_URL}/${t}?"IdPJ"=eq.${id}`,{method:'PATCH',headers:getHDR(),body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return r.json()}
-async function sbDel(t,id){const r=await fetch(`${NEON_DATA_API_URL}/${t}?"IdPJ"=eq.${id}`,{method:'DELETE',headers:getHDR()});if(!r.ok)throw new Error(await r.text())}
+async function sbPatch(t,id,d){
+  const s=await ensureSession();if(!s){location.replace('login.html');throw new Error('Sessió caducada');}
+  const r=await fetch(`${NEON_DATA_API_URL}/${t}?"IdPJ"=eq.${id}`,{method:'PATCH',headers:getHDR(),body:JSON.stringify(d)});
+  if(!r.ok)throw new Error(await r.text());return r.json();
+}
+async function sbDel(t,id){
+  const s=await ensureSession();if(!s){location.replace('login.html');throw new Error('Sessió caducada');}
+  const r=await fetch(`${NEON_DATA_API_URL}/${t}?"IdPJ"=eq.${id}`,{method:'DELETE',headers:getHDR()});
+  if(!r.ok)throw new Error(await r.text());
+}
 
 let allPJ=[], allClients=[], curIdPJ=null;
 const fe=(n,d=2)=>(n||0).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -627,6 +632,7 @@ function renderTable(rows){
       <td>${badgeHtml(p.estat)}</td>
       <td onclick="event.stopPropagation()" style="white-space:nowrap">
         <button class="btn btn-secondary btn-xs" onclick="openModal('${p.IdPJ}')">✏️</button>
+        <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarProjecte('${p.IdPJ}')" title="Duplicar">⧉</button>
         <button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel('${p.IdPJ}')" title="Eliminar">✕</button>
       </td>
     </tr>`).join('');
@@ -716,6 +722,7 @@ function fillForm(p){
   s('m-en-pc',p.en_pc??0);
   s('m-dg-pc',p.dg_pc??0);
   s('m-cb-pc',p.cb_pc??0);
+  s('m-acr-pc',p.acr_pc??0);
   updateBadge(); recalcComm();
 }
 
@@ -733,7 +740,7 @@ function resetForm(){
   _s('m-carpeta','ACR');
   _s('m-estat','ACTIU');
   _s('m-import',0);
-  _s('m-en-pc',0);_s('m-dg-pc',0);_s('m-cb-pc',0);
+  _s('m-en-pc',0);_s('m-dg-pc',0);_s('m-cb-pc',0);_s('m-acr-pc',0);
   updateBadge(); recalcComm();
 }
 
@@ -762,16 +769,15 @@ function recalcComm(){
   const enPc=parseFloat(document.getElementById('m-en-pc').value)||0;
   const dgPc=parseFloat(document.getElementById('m-dg-pc').value)||0;
   const cbPc=parseFloat(document.getElementById('m-cb-pc').value)||0;
+  const acrPc=parseFloat(document.getElementById('m-acr-pc').value)||0;
   const enI=Math.round(imp*enPc/100*100)/100;
   const dgI=Math.round(imp*dgPc/100*100)/100;
   const cbI=Math.round(imp*cbPc/100*100)/100;
-  const acrI=Math.round((imp-enI-dgI-cbI)*100)/100;
-  const acrPc=imp>0?Math.round(acrI/imp*10000)/100:0;
+  const acrI=Math.round(imp*acrPc/100*100)/100;
   document.getElementById('m-en-imp').value=fe(enI)+' €';
   document.getElementById('m-dg-imp').value=fe(dgI)+' €';
   document.getElementById('m-cb-imp').value=fe(cbI)+' €';
   document.getElementById('m-acr-imp').value=fe(acrI)+' €';
-  document.getElementById('m-acr-pc').value=fe(acrPc,2)+' %';
 }
 
 async function saveProjecte(){
@@ -783,11 +789,11 @@ async function saveProjecte(){
   const enPc=parseFloat(document.getElementById('m-en-pc').value)||0;
   const dgPc=parseFloat(document.getElementById('m-dg-pc').value)||0;
   const cbPc=parseFloat(document.getElementById('m-cb-pc').value)||0;
+  const acrPc=parseFloat(document.getElementById('m-acr-pc').value)||0;
   const enI=Math.round(imp*enPc/100*100)/100;
   const dgI=Math.round(imp*dgPc/100*100)/100;
   const cbI=Math.round(imp*cbPc/100*100)/100;
-  const acrI=Math.round((imp-enI-dgI-cbI)*100)/100;
-  const acrPc=imp>0?Math.round(acrI/imp*10000)/100:0;
+  const acrI=Math.round(imp*acrPc/100*100)/100;
   const g=id=>document.getElementById(id)?.value||null;
   const selCli=document.getElementById('m-client');
   const cliOpt=selCli.options[selCli.selectedIndex];
@@ -833,6 +839,17 @@ async function saveProjecte(){
     closeModal();
   }catch(e){toast('Error: '+e.message,'err');}
   finally{btn.disabled=false;btn.innerHTML='💾 Guardar';}
+}
+
+function duplicarProjecte(idpj){
+  const p=allPJ.find(x=>x.IdPJ===idpj);
+  if(!p)return;
+  curIdPJ=null;
+  showTab('tp-gen');
+  document.getElementById('m-title').textContent='Còpia de '+fmtIdPJ(p.IdPJ);
+  fillForm(p);
+  document.getElementById('m-idpj').value=nextIdPJ();
+  document.getElementById('overlay').classList.add('open');
 }
 
 async function confirmDel(idpj){
