@@ -911,9 +911,8 @@ function recalcFromPc(pfx){
 function recalcFromNom(pfx){
   const imp=parseAmt(document.getElementById('m-import')?.value);
   const nom=parseAmt(document.getElementById(`m-${pfx}-nom`).value);
-  const pc=imp?r2(nom/imp*100):0;
-  document.getElementById(`m-${pfx}-pc`).value=pc;
-  document.getElementById(`m-${pfx}-spj`).value=fe(pc,2)+'%';
+  const spj=imp?r2(nom/imp*100):0;
+  document.getElementById(`m-${pfx}-spj`).value=fe(spj,2)+'%';
   recalcTercers();
 }
 
