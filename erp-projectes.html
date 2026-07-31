@@ -249,20 +249,22 @@ input[type=number]{-moz-appearance:textfield}
 
     <!-- TAB PROJECTE -->
     <div class="tab-panel on" id="tp-gen">
+      <!-- IDPJ + DESCRIPCIO: fila completa (amplada màxima per a Descripcio) -->
+      <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;margin-bottom:10px">
+        <div class="fg">
+          <label>IdPJ *</label>
+          <input type="text" id="m-idpj" placeholder="S'autogenera">
+        </div>
+        <div class="fg">
+          <label>Descripció *</label>
+          <input type="text" id="m-descripcio" placeholder="Descripció del projecte">
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 270px;gap:16px">
 
-        <!-- COLUMNA ESQUERRA -->
+        <!-- COLUMNA ESQUERRA (des de TAG) -->
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
-          <div style="display:grid;grid-template-columns:80px 1fr;gap:8px">
-            <div class="fg">
-              <label>IdPJ *</label>
-              <input type="text" id="m-idpj" placeholder="S'autogenera">
-            </div>
-            <div class="fg">
-              <label>Descripció *</label>
-              <input type="text" id="m-descripcio" placeholder="Descripció del projecte">
-            </div>
-          </div>
           <div style="display:grid;grid-template-columns:55% auto;gap:8px">
             <div class="fg">
               <label>TAG</label>
