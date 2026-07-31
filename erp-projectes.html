@@ -924,7 +924,6 @@ function recalcACR(){
   const acrNom=r2(imp-en-dg-cb);
   const acrPc=imp?r2(acrNom/imp*100):0;
   document.getElementById('m-acr-nom').value=fe(acrNom);
-  document.getElementById('m-acr-pc').value=acrPc;
   document.getElementById('m-acr-spj').value=fe(acrPc,2)+'%';
   recalcTercers();
 }
