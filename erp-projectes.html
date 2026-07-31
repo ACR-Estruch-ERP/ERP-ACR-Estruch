@@ -249,7 +249,7 @@ input[type=number]{-moz-appearance:textfield}
 
     <!-- TAB PROJECTE -->
     <div class="tab-panel on" id="tp-gen">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="display:grid;grid-template-columns:1fr 270px;gap:16px">
 
         <!-- COLUMNA ESQUERRA -->
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
@@ -318,7 +318,7 @@ input[type=number]{-moz-appearance:textfield}
             <label>Empresa PJ</label>
             <input type="text" id="m-empresa-pj">
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:8px">
             <div class="fg">
               <label>Contacte</label>
               <input type="text" id="m-resp-pj">
@@ -338,47 +338,43 @@ input[type=number]{-moz-appearance:textfield}
             <label>eMail</label>
             <input type="email" id="m-resp-email">
           </div>
-          <div style="display:grid;grid-template-columns:65% auto;gap:8px">
-            <div class="fg">
-              <label>Web</label>
-              <input type="text" id="m-resp-web">
-            </div>
+          <div class="fg">
+            <label>Web</label>
+            <input type="text" id="m-resp-web">
           </div>
         </div>
 
         <!-- COLUMNA DRETA -->
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
-          <div style="display:grid;grid-template-columns:60% auto;gap:8px">
-            <div class="fg">
-              <label>Estat</label>
-              <select id="m-estat" onchange="onEstatChange()">
-                <option value="ACTIU">ACTIU</option>
-                <option value="COMPLETAT">COMPLETAT</option>
-                <option value="PAUSAT">PAUSAT</option>
-                <option value="CANCEL·LAT">CANCEL·LAT</option>
-              </select>
-            </div>
+          <div class="fg">
+            <label>Estat</label>
+            <select id="m-estat" onchange="onEstatChange()">
+              <option value="ACTIU">ACTIU</option>
+              <option value="COMPLETAT">COMPLETAT</option>
+              <option value="PAUSAT">PAUSAT</option>
+              <option value="CANCEL·LAT">CANCEL·LAT</option>
+            </select>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="fg">
               <label>Data Entrada</label>
-              <input type="date" id="m-data-entrada" onchange="onDataEntradaChange()">
+              <input type="date" id="m-data-entrada" onchange="onDataEntradaChange()" style="font-size:12px;padding:5px 6px">
             </div>
             <div class="fg">
               <label>Data Fi</label>
-              <input type="date" id="m-data-finalitzat">
+              <input type="date" id="m-data-finalitzat" style="font-size:12px;padding:5px 6px">
             </div>
           </div>
-          <div style="border:2px solid #c0392b;border-radius:6px;padding:10px 12px">
-            <div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Dates Matchmaking</div>
-            <div style="display:grid;grid-template-columns:1fr 130px;gap:8px">
+          <div style="border:2px solid #c0392b;border-radius:6px;padding:8px 10px">
+            <div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Dates Matchmaking</div>
+            <div style="display:grid;grid-template-columns:1fr 118px;gap:8px">
               <div class="fg">
                 <label>Execució Prevista</label>
                 <input type="text" id="m-exe-prev" placeholder="Text lliure">
               </div>
               <div class="fg">
                 <label>Data Inici</label>
-                <input type="date" id="m-data-inici">
+                <input type="date" id="m-data-inici" style="font-size:12px;padding:5px 6px">
               </div>
             </div>
           </div>
