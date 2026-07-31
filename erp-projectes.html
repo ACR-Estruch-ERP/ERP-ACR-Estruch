@@ -905,7 +905,7 @@ function recalcFromPc(pfx){
   const nom=r2(imp*pc/100);
   document.getElementById(`m-${pfx}-nom`).value=fe(nom);
   document.getElementById(`m-${pfx}-spj`).value=fe(pc,2)+'%';
-  recalcTercers();
+  if(pfx!=='acr') recalcACR(); else recalcTercers();
 }
 
 function recalcFromNom(pfx){
@@ -913,11 +913,30 @@ function recalcFromNom(pfx){
   const nom=parseAmt(document.getElementById(`m-${pfx}-nom`).value);
   const spj=imp?r2(nom/imp*100):0;
   document.getElementById(`m-${pfx}-spj`).value=fe(spj,2)+'%';
+  if(pfx!=='acr') recalcACR(); else recalcTercers();
+}
+
+function recalcACR(){
+  const imp=parseAmt(document.getElementById('m-import')?.value);
+  const en=parseAmt(document.getElementById('m-en-nom')?.value);
+  const dg=parseAmt(document.getElementById('m-dg-nom')?.value);
+  const cb=parseAmt(document.getElementById('m-cb-nom')?.value);
+  const acrNom=r2(imp-en-dg-cb);
+  const acrPc=imp?r2(acrNom/imp*100):0;
+  document.getElementById('m-acr-nom').value=fe(acrNom);
+  document.getElementById('m-acr-pc').value=acrPc;
+  document.getElementById('m-acr-spj').value=fe(acrPc,2)+'%';
   recalcTercers();
 }
 
 function recalcComm(){
-  ['en','dg','cb','acr'].forEach(pfx=>recalcFromPc(pfx));
+  const imp=parseAmt(document.getElementById('m-import')?.value);
+  ['en','dg','cb'].forEach(pfx=>{
+    const pc=parseFloat(document.getElementById(`m-${pfx}-pc`).value)||0;
+    document.getElementById(`m-${pfx}-nom`).value=fe(r2(imp*pc/100));
+    document.getElementById(`m-${pfx}-spj`).value=fe(pc,2)+'%';
+  });
+  recalcACR();
 }
 
 function recalcTercers(){ recalcPagaments(); }
