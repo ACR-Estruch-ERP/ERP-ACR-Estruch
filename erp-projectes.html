@@ -100,6 +100,7 @@ th.amt{text-align:right}
 .fg input.fmt-num{text-align:right}
 .bi{border:1.5px solid var(--border);border-radius:var(--r);font-family:inherit;outline:none;background:var(--white);box-sizing:border-box;width:100%}
 .bi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
+.rv{font-weight:700;color:var(--red);background:#fff5f5;border-radius:var(--r);box-sizing:border-box;width:100%}
 .fg textarea{resize:vertical;min-height:80px}
 .sec{font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;border-bottom:1.5px solid var(--blue-dim);margin-bottom:2px}
 .comm-box{background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-top:8px}
@@ -408,12 +409,12 @@ input[type=number]{-moz-appearance:textfield}
       <div style="display:grid;grid-template-columns:auto 1fr;gap:12px;margin-bottom:10px;align-items:start">
 
         <!-- TOP-LEFT -->
-        <div style="display:flex;flex-direction:column;gap:6px;min-width:200px">
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:190px">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:11px;font-weight:700;color:var(--blue);min-width:72px">IMPORT PJ</span>
-            <input type="text" id="m-import" value="0,00" class="bi fmt-num" style="font-size:12px;padding:4px 8px;max-width:130px" oninput="recalcComm()" onblur="fmtBlur('m-import');recalcComm()">
+            <span style="font-size:11px;font-weight:700;color:var(--blue);min-width:68px">IMPORT PJ</span>
+            <input type="text" id="m-import" value="0,00" class="bi fmt-num" style="font-size:12px;padding:4px 7px;max-width:120px;text-align:right" oninput="recalcComm()" onblur="fmtBlur('m-import');recalcComm()">
           </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11px;padding-top:2px">
+          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:11px;padding-top:2px">
             <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="NO"> NO</label>
             <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="SI"> SI</label>
             <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="PENDENT"> PENDENT</label>
@@ -423,117 +424,120 @@ input[type=number]{-moz-appearance:textfield}
         </div>
 
         <!-- TOP-RIGHT: FACTURACIÓ -->
-        <div style="background:#f0f4f8;border:1.5px solid var(--border);border-radius:var(--r);padding:8px 12px">
-          <div class="sec" style="margin-bottom:6px">Facturació</div>
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <div style="background:#f0f4f8;border:1.5px solid var(--border);border-radius:var(--r);padding:7px 10px">
+          <div class="sec" style="margin-bottom:5px">Facturació</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed">
+            <colgroup><col style="width:25%"><col style="width:25%"><col style="width:18%"><col style="width:32%"></colgroup>
             <thead><tr>
-              <th style="text-align:center;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">A Facturar</th>
-              <th style="text-align:center;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">Facturat</th>
+              <th style="text-align:right;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">A Facturar</th>
+              <th style="text-align:right;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">Facturat</th>
               <th style="text-align:center;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">%</th>
-              <th style="text-align:center;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">Pendent</th>
+              <th style="text-align:right;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">Pendent</th>
             </tr></thead>
             <tbody><tr>
-              <td style="padding:2px 3px"><input type="text" id="m-import-facturar" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="onImportAFacturarChange()" onblur="fmtBlur('m-import-facturar');onImportAFacturarChange()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-import-facturat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcFacturacio()" onblur="fmtBlur('m-import-facturat');recalcFacturacio()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pc-facturat" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pendent" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
+              <td style="padding:2px 3px"><input type="text" id="m-import-facturar" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px;text-align:right" oninput="onImportAFacturarChange()" onblur="fmtBlur('m-import-facturar');onImportAFacturarChange()"></td>
+              <td style="padding:2px 3px"><input type="text" id="m-import-facturat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px;text-align:right" oninput="recalcFacturacio()" onblur="fmtBlur('m-import-facturat');recalcFacturacio()"></td>
+              <td style="padding:2px 3px"><input type="text" id="m-pc-facturat" readonly class="bv" style="font-size:11px;padding:3px 5px;text-align:center"></td>
+              <td style="padding:2px 3px"><input type="text" id="m-pendent" readonly class="rv" style="font-size:11px;padding:3px 5px;text-align:right"></td>
             </tr></tbody>
           </table>
         </div>
 
       </div>
 
-      <!-- BOTTOM: Comissions + Pagaments (taula única per alineació perfecta) -->
-      <div style="background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:8px 12px">
+      <!-- BOTTOM: taula única alineada (5 cols esquerra + sep + 5 cols dreta) -->
+      <div style="background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:7px 10px">
         <table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed">
           <colgroup>
-            <col style="width:52px"><!-- label esquerra -->
-            <col style="width:9%">  <!-- % -->
-            <col style="width:14%"> <!-- nominal -->
-            <col style="width:9%">  <!-- %s/pj -->
-            <col style="width:14px"><!-- separador visual -->
-            <col style="width:52px"><!-- label dreta -->
-            <col style="width:14%"> <!-- import pagat/cobrat -->
-            <col style="width:9%">  <!-- % pag/cob -->
-            <col style="width:14%"> <!-- dif canvi -->
-            <col style="width:14%"> <!-- pendent -->
+            <col style="width:50px"> <!-- label -->
+            <col style="width:7%">  <!-- % -->
+            <col style="width:12%"> <!-- nominal -->
+            <col style="width:7%">  <!-- %s/pj -->
+            <col style="width:12px"><!-- sep -->
+            <col style="width:11%"> <!-- nominal-r readonly -->
+            <col style="width:12%"> <!-- pagat/cobrat -->
+            <col style="width:7%">  <!-- % pag -->
+            <col style="width:10%"> <!-- dif canvi -->
+            <col style="width:10%"> <!-- pendent -->
           </colgroup>
           <thead>
             <tr>
-              <th colspan="4" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 4px 4px;border-bottom:1px solid var(--border)">Distribució comissions</th>
+              <th colspan="4" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border)">Distribució comissions</th>
               <th style="border-bottom:1px solid var(--border)"></th>
-              <th colspan="5" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 4px 4px;border-bottom:1px solid var(--border)">Pagaments / Cobraments</th>
+              <th colspan="5" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border)">Pagaments / Cobraments</th>
             </tr>
             <tr>
               <th></th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">%</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">Nominal €</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">% s/PJ</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">%</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Nominal €</th>
+              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">% s/PJ</th>
               <th style="border-left:1.5px solid #dde3ea"></th>
-              <th></th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">Import</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">%</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">Dif.Canvi</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 4px">Pendent</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Nominal</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Pagat</th>
+              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">%</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Dif.Canvi</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Pendent</th>
             </tr>
           </thead>
           <tbody>
-            <!-- IMPORT PJ (Σ EN+DG+CB) | PAGAT -->
+            <!-- EN -->
             <tr>
-              <td style="font-size:10px;font-weight:700;color:var(--blue);padding:3px 4px;white-space:nowrap">IMPORT PJ</td>
-              <td></td>
-              <td style="padding:2px 3px"><input type="text" id="m-tercers-nom" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-tercers-spj" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
+              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 3px">EN</td>
+              <td style="padding:2px 2px"><input type="number" id="m-en-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromPc('en')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromNom('en')" onblur="fmtBlur('m-en-nom')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-spj" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
               <td style="border-left:1.5px solid #dde3ea"></td>
-              <td style="font-size:10px;font-weight:700;color:var(--blue);padding:3px 4px">PAGAT</td>
-              <td style="padding:2px 3px"><input type="text" id="m-pagat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcPagaments()" onblur="fmtBlur('m-pagat');recalcPagaments()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pc-pagat" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-dif-canvi-pagat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcPagaments()" onblur="fmtBlur('m-dif-canvi-pagat');recalcPagaments()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pendent-pagat" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-nom-r" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-pagat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-en-pagat');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-pc-pagat" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-dif-canvi" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-en-dif-canvi');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-en-pendent" readonly class="rv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
             </tr>
-            <!-- EN | (blanc) -->
+            <!-- DG -->
             <tr>
-              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 4px">EN</td>
-              <td style="padding:2px 3px"><input type="number" id="m-en-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:3px 5px;text-align:right" oninput="recalcFromPc('en')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-en-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcFromNom('en')" onblur="fmtBlur('m-en-nom')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-en-spj" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td colspan="6" style="border-left:1.5px solid #dde3ea"></td>
+              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 3px">DG</td>
+              <td style="padding:2px 2px"><input type="number" id="m-dg-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromPc('dg')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromNom('dg')" onblur="fmtBlur('m-dg-nom')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-spj" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
+              <td style="border-left:1.5px solid #dde3ea"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-nom-r" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-pagat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-dg-pagat');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-pc-pagat" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-dif-canvi" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-dg-dif-canvi');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dg-pendent" readonly class="rv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
             </tr>
-            <!-- DG | (blanc) -->
+            <!-- CB -->
             <tr>
-              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 4px">DG</td>
-              <td style="padding:2px 3px"><input type="number" id="m-dg-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:3px 5px;text-align:right" oninput="recalcFromPc('dg')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-dg-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcFromNom('dg')" onblur="fmtBlur('m-dg-nom')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-dg-spj" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td colspan="6" style="border-left:1.5px solid #dde3ea"></td>
-            </tr>
-            <!-- CB | (blanc) -->
-            <tr>
-              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 4px">CB</td>
-              <td style="padding:2px 3px"><input type="number" id="m-cb-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:3px 5px;text-align:right" oninput="recalcFromPc('cb')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-cb-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcFromNom('cb')" onblur="fmtBlur('m-cb-nom')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-cb-spj" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td colspan="6" style="border-left:1.5px solid #dde3ea"></td>
+              <td style="font-size:11px;font-weight:600;color:var(--blue);padding:3px 3px">CB</td>
+              <td style="padding:2px 2px"><input type="number" id="m-cb-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromPc('cb')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcFromNom('cb')" onblur="fmtBlur('m-cb-nom')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-spj" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
+              <td style="border-left:1.5px solid #dde3ea"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-nom-r" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-pagat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-cb-pagat');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-pc-pagat" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-dif-canvi" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-cb-dif-canvi');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cb-pendent" readonly class="rv" style="font-size:11px;padding:2px 4px;text-align:right"></td>
             </tr>
             <!-- Separador -->
-            <tr><td colspan="10" style="border-top:1.5px solid var(--border);padding:0;height:4px"></td></tr>
+            <tr><td colspan="10" style="border-top:1.5px solid var(--border);padding:0;height:3px"></td></tr>
             <!-- ACR | COBRAT -->
             <tr>
-              <td style="font-size:11px;font-weight:700;color:var(--green);padding:3px 4px">ACR</td>
-              <td style="padding:2px 3px"><input type="number" id="m-acr-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:3px 5px;text-align:right" oninput="recalcFromPc('acr')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-acr-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcFromNom('acr')" onblur="fmtBlur('m-acr-nom')"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-acr-spj" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
+              <td style="font-size:11px;font-weight:700;color:var(--green);padding:3px 3px">ACR</td>
+              <td style="padding:2px 2px"><input type="number" id="m-acr-pc" step="0.01" value="0" class="bi" style="font-size:11px;padding:2px 4px;text-align:right;color:var(--green);font-weight:700" oninput="recalcFromPc('acr')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-acr-nom" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right;color:var(--green);font-weight:700" oninput="recalcFromNom('acr')" onblur="fmtBlur('m-acr-nom')"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-acr-spj" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center;color:var(--green)"></td>
               <td style="border-left:1.5px solid #dde3ea"></td>
-              <td style="font-size:11px;font-weight:700;color:var(--green);padding:3px 4px">COBRAT</td>
-              <td style="padding:2px 3px"><input type="text" id="m-cobrat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcPagaments()" onblur="fmtBlur('m-cobrat');recalcPagaments()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pc-cobrat" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-dif-canvi-cobrat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:3px 5px" oninput="recalcPagaments()" onblur="fmtBlur('m-dif-canvi-cobrat');recalcPagaments()"></td>
-              <td style="padding:2px 3px"><input type="text" id="m-pendent-cobrat" readonly class="bv" style="font-size:11px;padding:3px 5px"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-acr-nom-r" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:right;color:var(--green);font-weight:700"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-cobrat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right;color:var(--green);font-weight:700" oninput="recalcPagaments()" onblur="fmtBlur('m-cobrat');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-pc-cobrat" readonly class="bv" style="font-size:11px;padding:2px 4px;text-align:center;color:var(--green)"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-dif-canvi-cobrat" value="0,00" class="bi fmt-num" style="font-size:11px;padding:2px 4px;text-align:right" oninput="recalcPagaments()" onblur="fmtBlur('m-dif-canvi-cobrat');recalcPagaments()"></td>
+              <td style="padding:2px 2px"><input type="text" id="m-pendent-cobrat" readonly class="rv" style="font-size:11px;padding:2px 4px;text-align:right;color:var(--green)"></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="font-size:10px;color:var(--muted);margin-top:6px">% o nominal → l'altre es calcula automàticament · ACR nominal = base P&amp;L</p>
+      <p style="font-size:10px;color:var(--muted);margin-top:5px">% o nominal → l'altre es calcula automàticament · ACR nominal = base P&amp;L</p>
 
     </div>
 
@@ -824,8 +828,12 @@ function fillForm(p){
   _setNom('en',p.en_import??0); _setNom('dg',p.dg_import??0); _setNom('cb',p.cb_import??0); _setNom('acr',p.acr_import??0);
   s('m-import-facturar',fe(p.import_a_facturar??0));
   s('m-import-facturat',fe(p.import_facturat??0));
-  s('m-pagat',fe(p.pagat??0));
-  s('m-dif-canvi-pagat',fe(p.dif_canvi_pagat??0));
+  s('m-en-pagat',fe(p.en_pagat??0));
+  s('m-en-dif-canvi',fe(p.en_dif_canvi??0));
+  s('m-dg-pagat',fe(p.dg_pagat??0));
+  s('m-dg-dif-canvi',fe(p.dg_dif_canvi??0));
+  s('m-cb-pagat',fe(p.cb_pagat??0));
+  s('m-cb-dif-canvi',fe(p.cb_dif_canvi??0));
   s('m-cobrat',fe(p.cobrat??0));
   s('m-dif-canvi-cobrat',fe(p.dif_canvi_cobrat??0));
   recalcTercers();
@@ -851,7 +859,9 @@ function resetForm(){
   _s('m-en-nom','0,00');_s('m-dg-nom','0,00');_s('m-cb-nom','0,00');_s('m-acr-nom','0,00');
   ['m-en-spj','m-dg-spj','m-cb-spj','m-acr-spj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0,00%';});
   _s('m-import-facturar','0,00');_s('m-import-facturat','0,00');
-  _s('m-pagat','0,00');_s('m-dif-canvi-pagat','0,00');
+  _s('m-en-pagat','0,00');_s('m-en-dif-canvi','0,00');
+  _s('m-dg-pagat','0,00');_s('m-dg-dif-canvi','0,00');
+  _s('m-cb-pagat','0,00');_s('m-cb-dif-canvi','0,00');
   _s('m-cobrat','0,00');_s('m-dif-canvi-cobrat','0,00');
   updateBadge(); recalcComm(); recalcFacturacio();
 }
@@ -912,32 +922,26 @@ function recalcComm(){
   ['en','dg','cb','acr'].forEach(pfx=>recalcFromPc(pfx));
 }
 
-function recalcTercers(){
-  const imp=parseAmt(document.getElementById('m-import')?.value);
-  const en=parseAmt(document.getElementById('m-en-nom')?.value);
-  const dg=parseAmt(document.getElementById('m-dg-nom')?.value);
-  const cb=parseAmt(document.getElementById('m-cb-nom')?.value);
-  const tot=r2(en+dg+cb);
-  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
-  sv('m-tercers-nom',fe(tot));
-  sv('m-tercers-spj',fe(imp?r2(tot/imp*100):0,2)+'%');
-  recalcPagaments();
-}
+function recalcTercers(){ recalcPagaments(); }
 
 function recalcPagaments(){
-  const tercNom=parseAmt(document.getElementById('m-tercers-nom')?.value);
-  const pagat=parseAmt(document.getElementById('m-pagat')?.value);
-  const difPag=parseAmt(document.getElementById('m-dif-canvi-pagat')?.value);
-  const pcPag=tercNom?r2(pagat/tercNom*100):0;
-  const pendPag=r2(tercNom-pagat-difPag);
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
+  ['en','dg','cb'].forEach(pfx=>{
+    const nom=parseAmt(document.getElementById(`m-${pfx}-nom`)?.value);
+    const pagat=parseAmt(document.getElementById(`m-${pfx}-pagat`)?.value);
+    const dif=parseAmt(document.getElementById(`m-${pfx}-dif-canvi`)?.value);
+    const pc=nom?r2(pagat/nom*100):0;
+    const pend=r2(nom-pagat-dif);
+    sv(`m-${pfx}-nom-r`,fe(nom));
+    sv(`m-${pfx}-pc-pagat`,fe(pc,2)+'%');
+    sv(`m-${pfx}-pendent`,fe(pend));
+  });
   const acrNom=parseAmt(document.getElementById('m-acr-nom')?.value);
   const cobrat=parseAmt(document.getElementById('m-cobrat')?.value);
   const difCob=parseAmt(document.getElementById('m-dif-canvi-cobrat')?.value);
   const pcCob=acrNom?r2(cobrat/acrNom*100):0;
   const pendCob=r2(acrNom-cobrat-difCob);
-  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
-  sv('m-pc-pagat',fe(pcPag,2)+'%');
-  sv('m-pendent-pagat',fe(pendPag));
+  sv('m-acr-nom-r',fe(acrNom));
   sv('m-pc-cobrat',fe(pcCob,2)+'%');
   sv('m-pendent-cobrat',fe(pendCob));
 }
@@ -979,8 +983,12 @@ async function saveProjecte(){
   const acrI=parseAmt(document.getElementById('m-acr-nom').value);
   const importAFacturar=parseAmt(document.getElementById('m-import-facturar').value);
   const importFacturat=parseAmt(document.getElementById('m-import-facturat').value);
-  const pagat=parseAmt(document.getElementById('m-pagat').value);
-  const difCanviPagat=parseAmt(document.getElementById('m-dif-canvi-pagat').value);
+  const enPagat=parseAmt(document.getElementById('m-en-pagat').value);
+  const enDifCanvi=parseAmt(document.getElementById('m-en-dif-canvi').value);
+  const dgPagat=parseAmt(document.getElementById('m-dg-pagat').value);
+  const dgDifCanvi=parseAmt(document.getElementById('m-dg-dif-canvi').value);
+  const cbPagat=parseAmt(document.getElementById('m-cb-pagat').value);
+  const cbDifCanvi=parseAmt(document.getElementById('m-cb-dif-canvi').value);
   const cobrat=parseAmt(document.getElementById('m-cobrat').value);
   const difCanviCobrat=parseAmt(document.getElementById('m-dif-canvi-cobrat').value);
   const g=id=>document.getElementById(id)?.value||null;
@@ -1018,7 +1026,9 @@ async function saveProjecte(){
     acr_pc:acrPc,acr_import:acrI,
     import_a_facturar:importAFacturar,
     import_facturat:importFacturat,
-    pagat,dif_canvi_pagat:difCanviPagat,
+    en_pagat:enPagat,en_dif_canvi:enDifCanvi,
+    dg_pagat:dgPagat,dg_dif_canvi:dgDifCanvi,
+    cb_pagat:cbPagat,cb_dif_canvi:cbDifCanvi,
     cobrat,dif_canvi_cobrat:difCanviCobrat,
   };
   if(!curIdPJ) data.IdPJ=idpj||null;
