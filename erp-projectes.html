@@ -414,11 +414,11 @@ input[type=number]{-moz-appearance:textfield}
             <input type="text" id="m-import" value="0,00" class="bi fmt-num" style="font-size:12px;padding:4px 7px;max-width:120px;text-align:right" oninput="recalcComm()" onblur="fmtBlur('m-import');recalcComm()">
           </div>
           <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:11px;padding-top:2px">
-            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="NO"> NO</label>
-            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="SI"> SI</label>
-            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="PENDENT"> PENDENT</label>
-            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="FACTURAT"> FACTURAT</label>
-            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="FRA. PERIÒDICA"> FRA. PERIÒDICA</label>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="NO" onchange="onFacturarChange('NO')"> NO</label>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="SI" onchange="onFacturarChange('SI')"> SI</label>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="PENDENT" onchange="onFacturarChange('PENDENT')"> PENDENT</label>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="FACTURAT" onchange="onFacturarChange('FACTURAT')"> FACTURAT</label>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-weight:normal"><input type="radio" name="m-facturar" value="FRA. PERIÒDICA" onchange="onFacturarChange('FRA. PERIÒDICA')"> FRA. PERIÒDICA</label>
           </div>
         </div>
 
@@ -978,8 +978,21 @@ function recalcFacturacio(){
 }
 
 function onImportAFacturarChange(){
-  const afac=parseAmt(document.getElementById('m-import-facturar').value);
-  document.getElementById('m-import-facturat').value=fe(afac);
+  recalcFacturacio();
+}
+
+function onFacturarChange(val){
+  const imp=parseAmt(document.getElementById('m-import').value);
+  const afacEl=document.getElementById('m-import-facturar');
+  const factEl=document.getElementById('m-import-facturat');
+  if(val==='SI'){
+    // A FACTURAR = Import PJ si encara no té valor
+    if(!parseAmt(afacEl.value) && imp) afacEl.value=fe(imp);
+  } else if(val==='FACTURAT'){
+    // Assegura A FACTURAR = Import PJ, i omple FACTURAT completament
+    if(!parseAmt(afacEl.value) && imp) afacEl.value=fe(imp);
+    factEl.value=fe(parseAmt(afacEl.value));
+  }
   recalcFacturacio();
 }
 
