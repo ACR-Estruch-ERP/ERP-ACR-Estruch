@@ -972,8 +972,9 @@ function recalcFacturacio(){
   sv('m-pendent',fe(pend));
   if(afac>0){
     const setR=v=>{const r=document.querySelector(`input[name="m-facturar"][value="${v}"]`);if(r)r.checked=true;};
-    if(fact>0&&fact<afac)setR('PENDENT');
-    else if(fact>=afac)setR('FACTURAT');
+    if(fact<=0)setR('SI');
+    else if(fact<afac)setR('PENDENT');
+    else setR('FACTURAT');
   }
 }
 
