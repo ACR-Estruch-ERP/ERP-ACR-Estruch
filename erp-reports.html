@@ -846,7 +846,7 @@ async function runPendFra(){
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
     const [pjsAll, cliAll] = await Promise.all([
-      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,en_import,dg_pc,dg_import,cb_pc,cb_import,acr_pc,acr_import,import_a_facturar,import_facturat,carpeta,entitat,mercat_desti,facturar&order=idclient.asc.nullslast,IdPJ.asc'),
+      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,en_import,en_pagat,en_dif_canvi,dg_pc,dg_import,dg_pagat,dg_dif_canvi,cb_pc,cb_import,cb_pagat,cb_dif_canvi,acr_pc,acr_import,cobrat,dif_canvi_cobrat,import_a_facturar,import_facturat,carpeta,entitat,mercat_desti,facturar&order=idclient.asc.nullslast,IdPJ.asc'),
       sbGet('clients','select=codi,rao_social,sinonim')
     ]);
 
@@ -869,9 +869,16 @@ async function runPendFra(){
     const colHead = `<tr>
       <th>IdCli</th><th>Client</th><th>PJ</th><th>Empresa PJ</th>
       <th>País</th><th>Carpeta</th><th>Tipus</th>
-      <th class="r">Import PJ</th><th class="r">Import Fra</th><th class="r">Pendent</th>
-      <th class="r">EN</th><th class="r">DG</th><th class="r">CB</th><th class="r">ACR</th>
+      <th class="r">Import PJ</th><th class="r">Import Fra</th><th class="r">Pendent Fra</th>
+      <th class="r">Pend. EN</th><th class="r">Pend. DG</th><th class="r">Pend. CB</th><th class="r">Pend. ACR</th>
     </tr>`;
+
+    const fmtPend = (nom, pend, imp) => {
+      if(!nom) return '—';
+      const pc = imp ? r2(pend/imp*100) : 0;
+      const col = pend>0 ? 'var(--red)' : 'var(--muted)';
+      return `<span style="color:${col}">${fe(pend)}</span><br><small style="color:var(--muted)">${fe(pc,2)}%</small>`;
+    };
 
     const pjRow = p => {
       const imp    = Number(p.import||0);
@@ -882,6 +889,10 @@ async function runPendFra(){
       const dgN    = Number(p.dg_import||0);
       const cbN    = Number(p.cb_import||0);
       const acrN   = Number(p.acr_import||0);
+      const enPend = r2(enN - Number(p.en_pagat||0) - Number(p.en_dif_canvi||0));
+      const dgPend = r2(dgN - Number(p.dg_pagat||0) - Number(p.dg_dif_canvi||0));
+      const cbPend = r2(cbN - Number(p.cb_pagat||0) - Number(p.cb_dif_canvi||0));
+      const acrPend= r2(acrN - Number(p.cobrat||0) - Number(p.dif_canvi_cobrat||0));
       const cli    = cliMap[p.idclient]||{};
       return {row:`<tr>
         <td style="font-size:12px">${p.idclient||''}</td>
@@ -894,11 +905,11 @@ async function runPendFra(){
         <td class="r">${fe(imp)}</td>
         <td class="r">${fra?fe(fra):'—'}</td>
         <td class="r" style="color:${pend>0?'var(--red)':'var(--muted)'}">${pend>0?fe(pend):'—'}</td>
-        <td class="r" style="font-size:12px">${fmtComm(enN,p.en_pc)}</td>
-        <td class="r" style="font-size:12px">${fmtComm(dgN,p.dg_pc)}</td>
-        <td class="r" style="font-size:12px">${fmtComm(cbN,p.cb_pc)}</td>
-        <td class="r" style="font-size:12px">${fmtComm(acrN,p.acr_pc)}</td>
-      </tr>`, imp, fra, pend, enN, dgN, cbN, acrN};
+        <td class="r" style="font-size:12px">${fmtPend(enN,enPend,imp)}</td>
+        <td class="r" style="font-size:12px">${fmtPend(dgN,dgPend,imp)}</td>
+        <td class="r" style="font-size:12px">${fmtPend(cbN,cbPend,imp)}</td>
+        <td class="r" style="font-size:12px">${fmtPend(acrN,acrPend,imp)}</td>
+      </tr>`, imp, fra, pend, enPend, dgPend, cbPend, acrPend};
     };
 
     const subtotalRow = (n, imp, fra, pend, enN, dgN, cbN, acrN) =>
