@@ -80,7 +80,7 @@ th.amt{text-align:right}
 .empty p{margin-bottom:14px;font-size:14px}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto}
 .overlay.open{display:flex}
-.modal{background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:95vw;max-width:1300px;max-height:90vh;display:flex;flex-direction:column;margin:auto}
+.modal{background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:95vw;max-width:730px;max-height:90vh;display:flex;flex-direction:column;margin:auto}
 .modal-hdr{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .modal-hdr h3{font-size:16px;font-weight:700;color:var(--blue);flex:1}
 .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;padding:0 4px}
@@ -96,11 +96,12 @@ th.amt{text-align:right}
 .fg input,.fg select,.fg textarea{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;color:var(--text);transition:border-color .15s;font-family:inherit}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
 .fg input[readonly]{background:#f8f9fa;color:var(--muted)}
-.fg input.bv{font-weight:700;color:var(--blue);background:#f0f4f8}
+.fg input.bv{font-weight:700;color:var(--blue);background:#eef2f8}
 .fg input.fmt-num{text-align:right}
 .bi{border:1.5px solid var(--border);border-radius:var(--r);font-family:inherit;outline:none;background:var(--white);box-sizing:border-box;width:100%}
 .bi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
-.rv{font-weight:700;color:var(--red);background:#fff5f5;border-radius:var(--r);box-sizing:border-box;width:100%}
+.bv{font-weight:700;color:var(--blue);background:#eef2f8;border:1.5px solid #c8d4e8;border-radius:var(--r);font-family:inherit;box-sizing:border-box;width:100%}
+.rv{font-weight:700;color:var(--red);background:#fff5f5;border:1.5px solid #ffc8c8;border-radius:var(--r);font-family:inherit;box-sizing:border-box;width:100%}
 .fg textarea{resize:vertical;min-height:80px}
 .sec{font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;border-bottom:1.5px solid var(--blue-dim);margin-bottom:2px}
 .comm-box{background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-top:8px}
@@ -427,7 +428,7 @@ input[type=number]{-moz-appearance:textfield}
         <div style="background:#f0f4f8;border:1.5px solid var(--border);border-radius:var(--r);padding:7px 10px">
           <div class="sec" style="margin-bottom:5px">Facturació</div>
           <table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed">
-            <colgroup><col style="width:25%"><col style="width:25%"><col style="width:18%"><col style="width:32%"></colgroup>
+            <colgroup><col style="width:86px"><col style="width:86px"><col style="width:50px"><col></colgroup>
             <thead><tr>
               <th style="text-align:right;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">A Facturar</th>
               <th style="text-align:right;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;padding:1px 3px">Facturat</th>
@@ -449,34 +450,34 @@ input[type=number]{-moz-appearance:textfield}
       <div style="background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:7px 10px">
         <table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed">
           <colgroup>
-            <col style="width:50px"> <!-- label -->
-            <col style="width:7%">  <!-- % -->
-            <col style="width:12%"> <!-- nominal -->
-            <col style="width:7%">  <!-- %s/pj -->
-            <col style="width:12px"><!-- sep -->
-            <col style="width:11%"> <!-- nominal-r readonly -->
-            <col style="width:12%"> <!-- pagat/cobrat -->
-            <col style="width:7%">  <!-- % pag -->
-            <col style="width:10%"> <!-- dif canvi -->
-            <col style="width:10%"> <!-- pendent -->
+            <col style="width:32px"> <!-- label -->
+            <col style="width:50px"> <!-- % -->
+            <col style="width:86px"> <!-- nominal -->
+            <col style="width:50px"> <!-- %s/pj -->
+            <col style="width:8px">  <!-- sep -->
+            <col style="width:86px"> <!-- nominal-r readonly -->
+            <col style="width:86px"> <!-- pagat/cobrat -->
+            <col style="width:50px"> <!-- % pag -->
+            <col style="width:74px"> <!-- dif canvi -->
+            <col style="width:86px"> <!-- pendent -->
           </colgroup>
           <thead>
             <tr>
-              <th colspan="4" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border)">Distribució comissions</th>
+              <th colspan="4" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border);background:#eef2f8">Distribució comissions</th>
               <th style="border-bottom:1px solid var(--border)"></th>
-              <th colspan="5" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border)">Pagaments / Cobraments</th>
+              <th colspan="5" style="text-align:left;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px 4px;border-bottom:1px solid var(--border);background:#edf5ee">Pagaments / Cobraments</th>
             </tr>
             <tr>
-              <th></th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">%</th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Nominal €</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">% s/PJ</th>
+              <th style="background:#eef2f8"></th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#eef2f8">%</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#eef2f8">Nominal €</th>
+              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#eef2f8">% s/PJ</th>
               <th style="border-left:1.5px solid #dde3ea"></th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Nominal</th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Pagat</th>
-              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">%</th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Dif.Canvi</th>
-              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px">Pendent</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#edf5ee">Nominal</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#edf5ee">Pagat</th>
+              <th style="text-align:center;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#edf5ee">%</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#edf5ee">Dif.Canvi</th>
+              <th style="text-align:right;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 3px;background:#edf5ee">Pendent</th>
             </tr>
           </thead>
           <tbody>
