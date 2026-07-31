@@ -846,7 +846,7 @@ async function runPendFra(){
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
     const [pjsAll, cliAll] = await Promise.all([
-      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,dg_pc,cb_pc,carpeta,entitat,mercat_desti,facturar&order=idclient.asc.nullslast,IdPJ.asc'),
+      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,en_import,dg_pc,dg_import,cb_pc,cb_import,acr_pc,acr_import,import_a_facturar,import_facturat,carpeta,entitat,mercat_desti,facturar&order=idclient.asc.nullslast,IdPJ.asc'),
       sbGet('clients','select=codi,rao_social,sinonim')
     ]);
 
@@ -855,8 +855,10 @@ async function runPendFra(){
 
     const fmtId = id => id ? String(id).padStart(8,'0') : '—';
     const fe = n => Number(n||0).toLocaleString('ca-ES',{minimumFractionDigits:2});
+    const r2 = n => Math.round(n*100)/100;
+    const fmtComm = (nom, pc) => nom ? `${fe(nom)}<br><small style="color:var(--muted)">${fe(pc,2)}%</small>` : '—';
 
-    const pendents   = pjsAll.filter(p=>p.facturar==='SI');
+    const pendents   = pjsAll.filter(p=>p.facturar==='SI'||p.facturar==='PENDENT');
     const periodiques= pjsAll.filter(p=>p.facturar==='FRA. PERIÒDICA');
 
     if(!pendents.length && !periodiques.length){
@@ -867,82 +869,78 @@ async function runPendFra(){
     const colHead = `<tr>
       <th>IdCli</th><th>Client</th><th>PJ</th><th>Empresa PJ</th>
       <th>País</th><th>Carpeta</th><th>Tipus</th>
-      <th class="r">Import PJ</th><th class="r">Import Fra</th>
-      <th class="r">Import DG</th><th class="r">ACR</th>
+      <th class="r">Import PJ</th><th class="r">Import Fra</th><th class="r">Pendent</th>
+      <th class="r">EN</th><th class="r">DG</th><th class="r">CB</th><th class="r">ACR</th>
     </tr>`;
 
     const pjRow = p => {
-      const imp  = Number(p.import||0);
-      const fra  = Math.round(imp*(Number(p.en_pc||0)/100)*100)/100;
-      const dg   = Math.round(imp*(Number(p.dg_pc||0)/100)*100)/100;
-      const acr  = Math.round(imp*(Number(p.cb_pc||0)/100)*100)/100;
-      const cli  = cliMap[p.idclient]||{};
+      const imp    = Number(p.import||0);
+      const fra    = Number(p.import_a_facturar||0);
+      const fact   = Number(p.import_facturat||0);
+      const pend   = r2(fra-fact);
+      const enN    = Number(p.en_import||0);
+      const dgN    = Number(p.dg_import||0);
+      const cbN    = Number(p.cb_import||0);
+      const acrN   = Number(p.acr_import||0);
+      const cli    = cliMap[p.idclient]||{};
       return {row:`<tr>
         <td style="font-size:12px">${p.idclient||''}</td>
         <td style="font-size:12px">${cli.sinonim||cli.rao_social||''}</td>
-        <td class="bold">${fmtId(p.IdPJ)}</td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}</td>
+        <td class="bold"><a href="erp-projectes.html?pj=${p.IdPJ}" style="color:var(--blue);text-decoration:none" title="Obrir projecte">${fmtId(p.IdPJ)}</a></td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}</td>
         <td style="font-size:12px">${p.mercat_desti||'—'}</td>
         <td style="font-size:12px">${p.carpeta||p.entitat||'—'}</td>
         <td style="font-size:12px">${p.TipusPJ||'—'}</td>
         <td class="r">${fe(imp)}</td>
-        <td class="r">${fe(fra)}</td>
-        <td class="r">${fe(dg)}</td>
-        <td class="r">${fe(acr)}</td>
-      </tr>`, imp, fra, dg, acr};
+        <td class="r">${fra?fe(fra):'—'}</td>
+        <td class="r" style="color:${pend>0?'var(--red)':'var(--muted)'}">${pend>0?fe(pend):'—'}</td>
+        <td class="r" style="font-size:12px">${fmtComm(enN,p.en_pc)}</td>
+        <td class="r" style="font-size:12px">${fmtComm(dgN,p.dg_pc)}</td>
+        <td class="r" style="font-size:12px">${fmtComm(cbN,p.cb_pc)}</td>
+        <td class="r" style="font-size:12px">${fmtComm(acrN,p.acr_pc)}</td>
+      </tr>`, imp, fra, pend, enN, dgN, cbN, acrN};
     };
 
-    const subtotalRow = (n, imp, fra, dg, acr) =>
+    const subtotalRow = (n, imp, fra, pend, enN, dgN, cbN, acrN) =>
       `<tr class="subtotal"><td colspan="7">Total: ${n} projecte${n!==1?'s':''}</td>
-       <td class="r">${fe(imp)}</td><td class="r">${fe(fra)}</td>
-       <td class="r">${fe(dg)}</td><td class="r">${fe(acr)}</td></tr>`;
+       <td class="r">${fe(imp)}</td><td class="r">${fe(fra)}</td><td class="r">${fe(pend)}</td>
+       <td class="r">${fe(enN)}</td><td class="r">${fe(dgN)}</td><td class="r">${fe(cbN)}</td><td class="r">${fe(acrN)}</td></tr>`;
 
     const secHdr = txt =>
-      `<tr style="background:#dde6f5"><td colspan="11" style="padding:6px 12px;font-size:11px;font-weight:900;color:#1a3a6b;text-transform:uppercase;letter-spacing:.6px">${txt}</td></tr>`;
-
-    const cliHdr = (codi, nom) =>
-      `<tr style="background:#f0f4fa"><td colspan="2" style="padding:5px 12px;font-size:12px;font-weight:700;color:var(--blue)">${codi}</td>
-       <td colspan="9" style="padding:5px 12px;font-size:12px;font-weight:700">${nom}</td></tr>`;
+      `<tr style="background:#dde6f5"><td colspan="14" style="padding:6px 12px;font-size:11px;font-weight:900;color:#1a3a6b;text-transform:uppercase;letter-spacing:.6px">${txt}</td></tr>`;
 
     let html = `<table class="rtbl"><thead>${colHead}</thead><tbody>`;
-    let gImp=0, gFra=0, gDg=0, gAcr=0;
+    let gImp=0,gFra=0,gPend=0,gEn=0,gDg=0,gCb=0,gAcr=0;
 
-    // ── FACTURES PENDENTS (SI) ──
+    // ── FACTURES PENDENTS (SI / PENDENT) ──
     if(pendents.length){
-      html += secHdr('Factures pendents');
-      let sImp=0,sFra=0,sDg=0,sAcr=0;
+      html += secHdr('Factures pendents de facturar');
+      let sImp=0,sFra=0,sPend=0,sEn=0,sDg=0,sCb=0,sAcr=0;
       pendents.forEach(p=>{
-        const {row,imp,fra,dg,acr}=pjRow(p);
-        html+=row; sImp+=imp;sFra+=fra;sDg+=dg;sAcr+=acr;
+        const {row,imp,fra,pend,enN,dgN,cbN,acrN}=pjRow(p);
+        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enN;sDg+=dgN;sCb+=cbN;sAcr+=acrN;
       });
-      html+=subtotalRow(pendents.length,sImp,sFra,sDg,sAcr);
-      gImp+=sImp;gFra+=sFra;gDg+=sDg;gAcr+=sAcr;
+      html+=subtotalRow(pendents.length,sImp,sFra,sPend,sEn,sDg,sCb,sAcr);
+      gImp+=sImp;gFra+=sFra;gPend+=sPend;gEn+=sEn;gDg+=sDg;gCb+=sCb;gAcr+=sAcr;
     }
 
-    // ── FACTURES PERIÒDIQUES, agrupades per client ──
+    // ── FACTURES PERIÒDIQUES ──
     if(periodiques.length){
       html += secHdr('Factures periòdiques');
-      const byClient = {};
+      let sImp=0,sFra=0,sPend=0,sEn=0,sDg=0,sCb=0,sAcr=0;
       periodiques.forEach(p=>{
-        const k = p.idclient||'__SENSE_CLIENT__';
-        (byClient[k]=byClient[k]||[]).push(p);
+        const {row,imp,fra,pend,enN,dgN,cbN,acrN}=pjRow(p);
+        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enN;sDg+=dgN;sCb+=cbN;sAcr+=acrN;
       });
-      let sImp=0,sFra=0,sDg=0,sAcr=0;
-      Object.keys(byClient).forEach(k=>{
-        byClient[k].forEach(p=>{
-          const {row,imp,fra,dg,acr}=pjRow(p);
-          html+=row; sImp+=imp;sFra+=fra;sDg+=dg;sAcr+=acr;
-        });
-      });
-      html+=subtotalRow(periodiques.length,sImp,sFra,sDg,sAcr);
-      gImp+=sImp;gFra+=sFra;gDg+=sDg;gAcr+=sAcr;
+      html+=subtotalRow(periodiques.length,sImp,sFra,sPend,sEn,sDg,sCb,sAcr);
+      gImp+=sImp;gFra+=sFra;gPend+=sPend;gEn+=sEn;gDg+=sDg;gCb+=sCb;gAcr+=sAcr;
     }
 
     const total = pendents.length+periodiques.length;
     html+=`<tr class="total-final">
       <td colspan="7">TOTAL — ${total} projecte${total!==1?'s':''}</td>
-      <td class="r">${fe(gImp)}</td><td class="r">${fe(gFra)}</td>
-      <td class="r">${fe(gDg)}</td><td class="r">${fe(gAcr)}</td>
+      <td class="r">${fe(gImp)}</td><td class="r">${fe(gFra)}</td><td class="r">${fe(gPend)}</td>
+      <td class="r">${fe(gEn)}</td><td class="r">${fe(gDg)}</td><td class="r">${fe(gCb)}</td><td class="r">${fe(gAcr)}</td>
     </tr></tbody></table>`;
     el.innerHTML=html;
   }catch(e){ el.innerHTML=`<div class="rpt-empty" style="color:var(--red)">Error: ${e.message}</div>`; }

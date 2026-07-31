@@ -97,6 +97,7 @@ th.amt{text-align:right}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
 .fg input[readonly]{background:#f8f9fa;color:var(--muted)}
 .fg input.bv{font-weight:700;color:var(--blue);background:#f0f4f8}
+.fg input.fmt-num{text-align:right}
 .fg textarea{resize:vertical;min-height:80px}
 .sec{font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;border-bottom:1.5px solid var(--blue-dim);margin-bottom:2px}
 .comm-box{background:#f8f9fa;border:1.5px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-top:8px}
@@ -210,14 +211,15 @@ input[type=number]{-moz-appearance:textfield}
               <th>Client</th>
               <th>Data Entrada</th>
               <th>Data Inici</th>
-              <th class="amt">Import</th>
+              <th class="amt">Import PJ</th>
+              <th class="amt">Pendent</th>
               <th>Facturar</th>
               <th>Estat</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="tbl-body">
-            <tr><td colspan="9"><div class="empty"><div class="eico">🔄</div><p>Carregant...</p></div></td></tr>
+            <tr><td colspan="10"><div class="empty"><div class="eico">🔄</div><p>Carregant...</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -405,7 +407,7 @@ input[type=number]{-moz-appearance:textfield}
         <div style="display:flex;flex-direction:column;gap:10px">
           <div class="fg" style="max-width:200px">
             <label>Import PJ (€)</label>
-            <input type="number" id="m-import" value="0" step="0.01" oninput="recalcComm()">
+            <input type="text" id="m-import" value="0,00" class="fmt-num" oninput="recalcComm()" onblur="fmtBlur('m-import');recalcComm()">
           </div>
           <div class="fg">
             <label>Estat facturació</label>
@@ -424,11 +426,11 @@ input[type=number]{-moz-appearance:textfield}
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
             <div class="fg">
               <label>A facturar (€)</label>
-              <input type="number" id="m-import-facturar" value="0" step="0.01" oninput="recalcPendent()">
+              <input type="text" id="m-import-facturar" value="0,00" class="fmt-num" oninput="onImportAFacturarChange()" onblur="fmtBlur('m-import-facturar');onImportAFacturarChange()">
             </div>
             <div class="fg">
               <label>Facturat (€)</label>
-              <input type="number" id="m-import-facturat" value="0" step="0.01" oninput="recalcPendent()">
+              <input type="text" id="m-import-facturat" value="0,00" class="fmt-num" oninput="recalcPendent()" onblur="fmtBlur('m-import-facturat');recalcPendent()">
             </div>
             <div class="fg">
               <label>Pendent (€)</label>
@@ -449,26 +451,26 @@ input[type=number]{-moz-appearance:textfield}
         <div style="display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:8px;align-items:end;margin-bottom:8px">
           <span class="comm-label" style="padding-bottom:8px">EN</span>
           <div class="fg"><input type="number" id="m-en-pc" step="0.01" value="0" oninput="recalcFromPc('en')"></div>
-          <div class="fg"><input type="number" id="m-en-nom" step="0.01" value="0" oninput="recalcFromNom('en')"></div>
+          <div class="fg"><input type="text" id="m-en-nom" value="0,00" class="fmt-num" oninput="recalcFromNom('en')" onblur="fmtBlur('m-en-nom')"></div>
           <div class="fg"><input type="text" id="m-en-spj" readonly class="bv"></div>
         </div>
         <div style="display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:8px;align-items:end;margin-bottom:8px">
           <span class="comm-label" style="padding-bottom:8px">DG</span>
           <div class="fg"><input type="number" id="m-dg-pc" step="0.01" value="0" oninput="recalcFromPc('dg')"></div>
-          <div class="fg"><input type="number" id="m-dg-nom" step="0.01" value="0" oninput="recalcFromNom('dg')"></div>
+          <div class="fg"><input type="text" id="m-dg-nom" value="0,00" class="fmt-num" oninput="recalcFromNom('dg')" onblur="fmtBlur('m-dg-nom')"></div>
           <div class="fg"><input type="text" id="m-dg-spj" readonly class="bv"></div>
         </div>
         <div style="display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:8px;align-items:end;margin-bottom:8px">
           <span class="comm-label" style="padding-bottom:8px">CB</span>
           <div class="fg"><input type="number" id="m-cb-pc" step="0.01" value="0" oninput="recalcFromPc('cb')"></div>
-          <div class="fg"><input type="number" id="m-cb-nom" step="0.01" value="0" oninput="recalcFromNom('cb')"></div>
+          <div class="fg"><input type="text" id="m-cb-nom" value="0,00" class="fmt-num" oninput="recalcFromNom('cb')" onblur="fmtBlur('m-cb-nom')"></div>
           <div class="fg"><input type="text" id="m-cb-spj" readonly class="bv"></div>
         </div>
         <div style="height:1px;background:var(--border);margin:10px 0"></div>
         <div style="display:grid;grid-template-columns:60px 1fr 1fr 90px;gap:8px;align-items:end">
           <span class="comm-label" style="color:var(--green);padding-bottom:8px">ACR</span>
           <div class="fg"><input type="number" id="m-acr-pc" step="0.01" value="0" oninput="recalcFromPc('acr')"></div>
-          <div class="fg"><input type="number" id="m-acr-nom" step="0.01" value="0" oninput="recalcFromNom('acr')"></div>
+          <div class="fg"><input type="text" id="m-acr-nom" value="0,00" class="fmt-num" oninput="recalcFromNom('acr')" onblur="fmtBlur('m-acr-nom')"></div>
           <div class="fg"><input type="text" id="m-acr-spj" readonly class="bv"></div>
         </div>
       </div>
@@ -529,6 +531,8 @@ function badgeHtml(estat){
 async function init(){
   if(!requireAuth()) return;
   await Promise.all([loadClients(), loadEntitats(), loadPaisos(), loadProveniments(), loadProjectes(), loadTags()]);
+  const urlPJ=new URLSearchParams(location.search).get('pj');
+  if(urlPJ) openModal(urlPJ);
 }
 
 async function loadClients(){
@@ -639,7 +643,7 @@ function renderTable(rows){
   document.getElementById('f-count').textContent=rows.length+' projectes';
   const tbody=document.getElementById('tbl-body');
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="eico">📋</div><p>Cap projecte trobat.</p><button class="btn btn-primary" onclick="openModal(null)">+ Nou projecte</button></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty"><div class="eico">📋</div><p>Cap projecte trobat.</p><button class="btn btn-primary" onclick="openModal(null)">+ Nou projecte</button></div></td></tr>`;
     return;
   }
   const currentYY=String(new Date().getFullYear()).slice(-2);
@@ -650,14 +654,17 @@ function renderTable(rows){
     const exp=yy===currentYY;
     const disp=exp?'':'display:none';
     const ico=exp?'▼':'▶';
-    const hdr=`<tr class="year-hdr" onclick="toggleYear('${yy}')"><td colspan="9"><span id="ych-${yy}">${ico}</span> Any 20${yy} — ${byYear[yy].length} projectes</td></tr>`;
-    const rws=byYear[yy].map(p=>`<tr class="yr-${yy}" style="${disp}" onclick="openModal('${p.IdPJ}')">
+    const hdr=`<tr class="year-hdr" onclick="toggleYear('${yy}')"><td colspan="10"><span id="ych-${yy}">${ico}</span> Any 20${yy} — ${byYear[yy].length} projectes</td></tr>`;
+    const rws=byYear[yy].map(p=>{
+      const pv=r2((p.import_a_facturar||0)-(p.import_facturat||0));
+      return `<tr class="yr-${yy}" style="${disp}" onclick="openModal('${p.IdPJ}')">
       <td><span class="pj-codi">${fmtIdPJ(p.IdPJ)}</span></td>
       <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.Descripcio||''}">${p.Descripcio||'—'}</td>
       <td style="color:var(--muted);font-size:12px">${p.client||'—'}</td>
       <td style="font-size:12px">${fd(p.data_entrada)}</td>
       <td style="font-size:12px">${fd(p.data_inici)}</td>
       <td class="amt">${fe(p.import)}</td>
+      <td class="amt" style="font-size:12px;color:${pv>0?'var(--amber,#d97706)':'var(--muted)'}">${pv>0?fe(pv):'—'}</td>
       <td style="font-size:12px">${p.facturar||'—'}</td>
       <td>${badgeHtml(p.estat)}</td>
       <td onclick="event.stopPropagation()" style="white-space:nowrap">
@@ -665,7 +672,7 @@ function renderTable(rows){
         <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarProjecte('${p.IdPJ}')" title="Duplicar">⧉</button>
         <button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel('${p.IdPJ}')" title="Eliminar">✕</button>
       </td>
-    </tr>`).join('');
+    </tr>`;}).join('');
     return hdr+rws;
   }).join('');
 }
@@ -742,7 +749,7 @@ function fillForm(p){
   s('m-data-entrada',p.data_entrada);
   s('m-data-finalitzat',p.data_finalitzat);
   document.querySelectorAll('input[name="m-facturar"]').forEach(r=>r.checked=r.value===(p.facturar||''));
-  s('m-import',p.import??0);
+  s('m-import',fe(p.import??0));
   s('m-exe-prev',p.data_execucio);
   s('m-data-inici',p.data_inici);
   s('m-mercat-origen',p.mercat_origen);
@@ -752,12 +759,12 @@ function fillForm(p){
   s('m-en-pc',p.en_pc??0);  s('m-dg-pc',p.dg_pc??0);  s('m-cb-pc',p.cb_pc??0);  s('m-acr-pc',p.acr_pc??0);
   const _setNom=(pfx,nom)=>{
     const imp=parseFloat(p.import)||0;
-    document.getElementById(`m-${pfx}-nom`).value=nom||0;
+    document.getElementById(`m-${pfx}-nom`).value=fe(nom||0);
     document.getElementById(`m-${pfx}-spj`).value=fe(imp?r2(nom/imp*100):0,2)+'%';
   };
   _setNom('en',p.en_import??0); _setNom('dg',p.dg_import??0); _setNom('cb',p.cb_import??0); _setNom('acr',p.acr_import??0);
-  s('m-import-facturar',p.import_a_facturar??0);
-  s('m-import-facturat',p.import_facturat??0);
+  s('m-import-facturar',fe(p.import_a_facturar??0));
+  s('m-import-facturat',fe(p.import_facturat??0));
   recalcPendent();
   updateBadge();
 }
@@ -775,11 +782,11 @@ function resetForm(){
   const _s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
   _s('m-carpeta','ACR');
   _s('m-estat','ACTIU');
-  _s('m-import',0);
+  _s('m-import','0,00');
   _s('m-en-pc',0);_s('m-dg-pc',0);_s('m-cb-pc',0);_s('m-acr-pc',0);
-  _s('m-en-nom',0);_s('m-dg-nom',0);_s('m-cb-nom',0);_s('m-acr-nom',0);
+  _s('m-en-nom','0,00');_s('m-dg-nom','0,00');_s('m-cb-nom','0,00');_s('m-acr-nom','0,00');
   ['m-en-spj','m-dg-spj','m-cb-spj','m-acr-spj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0,00%';});
-  _s('m-import-facturar',0);_s('m-import-facturat',0);
+  _s('m-import-facturar','0,00');_s('m-import-facturat','0,00');
   const elP=document.getElementById('m-pendent');if(elP)elP.value='0,00 €';
   updateBadge(); recalcComm();
 }
@@ -806,17 +813,29 @@ function updateBadge(){
 
 const r2=n=>Math.round(n*100)/100;
 
+function parseAmt(s){
+  s=String(s||'').trim().replace(/\s/g,'').replace('€','');
+  if(!s||s==='—')return 0;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  return parseFloat(s)||0;
+}
+
+function fmtBlur(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.value=fe(parseAmt(el.value));
+}
+
 function recalcFromPc(pfx){
-  const imp=parseFloat(document.getElementById('m-import')?.value)||0;
+  const imp=parseAmt(document.getElementById('m-import')?.value);
   const pc=parseFloat(document.getElementById(`m-${pfx}-pc`).value)||0;
   const nom=r2(imp*pc/100);
-  document.getElementById(`m-${pfx}-nom`).value=nom;
+  document.getElementById(`m-${pfx}-nom`).value=fe(nom);
   document.getElementById(`m-${pfx}-spj`).value=fe(pc,2)+'%';
 }
 
 function recalcFromNom(pfx){
-  const imp=parseFloat(document.getElementById('m-import')?.value)||0;
-  const nom=parseFloat(document.getElementById(`m-${pfx}-nom`).value)||0;
+  const imp=parseAmt(document.getElementById('m-import')?.value);
+  const nom=parseAmt(document.getElementById(`m-${pfx}-nom`).value);
   const pc=imp?r2(nom/imp*100):0;
   document.getElementById(`m-${pfx}-pc`).value=pc;
   document.getElementById(`m-${pfx}-spj`).value=fe(pc,2)+'%';
@@ -827,9 +846,20 @@ function recalcComm(){
 }
 
 function recalcPendent(){
-  const afac=parseFloat(document.getElementById('m-import-facturar').value)||0;
-  const fact=parseFloat(document.getElementById('m-import-facturat').value)||0;
+  const afac=parseAmt(document.getElementById('m-import-facturar').value);
+  const fact=parseAmt(document.getElementById('m-import-facturat').value);
   document.getElementById('m-pendent').value=fe(r2(afac-fact))+' €';
+  if(afac>0){
+    const setR=v=>{const r=document.querySelector(`input[name="m-facturar"][value="${v}"]`);if(r)r.checked=true;};
+    if(fact>0&&fact<afac)setR('PENDENT');
+    else if(fact>=afac)setR('FACTURAT');
+  }
+}
+
+function onImportAFacturarChange(){
+  const afac=parseAmt(document.getElementById('m-import-facturar').value);
+  document.getElementById('m-import-facturat').value=fe(afac);
+  recalcPendent();
 }
 
 async function saveProjecte(){
@@ -837,17 +867,17 @@ async function saveProjecte(){
   const idpj=document.getElementById('m-idpj').value.trim();
   const descripcio=document.getElementById('m-descripcio').value.trim();
   if(!descripcio){toast('La descripció és obligatòria','err');return;}
-  const imp=parseFloat(document.getElementById('m-import')?.value)||0;
+  const imp=parseAmt(document.getElementById('m-import')?.value);
   const enPc=parseFloat(document.getElementById('m-en-pc').value)||0;
   const dgPc=parseFloat(document.getElementById('m-dg-pc').value)||0;
   const cbPc=parseFloat(document.getElementById('m-cb-pc').value)||0;
   const acrPc=parseFloat(document.getElementById('m-acr-pc').value)||0;
-  const enI=parseFloat(document.getElementById('m-en-nom').value)||0;
-  const dgI=parseFloat(document.getElementById('m-dg-nom').value)||0;
-  const cbI=parseFloat(document.getElementById('m-cb-nom').value)||0;
-  const acrI=parseFloat(document.getElementById('m-acr-nom').value)||0;
-  const importAFacturar=parseFloat(document.getElementById('m-import-facturar').value)||0;
-  const importFacturat=parseFloat(document.getElementById('m-import-facturat').value)||0;
+  const enI=parseAmt(document.getElementById('m-en-nom').value);
+  const dgI=parseAmt(document.getElementById('m-dg-nom').value);
+  const cbI=parseAmt(document.getElementById('m-cb-nom').value);
+  const acrI=parseAmt(document.getElementById('m-acr-nom').value);
+  const importAFacturar=parseAmt(document.getElementById('m-import-facturar').value);
+  const importFacturat=parseAmt(document.getElementById('m-import-facturat').value);
   const g=id=>document.getElementById(id)?.value||null;
   const selCli=document.getElementById('m-client');
   const cliOpt=selCli.options[selCli.selectedIndex];
