@@ -928,8 +928,8 @@ async function runPendFra(){
       html += secHdr('Factures pendents de facturar');
       let sImp=0,sFra=0,sPend=0,sEn=0,sDg=0,sCb=0,sAcr=0;
       pendents.forEach(p=>{
-        const {row,imp,fra,pend,enN,dgN,cbN,acrN}=pjRow(p);
-        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enN;sDg+=dgN;sCb+=cbN;sAcr+=acrN;
+        const {row,imp,fra,pend,enPend,dgPend,cbPend,acrPend}=pjRow(p);
+        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enPend;sDg+=dgPend;sCb+=cbPend;sAcr+=acrPend;
       });
       html+=subtotalRow(pendents.length,sImp,sFra,sPend,sEn,sDg,sCb,sAcr);
       gImp+=sImp;gFra+=sFra;gPend+=sPend;gEn+=sEn;gDg+=sDg;gCb+=sCb;gAcr+=sAcr;
@@ -940,8 +940,8 @@ async function runPendFra(){
       html += secHdr('Factures periòdiques');
       let sImp=0,sFra=0,sPend=0,sEn=0,sDg=0,sCb=0,sAcr=0;
       periodiques.forEach(p=>{
-        const {row,imp,fra,pend,enN,dgN,cbN,acrN}=pjRow(p);
-        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enN;sDg+=dgN;sCb+=cbN;sAcr+=acrN;
+        const {row,imp,fra,pend,enPend,dgPend,cbPend,acrPend}=pjRow(p);
+        html+=row; sImp+=imp;sFra+=fra;sPend+=pend;sEn+=enPend;sDg+=dgPend;sCb+=cbPend;sAcr+=acrPend;
       });
       html+=subtotalRow(periodiques.length,sImp,sFra,sPend,sEn,sDg,sCb,sAcr);
       gImp+=sImp;gFra+=sFra;gPend+=sPend;gEn+=sEn;gDg+=sDg;gCb+=sCb;gAcr+=sAcr;
