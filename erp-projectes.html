@@ -93,7 +93,7 @@ th.amt{text-align:right}
 .tab-panel{display:none;padding:20px 22px}.tab-panel.on{display:block}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select,.fg textarea{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;color:var(--text);transition:border-color .15s;font-family:inherit}
+.fg input,.fg select,.fg textarea{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;color:var(--text);transition:border-color .15s;font-family:inherit;width:100%;box-sizing:border-box}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
 .fg input[readonly]{background:#f8f9fa;color:var(--muted)}
 .fg input.bv{font-weight:700;color:var(--blue);background:#eef2f8}
@@ -249,10 +249,10 @@ input[type=number]{-moz-appearance:textfield}
 
     <!-- TAB PROJECTE -->
     <div class="tab-panel on" id="tp-gen">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
 
         <!-- COLUMNA ESQUERRA -->
-        <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
           <div style="display:grid;grid-template-columns:120px 1fr;gap:8px">
             <div class="fg">
               <label>IdPJ *</label>
@@ -347,7 +347,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
 
         <!-- COLUMNA DRETA -->
-        <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
           <div style="display:grid;grid-template-columns:60% auto;gap:8px">
             <div class="fg">
               <label>Estat</label>
