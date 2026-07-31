@@ -818,7 +818,7 @@ function fillForm(p){
   s('m-mercat-desti',p.mercat_desti);
   s('m-observacions',p.observacions);
   s('m-anotacions',p.anotacions);
-  s('m-en-pc',p.en_pc??0);  s('m-dg-pc',p.dg_pc??0);  s('m-cb-pc',p.cb_pc??0);  s('m-acr-pc',p.acr_pc??0);
+  s('m-en-pc',p.en_pc??0);  s('m-dg-pc',p.dg_pc??0);  s('m-cb-pc',p.cb_pc??0);  s('m-acr-pc',0);
   const _setNom=(pfx,nom)=>{
     const imp=parseFloat(p.import)||0;
     document.getElementById(`m-${pfx}-nom`).value=fe(nom||0);
@@ -992,7 +992,6 @@ async function saveProjecte(){
   const enPc=parseFloat(document.getElementById('m-en-pc').value)||0;
   const dgPc=parseFloat(document.getElementById('m-dg-pc').value)||0;
   const cbPc=parseFloat(document.getElementById('m-cb-pc').value)||0;
-  const acrPc=parseFloat(document.getElementById('m-acr-pc').value)||0;
   const enI=parseAmt(document.getElementById('m-en-nom').value);
   const dgI=parseAmt(document.getElementById('m-dg-nom').value);
   const cbI=parseAmt(document.getElementById('m-cb-nom').value);
@@ -1039,7 +1038,7 @@ async function saveProjecte(){
     en_pc:enPc,en_import:enI,
     dg_pc:dgPc,dg_import:dgI,
     cb_pc:cbPc,cb_import:cbI,
-    acr_pc:acrPc,acr_import:acrI,
+    acr_import:acrI,
     import_a_facturar:importAFacturar,
     import_facturat:importFacturat,
     en_pagat:enPagat,en_dif_canvi:enDifCanvi,
