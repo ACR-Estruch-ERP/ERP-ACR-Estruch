@@ -332,10 +332,6 @@ input[type=number]{-moz-appearance:textfield}
           <input type="number" id="m-bi" step="0.01" value="0" onchange="recalc()">
         </div>
         <div class="fg">
-          <label>% IVA suportat</label>
-          <input type="number" id="m-iva" step="0.1" value="21" min="0" max="100" onchange="recalc()">
-        </div>
-        <div class="fg">
           <label>Divisa</label>
           <select id="m-div">
             <option value="EUR">EUR</option>
@@ -348,10 +344,6 @@ input[type=number]{-moz-appearance:textfield}
           <label>Exchange rate</label>
           <input type="number" id="m-tc" step="0.00001" value="1">
         </div>
-        <div class="fg">
-          <label>% IRPF</label>
-          <input type="number" id="m-irpf" step="0.1" value="0" min="0" max="100" onchange="recalc()">
-        </div>
       </div>
 
       <div class="totals-box">
@@ -361,12 +353,12 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="tot-row">
           <span class="tl">IVA suportat</span>
-          <input class="pct-inp" type="number" id="t-iva-pct" value="21" min="0" max="100" step="0.1" onchange="syncIva()"> %
+          <input class="pct-inp" type="number" id="t-iva-pct" value="21" min="0" max="100" step="0.1" onchange="recalc()"> %
           <span class="tv" id="t-iva">0,00 EUR</span>
         </div>
         <div class="tot-row">
           <span class="tl">IRPF retingut</span>
-          <input class="pct-inp" type="number" id="t-irpf-pct" value="0" min="0" max="100" step="0.1" onchange="syncIrpf()"> %
+          <input class="pct-inp" type="number" id="t-irpf-pct" value="0" min="0" max="100" step="0.1" onchange="recalc()"> %
           <span class="tv" id="t-irpf" style="color:var(--red)">0,00 EUR</span>
         </div>
         <div class="tot-row tot-total">
@@ -544,8 +536,8 @@ function onProvChange(){
   if(!opt || !opt.value) return;
   const cnce = opt.dataset.cnce || 'CN';
   const noTax = cnce === 'CE' || cnce === 'EX';
-  document.getElementById('m-iva').value  = noTax ? 0 : (opt.dataset.iva  ?? 21);
-  document.getElementById('m-irpf').value = noTax ? 0 : (opt.dataset.irpf ?? 0);
+  document.getElementById('t-iva-pct').value  = noTax ? 0 : (opt.dataset.iva  ?? 21);
+  document.getElementById('t-irpf-pct').value = noTax ? 0 : (opt.dataset.irpf ?? 0);
   document.getElementById('m-div').value  = opt.dataset.divisa || 'EUR';
   recalc();
 }
@@ -745,9 +737,9 @@ function fillForm(fr){
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'')};
   s('m-no',fr.no_seriefra); s('m-no-prov',fr.no_fra_prov); s('m-estat',fr.estat);
   s('m-prov',fr.codi_prov); s('m-data',fr.data_fra); s('m-termini',fr.data_termini1);
-  s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0); s('m-iva',fr.tipus_iva??21);
+  s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0);
   s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fr.divisa_canvi??1);
-  s('m-irpf',fr.tipus_irpf??0);
+  s('t-iva-pct',fr.tipus_iva??21); s('t-irpf-pct',fr.tipus_irpf??0);
   s('m-cte-prov',fr.compte_prov||'400'); s('m-cte-desp',fr.compte_despeses||'600');
   s('m-cte-iva',fr.compte_iva_sup||'472'); s('m-cte-irpf',fr.compte_irpf||'473');
   document.getElementById('m-assentat').checked=!!fr.assentat;
@@ -766,10 +758,10 @@ function resetForm(){
   document.getElementById('m-termini').value='';
   document.getElementById('m-concepte').value='';
   document.getElementById('m-bi').value=0;
-  document.getElementById('m-iva').value=21;
   document.getElementById('m-div').value='EUR';
   document.getElementById('m-tc').value=1;
-  document.getElementById('m-irpf').value=0;
+  document.getElementById('t-iva-pct').value=21;
+  document.getElementById('t-irpf-pct').value=0;
   document.getElementById('m-cte-prov').value='400';
   document.getElementById('m-cte-desp').value='600';
   document.getElementById('m-cte-iva').value='472';
@@ -788,10 +780,8 @@ function updateBadge(){
 // ── CÀLCULS ──
 function recalc(){
   curBi=parseFloat(document.getElementById('m-bi').value)||0;
-  const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
-  const irpfPc=parseFloat(document.getElementById('m-irpf').value)||0;
-  document.getElementById('t-iva-pct').value=ivaPc;
-  document.getElementById('t-irpf-pct').value=irpfPc;
+  const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
+  const irpfPc=parseFloat(document.getElementById('t-irpf-pct').value)||0;
   const iva=Math.round(curBi*ivaPc/100*100)/100;
   const irpf=Math.round(curBi*irpfPc/100*100)/100;
   const tot=Math.round((curBi+iva-irpf)*100)/100;
@@ -803,15 +793,6 @@ function recalc(){
   updateAssentament();
   updatePagResum();
 }
-function syncIva(){
-  document.getElementById('m-iva').value=document.getElementById('t-iva-pct').value;
-  recalc();
-}
-function syncIrpf(){
-  document.getElementById('m-irpf').value=document.getElementById('t-irpf-pct').value;
-  recalc();
-}
-
 // ── PAGAMENTS ──
 async function loadPagaments(idFra){
   try{
@@ -841,8 +822,8 @@ function renderPagaments(){
 }
 
 function updatePagResum(){
-  const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
-  const irpfPc=parseFloat(document.getElementById('m-irpf').value)||0;
+  const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
+  const irpfPc=parseFloat(document.getElementById('t-irpf-pct').value)||0;
   const tot=Math.round((curBi+curBi*ivaPc/100-curBi*irpfPc/100)*100)/100;
   const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
   const pendent=tot-pagat;
@@ -871,7 +852,7 @@ async function addPagament(){
       curPagaments.push(res[0]);
       // Actualitzar import_pagat i estat
       const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
-      const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
+      const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
       const tot=Math.round((curBi+curBi*ivaPc/100)*100)/100;
       const nouEstat=pagat>=tot?'PAGAT':pagat>0?'PARCIALMENT':'PENDENT';
       await sbPatch('factures_rebudes',curId,{import_pagat:pagat,estat:nouEstat});
@@ -902,7 +883,7 @@ async function delPagament(i){
   curPagaments.splice(i,1);
   if(curId){
     const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
-    const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
+    const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
     const tot=Math.round((curBi+curBi*ivaPc/100)*100)/100;
     const nouEstat=pagat>=tot&&tot>0?'PAGAT':pagat>0?'PARCIALMENT':'PENDENT';
     await sbPatch('factures_rebudes',curId,{import_pagat:pagat,estat:nouEstat});
@@ -916,8 +897,8 @@ async function delPagament(i){
 // ── ASSENTAMENT ──
 function updateAssentament(){
   const bi=curBi;
-  const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
-  const irpfPc=parseFloat(document.getElementById('m-irpf').value)||0;
+  const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
+  const irpfPc=parseFloat(document.getElementById('t-irpf-pct').value)||0;
   const iva=Math.round(bi*ivaPc/100*100)/100;
   const irpf=Math.round(bi*irpfPc/100*100)/100;
   const tot=Math.round((bi+iva-irpf)*100)/100;
@@ -966,9 +947,9 @@ function repeatFactura(){
   const g = id => document.getElementById(id)?.value ?? '';
   const snap = {
     prov:     g('m-prov'),      concepte: g('m-concepte'),
-    bi:       g('m-bi'),        iva:      g('m-iva'),
+    bi:       g('m-bi'),        iva:      g('t-iva-pct'),
     div:      g('m-div'),       tc:       g('m-tc'),
-    irpf:     g('m-irpf'),
+    irpf:     g('t-irpf-pct'),
     cte_prov: g('m-cte-prov'),  cte_desp: g('m-cte-desp'),
     cte_iva:  g('m-cte-iva'),   cte_irpf: g('m-cte-irpf'),
     notes:    g('m-notes'),
@@ -976,9 +957,9 @@ function repeatFactura(){
   openModal(null);
   const s = (id,v) => { const el=document.getElementById(id); if(el) el.value=(v??''); };
   s('m-prov',     snap.prov);     s('m-concepte', snap.concepte);
-  s('m-bi',       snap.bi);       s('m-iva',       snap.iva);
+  s('m-bi',       snap.bi);       s('t-iva-pct',    snap.iva);
   s('m-div',      snap.div);      s('m-tc',         snap.tc);
-  s('m-irpf',     snap.irpf);
+  s('t-irpf-pct', snap.irpf);
   s('m-cte-prov', snap.cte_prov); s('m-cte-desp',  snap.cte_desp);
   s('m-cte-iva',  snap.cte_iva);  s('m-cte-irpf',  snap.cte_irpf);
   s('m-notes',    snap.notes);
@@ -991,7 +972,7 @@ async function saveFactura(){
   const noFra=document.getElementById('m-no').value.trim();
   const dataFra=document.getElementById('m-data').value;
   if(!noFra||!dataFra){ toast('Número i data obligatoris','err'); return; }
-  const ivaPc=parseFloat(document.getElementById('m-iva').value)||0;
+  const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
   const iva=Math.round(curBi*ivaPc/100*100)/100;
   const tot=Math.round((curBi+iva)*100)/100;
   const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
@@ -1012,8 +993,8 @@ async function saveFactura(){
     estat:document.getElementById('m-estat').value,
     import_pagat:pagat,
     notes:document.getElementById('m-concepte').value||null,
-    tipus_irpf:parseFloat(document.getElementById('m-irpf').value)||0,
-    import_irpf:Math.round(curBi*(parseFloat(document.getElementById('m-irpf').value)||0)/100*100)/100,
+    tipus_irpf:parseFloat(document.getElementById('t-irpf-pct').value)||0,
+    import_irpf:Math.round(curBi*(parseFloat(document.getElementById('t-irpf-pct').value)||0)/100*100)/100,
     compte_prov:document.getElementById('m-cte-prov').value,
     compte_despeses:document.getElementById('m-cte-desp').value,
     compte_iva_sup:document.getElementById('m-cte-iva').value,
@@ -1058,10 +1039,10 @@ async function duplicarFra(id){
   s('m-prov',     fr.codi_prov);
   s('m-concepte', fr.notes);
   s('m-bi',       fr.base_imposable??0);
-  s('m-iva',      fr.tipus_iva??21);
   s('m-div',      fr.divisa_fra||'EUR');
   s('m-tc',       fr.divisa_canvi??1);
-  s('m-irpf',     fr.tipus_irpf??0);
+  s('t-iva-pct',  fr.tipus_iva??21);
+  s('t-irpf-pct', fr.tipus_irpf??0);
   s('m-cte-prov', fr.compte_prov||'400');
   s('m-cte-desp', fr.compte_despeses||'600');
   s('m-cte-iva',  fr.compte_iva_sup||'472');
