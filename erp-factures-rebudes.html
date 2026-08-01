@@ -552,7 +552,7 @@ async function init(){
 
 async function loadProveidors(){
   try{
-    allProv = await sbGet('proveidors','select=id,codi,rao_social,sinonim,tipus_iva,tipus_irpf,cnce,divisa&order=rao_social');
+    allProv = await sbGet('proveidors','select=id,codi,rao_social,sinonim,tipus_iva,tipus_irpf,cnce,divisa,forma_pag&order=rao_social');
     const sel = document.getElementById('m-prov');
     sel.innerHTML = '<option value="">— Selecciona proveïdor —</option>';
     allProv.forEach(p=>{
@@ -564,6 +564,7 @@ async function loadProveidors(){
       o.dataset.divisa = p.divisa || 'EUR';
       o.dataset.codi   = p.codi || '';
       o.dataset.sinonim= p.sinonim || '';
+      o.dataset.fpag   = p.forma_pag || 'Transferència';
       sel.appendChild(o);
     });
   }catch(e){console.error(e)}
@@ -962,10 +963,12 @@ async function marcarPagat(){
   const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
   const pendent=Math.round((tot-pagat)*100)/100;
   if(pendent<=0){ toast('La factura ja està totalment pagada','inf'); return; }
-  const today=new Date().toISOString().split('T')[0];
+  const dataFra=document.getElementById('m-data').value || new Date().toISOString().split('T')[0];
+  const provOpt=document.getElementById('m-prov').selectedOptions[0];
+  const fpag=provOpt?.dataset.fpag || 'Transferència';
   const pag={
-    data_pag:today,
-    forma_pag:document.getElementById('np-fpag').value||'Transferència',
+    data_pag:dataFra,
+    forma_pag:fpag,
     import:pendent,
     banc:document.getElementById('np-banc').value||null,
     despeses_banc:0,
