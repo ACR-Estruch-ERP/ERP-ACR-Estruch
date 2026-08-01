@@ -687,7 +687,6 @@ async function saveViatge(){
     canvi_mig2:parseFloat(document.getElementById('mv-canvi2').value)||null,
     notes:document.getElementById('mv-notes').value||null,
     total_eur:Math.round((totEur+totDiv)*100)/100,
-    updated_at:new Date().toISOString()
   };
 
   const pin=prompt('🔒 Introdueix el PIN per guardar:');
@@ -897,7 +896,6 @@ async function saveTicket(){
     varis:parseFloat(document.getElementById('mt-varis').value)||0,
     especial:parseFloat(document.getElementById('mt-especial').value)||0,
     especial_mig:parseFloat(document.getElementById('mt-especial-mig').value)||0,
-    updated_at:new Date().toISOString()
   };
 
   const pin=prompt('🔒 Introdueix el PIN per guardar:');
