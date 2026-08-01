@@ -328,12 +328,12 @@ input[type=number]{-moz-appearance:textfield}
           <input type="text" id="m-concepte" placeholder="Descripció del servei o producte...">
         </div>
         <div class="fg">
-          <label>Base Imposable</label>
+          <label>Base Imposable (EUR)</label>
           <input type="number" id="m-bi" step="0.01" value="0" onchange="recalc()">
         </div>
         <div class="fg">
           <label>Divisa</label>
-          <select id="m-div">
+          <select id="m-div" onchange="calcBiFromDivisa()">
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
             <option value="GBP">GBP</option>
@@ -341,9 +341,17 @@ input[type=number]{-moz-appearance:textfield}
           </select>
         </div>
         <div class="fg">
-          <label>Exchange rate</label>
-          <input type="number" id="m-tc" step="0.00001" value="1">
+          <label>Import en divisa</label>
+          <input type="number" id="m-bi-div" step="0.01" value="" placeholder="—" oninput="calcBiFromDivisa()">
         </div>
+        <div class="fg">
+          <label>Exchange rate</label>
+          <input type="number" id="m-tc" step="0.00001" value="1" oninput="calcBiFromDivisa()">
+        </div>
+      </div>
+
+      <div id="div-note" style="display:none;margin-top:8px;padding:8px 12px;background:#fffbe6;border:1px solid #ffe082;border-radius:5px;font-size:11.5px;color:#6b4f00;line-height:1.5">
+        Per a la comptabilització, el tipus de canvi a aplicar hauria de ser el de la data de meritació de la factura (no la data de pagament). Normalment s'agafa el tipus de referència del BCE o del Banco de España d'aquell dia — no un tipus qualsevol de mercat.
       </div>
 
       <div class="totals-box">
@@ -739,6 +747,11 @@ function fillForm(fr){
   s('m-prov',fr.codi_prov); s('m-data',fr.data_fra); s('m-termini',fr.data_termini1);
   s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0);
   s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fr.divisa_canvi??1);
+  // import en divisa: base_imposable * tc (aproximació inversa per mostrar el valor original)
+  const biDivVal=(fr.divisa_fra&&fr.divisa_fra!=='EUR'&&fr.base_imposable&&fr.divisa_canvi)
+    ? Math.round(fr.base_imposable*fr.divisa_canvi*100)/100 : '';
+  s('m-bi-div', biDivVal);
+  document.getElementById('div-note').style.display=(fr.divisa_fra&&fr.divisa_fra!=='EUR')?'':'none';
   s('t-iva-pct',fr.tipus_iva??21); s('t-irpf-pct',fr.tipus_irpf??0);
   s('m-cte-prov',fr.compte_prov||'400'); s('m-cte-desp',fr.compte_despeses||'600');
   s('m-cte-iva',fr.compte_iva_sup||'472'); s('m-cte-irpf',fr.compte_irpf||'473');
@@ -758,8 +771,10 @@ function resetForm(){
   document.getElementById('m-termini').value='';
   document.getElementById('m-concepte').value='';
   document.getElementById('m-bi').value=0;
+  document.getElementById('m-bi-div').value='';
   document.getElementById('m-div').value='EUR';
   document.getElementById('m-tc').value=1;
+  document.getElementById('div-note').style.display='none';
   document.getElementById('t-iva-pct').value=21;
   document.getElementById('t-irpf-pct').value=0;
   document.getElementById('m-cte-prov').value='400';
@@ -778,6 +793,20 @@ function updateBadge(){
 }
 
 // ── CÀLCULS ──
+function calcBiFromDivisa(){
+  const div=document.getElementById('m-div').value;
+  const biDiv=parseFloat(document.getElementById('m-bi-div').value);
+  const tc=parseFloat(document.getElementById('m-tc').value)||1;
+  const note=document.getElementById('div-note');
+  if(div!=='EUR' && !isNaN(biDiv) && biDiv>0){
+    const biEur=Math.round(biDiv/tc*100)/100;
+    document.getElementById('m-bi').value=biEur;
+    note.style.display='';
+  } else {
+    note.style.display = div!=='EUR' ? '' : 'none';
+  }
+  recalc();
+}
 function recalc(){
   curBi=parseFloat(document.getElementById('m-bi').value)||0;
   const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
