@@ -244,6 +244,7 @@ input[type=number]{-moz-appearance:textfield}
     <button class="tab on" data-tab="tp-gen">Projecte</button>
     <button class="tab" data-tab="tp-com">Budget</button>
     <button class="tab" data-tab="tp-not">Notes</button>
+    <button class="tab" data-tab="tp-seg">Seguiment</button>
   </div>
   <div class="modal-body">
 
@@ -548,6 +549,22 @@ input[type=number]{-moz-appearance:textfield}
       </div>
     </div>
 
+    <!-- TAB SEGUIMENT -->
+    <div class="tab-panel" id="tp-seg">
+      <div style="display:grid;grid-template-columns:130px 1fr auto;gap:8px;align-items:end;margin-bottom:16px">
+        <div class="fg">
+          <label>Data</label>
+          <input type="date" id="seg-data">
+        </div>
+        <div class="fg">
+          <label>Nota</label>
+          <input type="text" id="seg-text" placeholder="Descripció del seguiment...">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addSeguiment()" style="margin-bottom:1px">+ Afegir</button>
+      </div>
+      <div id="seg-list"></div>
+    </div>
+
   </div>
   <div class="modal-ftr">
     <button class="btn btn-secondary" onclick="closeModal()">Cancel·lar</button>
@@ -783,6 +800,8 @@ function fmtIdPJ(id){ return id?String(id).padStart(8,'0'):'—'; }
 
 function openModal(idpj){
   curIdPJ=idpj; showTab('tp-gen');
+  document.getElementById('seg-data').value=new Date().toISOString().slice(0,10);
+  document.getElementById('seg-text').value='';
   if(idpj){
     const p=allPJ.find(x=>x.IdPJ===idpj);
     if(!p)return;
@@ -1105,8 +1124,52 @@ async function confirmDel(idpj){
 function showTab(tabId){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===tabId));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('on',p.id===tabId));
+  if(tabId==='tp-seg') loadSeguiment();
 }
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+
+async function loadSeguiment(){
+  const el=document.getElementById('seg-list');
+  if(!curIdPJ){el.innerHTML='<p style="color:var(--muted);padding:8px 0">Guarda el projecte primer.</p>';return;}
+  el.innerHTML='<p style="color:var(--muted);padding:8px 0">Carregant...</p>';
+  try{
+    const rows=await sbGet('projectes_seguiment',`select=id,data,notes&id_projecte=eq.${encodeURIComponent(curIdPJ)}&order=data.desc,id.desc`);
+    if(!rows.length){el.innerHTML='<p style="color:var(--muted);padding:8px 0">Sense entrades de seguiment.</p>';return;}
+    const fd=d=>new Date(d+'T00:00:00').toLocaleDateString('ca-ES',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    el.innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">
+      ${rows.map(r=>`<div style="display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:start;padding:10px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid var(--blue)">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;padding-top:1px">${fd(r.data)}</div>
+        <div style="font-size:13px;white-space:pre-wrap;line-height:1.5">${r.notes||''}</div>
+        <button class="btn btn-xs btn-danger" onclick="delSeguiment(${r.id})">✕</button>
+      </div>`).join('')}
+    </div>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Total: ${rows.length}</p>`;
+  }catch(e){el.innerHTML=`<p style="color:var(--red)">Error: ${e.message}</p>`;}
+}
+
+async function addSeguiment(){
+  if(!curIdPJ){toast('Guarda el projecte primer','err');return;}
+  const data=document.getElementById('seg-data').value;
+  const text=document.getElementById('seg-text').value.trim();
+  if(!data||!text){toast('Cal data i text','err');return;}
+  try{
+    await sbPost('projectes_seguiment',{id_projecte:curIdPJ,data,notes:text});
+    document.getElementById('seg-text').value='';
+    await loadSeguiment();
+    toast('Afegit','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+async function delSeguiment(id){
+  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  try{
+    const s=await ensureSession();if(!s){location.replace('login.html');return;}
+    const r=await fetch(`${NEON_DATA_API_URL}/projectes_seguiment?id=eq.${id}`,{method:'DELETE',headers:getHDR()});
+    if(!r.ok)throw new Error(await r.text());
+    await loadSeguiment();
+    toast('Eliminat','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
 
 function toast(msg,type='inf'){
   const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;
