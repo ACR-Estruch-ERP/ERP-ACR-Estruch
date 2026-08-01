@@ -1118,6 +1118,7 @@ function renderTable(rows){
             ? `<button class="btn btn-xs" style="background:#e9ecef;color:#adb5bd;border:1px solid #dee2e6" onclick="editProtected(${inv.id})" title="Factura cobrada — edició protegida per PIN">✏️</button>`
             : `<button class="btn btn-secondary btn-xs" onclick="openModal(${inv.id})">✏️</button>`
           }
+          <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarFactura(${inv.id})" title="Duplicar">⧉</button>
           ${['COBRAT','RECTIFICATIVA'].includes(inv.estat)
             ? `<button class="btn btn-xs" style="margin-left:4px;background:var(--grey-bg);color:var(--grey);border:1px solid var(--border);cursor:default" title="No es pot eliminar" disabled>✕</button>`
             : `<button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel(${inv.id})" title="Eliminar">✕</button>`
@@ -1690,6 +1691,34 @@ async function confirmDel(id){
     toast('Factura eliminada','ok');
     await loadInvoices(false);
   } catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+async function duplicarFactura(id){
+  const inv=allInvoices.find(i=>i.id===id);
+  if(!inv) return;
+  // Carrega les línies originals
+  let lines=[];
+  try{ lines=await sbGet('factura_lines',`no_factura=eq.${encodeURIComponent(inv.no_factura)}&order=ordre`); }catch(e){}
+  curId=null;
+  curLines=lines.length
+    ? lines.map((l,i)=>({ordre:i+1,article:l.article||'',descripcio:l.descripcio||'',quantitat:l.quantitat||1,preu_unitari:l.preu_unitari||0,descompte:l.descompte||0,import_linia:l.import_linia||0}))
+    : [{ordre:1,article:'',descripcio:'',quantitat:1,preu_unitari:0,descompte:0,import_linia:0}];
+  showTab('tp-fra');
+  const _br=document.getElementById('btn-repeat');if(_br)_br.style.display='none';
+  const _bp=document.getElementById('btn-print');if(_bp)_bp.style.display='none';
+  const _sl=document.getElementById('sel-lang');if(_sl)_sl.style.display='none';
+  document.getElementById('m-title').textContent='Còpia de '+inv.no_factura;
+  fillForm(inv);
+  // Reseteja camps que no s'han de copiar
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'');};
+  s('m-no', nextInvoiceNum());
+  s('m-estat','PENDENT'); s('m-estat-fin','PENDENT');
+  s('m-cobrat',0); s('m-dcob','');
+  s('m-anulada-per',''); s('m-rectifica-fra','');
+  s('m-liq','false'); s('m-notes-liq','');
+  document.getElementById('m-assentat').checked=false;
+  renderLines();
+  document.getElementById('overlay').classList.add('open');
 }
 
 // ════════════════════════════════════════════════

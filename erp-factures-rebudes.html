@@ -680,6 +680,7 @@ function renderTable(rows){
         <td>${badgeHtml(fr)}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap">
           <button class="btn btn-secondary btn-xs" onclick="openModal(${fr.id})">✏️</button>
+          <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarFra(${fr.id})" title="Duplicar">⧉</button>
           ${['PAGAT','RECTIFICATIVA'].includes(fr.estat)
             ? `<button class="btn btn-xs" style="margin-left:4px;background:var(--grey-bg);color:var(--grey);border:1px solid var(--border);cursor:default" title="No es pot eliminar" disabled>✕</button>`
             : `<button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel(${fr.id})" title="Eliminar">✕</button>`
@@ -1047,6 +1048,27 @@ async function confirmDel(id){
   if(!confirm(`Eliminar la factura ${fr.no_seriefra}?`)) return;
   try{ await sbDel('factures_rebudes',id); toast('Eliminada','ok'); await loadFactures(); }
   catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+async function duplicarFra(id){
+  const fr=allFra.find(x=>x.id===id);
+  if(!fr) return;
+  await openModal(null);
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'');};
+  s('m-prov',     fr.codi_prov);
+  s('m-concepte', fr.notes);
+  s('m-bi',       fr.base_imposable??0);
+  s('m-iva',      fr.tipus_iva??21);
+  s('m-div',      fr.divisa_fra||'EUR');
+  s('m-tc',       fr.divisa_canvi??1);
+  s('m-irpf',     fr.tipus_irpf??0);
+  s('m-cte-prov', fr.compte_prov||'400');
+  s('m-cte-desp', fr.compte_despeses||'600');
+  s('m-cte-iva',  fr.compte_iva_sup||'472');
+  s('m-cte-irpf', fr.compte_irpf||'473');
+  s('m-notes',    fr.notes);
+  recalc();
+  document.getElementById('m-title').textContent='Còpia de '+fr.no_seriefra;
 }
 
 function showTab(tabId){
