@@ -747,10 +747,7 @@ function fillForm(fr){
   s('m-prov',fr.codi_prov); s('m-data',fr.data_fra); s('m-termini',fr.data_termini1);
   s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0);
   s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fr.divisa_canvi??1);
-  // import en divisa: base_imposable * tc (aproximació inversa per mostrar el valor original)
-  const biDivVal=(fr.divisa_fra&&fr.divisa_fra!=='EUR'&&fr.base_imposable&&fr.divisa_canvi)
-    ? Math.round(fr.base_imposable*fr.divisa_canvi*100)/100 : '';
-  s('m-bi-div', biDivVal);
+  s('m-bi-div', fr.import_divisa??'');
   document.getElementById('div-note').style.display=(fr.divisa_fra&&fr.divisa_fra!=='EUR')?'':'none';
   s('t-iva-pct',fr.tipus_iva??21); s('t-irpf-pct',fr.tipus_irpf??0);
   s('m-cte-prov',fr.compte_prov||'400'); s('m-cte-desp',fr.compte_despeses||'600');
@@ -1015,6 +1012,7 @@ async function saveFactura(){
     forma_pag:document.getElementById('m-fpag')?.value||'Transferència',
     divisa_fra:document.getElementById('m-div').value,
     divisa_canvi:parseFloat(document.getElementById('m-tc').value)||1,
+    import_divisa:parseFloat(document.getElementById('m-bi-div').value)||null,
     base_imposable:curBi,
     tipus_iva:ivaPc,
     import_iva:iva,
