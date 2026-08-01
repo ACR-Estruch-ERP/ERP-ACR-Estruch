@@ -138,6 +138,7 @@ th.amt{text-align:right}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:3px}
+.num-inp{text-align:right!important}
 
 /* ── FILES COMPACTES ── */
 .main-tbl td{padding:5px 10px!important;font-size:12.5px;}
@@ -352,7 +353,7 @@ input[type=number]{-moz-appearance:textfield}
         <div style="display:grid;grid-template-columns:1fr 90px 1fr 120px;gap:12px">
           <div class="fg">
             <label>Base Imposable (EUR)</label>
-            <input type="number" id="m-bi" step="0.01" value="0" onchange="recalc()">
+            <input type="text" inputmode="decimal" id="m-bi" class="num-inp" onfocus="numFocus(this)" onblur="numBlur(this,2);recalc()">
           </div>
           <div class="fg">
             <label>Divisa</label>
@@ -365,11 +366,11 @@ input[type=number]{-moz-appearance:textfield}
           </div>
           <div class="fg">
             <label>Import en divisa</label>
-            <input type="number" id="m-bi-div" step="0.01" placeholder="—" oninput="calcBiFromDivisa()">
+            <input type="text" inputmode="decimal" id="m-bi-div" class="num-inp" placeholder="—" onfocus="numFocus(this)" onblur="numBlur(this,2);calcBiFromDivisa()">
           </div>
           <div class="fg">
             <label>Exchange rate</label>
-            <input type="number" id="m-tc" step="0.00001" value="1" oninput="calcBiFromDivisa()">
+            <input type="text" inputmode="decimal" id="m-tc" class="num-inp" onfocus="numFocus(this)" onblur="numBlur(this,5);calcBiFromDivisa()">
           </div>
         </div>
       </div>
@@ -778,9 +779,9 @@ function fillForm(fr){
   const provOpt=document.querySelector(`#m-prov option[value="${fr.codi_prov}"]`);
   document.getElementById('m-prov-codi').textContent    = provOpt?.dataset.codi    || fr.codi_prov || '—';
   document.getElementById('m-prov-sinonim').textContent = provOpt?.dataset.sinonim || '—';
-  s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0);
-  s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fr.divisa_canvi??1);
-  s('m-bi-div', fr.import_divisa??'');
+  s('m-concepte',fr.notes); s('m-bi',fmtN(fr.base_imposable??0));
+  s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fmtN(fr.divisa_canvi??1,5));
+  s('m-bi-div', fmtN(fr.import_divisa));
   document.getElementById('div-note').style.display=(fr.divisa_fra&&fr.divisa_fra!=='EUR')?'':'none';
   s('t-iva-pct',fr.tipus_iva??21); s('t-irpf-pct',fr.tipus_irpf??0);
   s('m-cte-prov',fr.compte_prov||'400'); s('m-cte-desp',fr.compte_despeses||'600');
@@ -802,10 +803,10 @@ function resetForm(){
   document.getElementById('m-data').value=today;
   document.getElementById('m-termini').value='';
   document.getElementById('m-concepte').value='';
-  document.getElementById('m-bi').value=0;
+  document.getElementById('m-bi').value='';
   document.getElementById('m-bi-div').value='';
   document.getElementById('m-div').value='EUR';
-  document.getElementById('m-tc').value=1;
+  document.getElementById('m-tc').value=fmtN(1,5);
   document.getElementById('div-note').style.display='none';
   document.getElementById('t-iva-pct').value=21;
   document.getElementById('t-irpf-pct').value=0;
@@ -824,15 +825,33 @@ function updateBadge(){
   document.getElementById('m-badge').innerHTML=`<span class="badge ${cls}">${lbl}</span>`;
 }
 
+// ── FORMAT NUMÈRIC ──
+function parseN(id){
+  const v=(document.getElementById(id).value||'').replace(/\./g,'').replace(',','.');
+  return parseFloat(v)||0;
+}
+function fmtN(v,dec=2){
+  const n=parseFloat(v)||0;
+  return n?n.toLocaleString('ca-ES',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'';
+}
+function numFocus(el){
+  const v=parseFloat((el.value||'').replace(/\./g,'').replace(',','.'));
+  el.value=v||''; el.select();
+}
+function numBlur(el,dec=2){
+  const v=parseFloat((el.value||'').replace(/\./g,'').replace(',','.'))||0;
+  el.value=v?v.toLocaleString('ca-ES',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'';
+}
+
 // ── CÀLCULS ──
 function calcBiFromDivisa(){
   const div=document.getElementById('m-div').value;
-  const biDiv=parseFloat(document.getElementById('m-bi-div').value);
-  const tc=parseFloat(document.getElementById('m-tc').value)||1;
+  const biDiv=parseN('m-bi-div');
+  const tc=parseN('m-tc')||1;
   const note=document.getElementById('div-note');
-  if(div!=='EUR' && !isNaN(biDiv) && biDiv>0){
+  if(div!=='EUR' && biDiv>0){
     const biEur=Math.round(biDiv/tc*100)/100;
-    document.getElementById('m-bi').value=biEur;
+    document.getElementById('m-bi').value=fmtN(biEur);
     note.style.display='';
   } else {
     note.style.display = div!=='EUR' ? '' : 'none';
@@ -840,7 +859,7 @@ function calcBiFromDivisa(){
   recalc();
 }
 function recalc(){
-  curBi=parseFloat(document.getElementById('m-bi').value)||0;
+  curBi=parseN('m-bi');
   const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
   const irpfPc=parseFloat(document.getElementById('t-irpf-pct').value)||0;
   const iva=Math.round(curBi*ivaPc/100*100)/100;
@@ -1024,7 +1043,7 @@ function repeatFactura(){
   s('m-cte-prov', snap.cte_prov); s('m-cte-desp',  snap.cte_desp);
   s('m-cte-iva',  snap.cte_iva);  s('m-cte-irpf',  snap.cte_irpf);
   s('m-notes',    snap.notes);
-  curBi = parseFloat(snap.bi)||0;
+  curBi = parseFloat((snap.bi||'').replace(/\./g,'').replace(',','.'))||0;
   recalc(); updateAssentament();
 }
 
@@ -1046,8 +1065,8 @@ async function saveFactura(){
     data_termini1:document.getElementById('m-termini').value||null,
     forma_pag:document.getElementById('m-fpag')?.value||'Transferència',
     divisa_fra:document.getElementById('m-div').value,
-    divisa_canvi:parseFloat(document.getElementById('m-tc').value)||1,
-    import_divisa:parseFloat(document.getElementById('m-bi-div').value)||null,
+    divisa_canvi:parseN('m-tc')||1,
+    import_divisa:parseN('m-bi-div')||null,
     base_imposable:curBi,
     tipus_iva:ivaPc,
     import_iva:iva,
@@ -1100,9 +1119,10 @@ async function duplicarFra(id){
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'');};
   s('m-prov',     fr.codi_prov);
   s('m-concepte', fr.notes);
-  s('m-bi',       fr.base_imposable??0);
+  s('m-bi',       fmtN(fr.base_imposable??0));
   s('m-div',      fr.divisa_fra||'EUR');
-  s('m-tc',       fr.divisa_canvi??1);
+  s('m-tc',       fmtN(fr.divisa_canvi??1,5));
+  s('m-bi-div',   fmtN(fr.import_divisa));
   s('t-iva-pct',  fr.tipus_iva??21);
   s('t-irpf-pct', fr.tipus_irpf??0);
   s('m-cte-prov', fr.compte_prov||'400');
