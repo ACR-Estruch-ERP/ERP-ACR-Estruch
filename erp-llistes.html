@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP ACR Estruch — Llistes</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#00387C;--blue-mid:#1a54a0;--blue-light:#e8f0fb;--blue-dim:#d0e0f5;
+  --green:#1a8c42;--green-bg:#d4edda;--green-txt:#155724;
+  --red:#c0392b;--red-bg:#f8d7da;--red-txt:#721c24;
+  --grey:#6c757d;--grey-bg:#e9ecef;--grey-txt:#495057;
+  --bg:#FAF8F6;--white:#fff;--border:#dee2e6;--border-light:#eaeef2;
+  --text:#212529;--muted:#6c757d;
+  --sidebar:220px;--topbar:58px;--r:6px;
+  --shadow:0 1px 4px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.06);
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+#app{display:flex;height:100vh}
+#sidebar{width:var(--sidebar);background:#fff;border-right:1px solid #EDE9E4;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+#logo-area{padding:14px 16px 12px;border-bottom:1px solid #EDE9E4;cursor:pointer}
+.logo-main{font-size:19px;font-weight:800;color:var(--blue);letter-spacing:-.4px;line-height:1.1}
+.logo-main .sep{color:#9ca3af;font-weight:300;margin:0 1px}
+.logo-sub{font-size:10.5px;color:#6b7280;margin-top:3px;letter-spacing:.3px;font-style:italic}
+#nav{padding:10px 0;flex:1}
+.nav-section{padding:10px 14px 3px;font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:#374151;cursor:pointer;border-left:3px solid transparent;transition:all .15s;font-size:13px;user-select:none}
+.nav-item:hover{background:#f3f4f6;color:#111827}
+.nav-item.active{background:#eff6ff;color:var(--blue);border-left-color:var(--blue);font-weight:600}
+.nav-item .ico{font-size:15px;width:19px;text-align:center;flex-shrink:0}
+.nav-sub{padding:6px 16px 6px 44px;color:#6b7280;cursor:pointer;font-size:12px;transition:all .15s;border-left:3px solid transparent;user-select:none}
+.nav-sub:hover{color:#374151;background:#f3f4f6}
+.nav-footer{padding:12px 14px;border-top:1px solid #EDE9E4;font-size:11px;color:#9ca3af}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#topbar{height:var(--topbar);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:12px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+#topbar h1{font-size:17px;font-weight:700;color:var(--blue);flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:var(--r);border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap}
+.btn-sm{padding:5px 10px;font-size:12px}
+#content{flex:1;overflow:hidden;padding:18px 22px}
+
+/* ── Layout principal (idèntic a llistats) ── */
+.ll-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;height:calc(100vh - var(--topbar) - 36px)}
+.ll-index{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.ll-index-hdr{padding:14px 18px;border-bottom:1px solid var(--border);font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.8px}
+.ll-grup-item{padding:13px 18px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-light)}
+.ll-grup-item:hover{background:var(--blue-light)}
+.ll-grup-item.active{background:#eff6ff;border-left-color:var(--blue);font-weight:700;color:var(--blue)}
+.ll-grup-item:last-child{border-bottom:none}
+.ll-grup-ico{font-size:18px}
+.ll-grup-info{flex:1}
+.ll-grup-nom{font-size:13px;font-weight:600}
+.ll-grup-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.ll-content{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.ll-content-hdr{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ll-content-hdr h2{font-size:15px;font-weight:700;color:var(--blue);flex:1}
+.ll-blocs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-wrap:wrap;gap:20px;align-content:flex-start}
+
+/* ── Blocs editables ── */
+.ll-bloc{min-width:180px;flex:0 0 auto}
+.ll-bloc-hdr{display:block;font-size:10px;font-weight:800;color:var(--blue);letter-spacing:1px;text-transform:uppercase;background:#e9ecef;border:1px solid var(--border-light);border-radius:5px;padding:4px 8px;margin-bottom:8px}
+.ll-bloc ul{list-style:none;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.ll-item{display:flex;align-items:center;background:var(--white);border:1px solid var(--border-light);border-radius:5px;overflow:hidden;padding:4px 4px 4px 8px;font-size:12.5px;gap:6px}
+.ll-item span{flex:1;color:var(--text)}
+.ll-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:0 3px;line-height:1;transition:color .12s;flex-shrink:0}
+.ll-del:hover{color:var(--red)}
+.ll-add{display:flex;gap:6px;margin-top:2px}
+.ll-add input{flex:1;padding:4px 8px;border:1.5px solid var(--border);border-radius:4px;font-size:12px;font-family:inherit;color:var(--text)}
+.ll-add input:focus{outline:none;border-color:var(--blue)}
+.ll-add button{padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:700}
+.ll-add button:hover{background:var(--blue-mid)}
+.ll-empty{font-size:12px;color:var(--muted);font-style:italic;padding:4px 2px;margin-bottom:6px}
+
+/* Toast */
+#toast{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:11px 18px;border-radius:var(--r);font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.25);animation:tin .3s ease}
+.toast.ok{background:var(--green)}.toast.err{background:var(--red)}.toast.inf{background:var(--blue)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:3px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<nav id="sidebar">
+  <div id="logo-area" onclick="location.href='index.html'">
+    <div class="logo-main">ACR<span class="sep">·</span>ERP</div>
+    <div class="logo-sub">ACR Estruch ERP v1.0</div>
+  </div>
+  <div id="nav">
+    <div class="nav-item" onclick="location.href='index.html'"><span class="ico">🏠</span> Dashboard</div>
+    <div class="nav-section">Mòduls</div>
+    <div class="nav-item" onclick="location.href='index.html'"><span class="ico">🧾</span> Facturació</div>
+    <div class="nav-sub" onclick="location.href='erp-facturacio.html'">Factures emeses</div>
+    <div class="nav-sub" onclick="location.href='erp-factures-rebudes.html'">Factures rebudes</div>
+    <div class="nav-item" onclick="location.href='erp-clients.html'"><span class="ico">👥</span> Clients</div>
+    <div class="nav-item" onclick="location.href='erp-proveidors.html'"><span class="ico">🏭</span> Proveïdors</div>
+    <div class="nav-item" onclick="location.href='erp-entitats.html'"><span class="ico">🏢</span> Entitats</div>
+    <div class="nav-item" onclick="location.href='erp-projectes.html'"><span class="ico">📋</span> Projectes</div>
+    <div class="nav-section" style="margin-top:10px">Comptabilitat</div>
+    <div class="nav-item" onclick="location.href='erp-major.html'"><span class="ico">📒</span> Major</div>
+    <div class="nav-item" onclick="location.href='erp-assentaments.html'"><span class="ico">✏️</span> Assentaments</div>
+    <div class="nav-item" onclick="location.href='erp-pla-comptes.html'"><span class="ico">🗂️</span> Pla de comptes</div>
+    <div class="nav-section" style="margin-top:10px">Altres</div>
+    <div class="nav-item" onclick="location.href='erp-despeses.html'"><span class="ico">✈️</span> Despeses</div>
+    <div class="nav-item" onclick="location.href='erp-reports.html'"><span class="ico">📊</span> Reports</div>
+    <div class="nav-item" onclick="location.href='erp-tags.html'"><span class="ico">🏷️</span> Tags</div>
+    <div class="nav-item" onclick="location.href='erp-llistats.html'"><span class="ico">📑</span> Llistats</div>
+    <div class="nav-item active" onclick="location.href='erp-llistes.html'"><span class="ico">📋</span> Llistes</div>
+  </div>
+  <div class="nav-footer">ACR Estruch ERP v1.0</div>
+</nav>
+
+<main id="main">
+  <header id="topbar">
+    <h1>Llistes</h1>
+    <button class="btn btn-sm" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb" onclick="doLogout()">⏻ Sortir</button>
+  </header>
+  <div id="content">
+    <div class="ll-layout">
+
+      <!-- Panel esquerre: mòduls -->
+      <div class="ll-index">
+        <div class="ll-index-hdr">Mòdul</div>
+        <div id="ll-moduls"></div>
+      </div>
+
+      <!-- Panel dret: llistes editables -->
+      <div class="ll-content">
+        <div class="ll-content-hdr">
+          <h2 id="content-title">—</h2>
+        </div>
+        <div class="ll-blocs" id="ll-blocs"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+</div>
+
+<div id="toast"></div>
+<script src="js/neon-client.js"></script>
+<script>
+// ── DEFINICIÓ DE MÒDULS I LLISTES ──────────────────────────────────────────
+const MODULS = [
+  {
+    key: 'clients', nom: 'Clients', ico: '👥', desc: 'Situació · Grup',
+    llistes: [
+      { cat: 'clients_situacio', nom: 'Situació' },
+      { cat: 'clients_grup',     nom: 'Grup / Categoria' },
+    ]
+  },
+  {
+    key: 'projectes', nom: 'Projectes', ico: '📋', desc: 'Estat · Tipus',
+    llistes: [
+      { cat: 'projectes_estat', nom: 'Estat' },
+      { cat: 'projectes_tipus', nom: 'Tipus' },
+    ]
+  },
+  {
+    key: 'facturacio', nom: 'Facturació emeses', ico: '🧾', desc: 'Estat · Forma pagament',
+    llistes: [
+      { cat: 'factures_estat', nom: 'Estat factura' },
+      { cat: 'forma_pag',      nom: 'Forma de pagament' },
+    ]
+  },
+  {
+    key: 'fra_rebudes', nom: 'Factures rebudes', ico: '📥', desc: 'Estat · Divises',
+    llistes: [
+      { cat: 'fra_rebudes_estat', nom: 'Estat' },
+      { cat: 'divises',           nom: 'Divises' },
+    ]
+  },
+  {
+    key: 'despeses', nom: 'Despeses', ico: '✈️', desc: 'Tickets · Viatges',
+    llistes: [
+      { cat: 'tickets_tipus',    nom: 'Tipus ticket' },
+      { cat: 'viatge_categoria', nom: 'Categoria viatge' },
+    ]
+  },
+  {
+    key: 'proveidors', nom: 'Proveïdors', ico: '🏭', desc: 'Forma pagament · CNCE',
+    llistes: [
+      { cat: 'forma_pag',  nom: 'Forma de pagament' },
+      { cat: 'prov_cnce',  nom: 'CNCE' },
+    ]
+  },
+];
+
+// ── ESTAT ──────────────────────────────────────────────────────────────────
+let allLlistes = {};   // { cat: [{id, valor, ordre}, ...] }
+let curModul = MODULS[0].key;
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+async function init(){
+  await ensureSession();
+  try{
+    const rows = await sbGet('llistes','select=id,modul,categoria,valor,ordre&order=categoria,ordre,valor');
+    allLlistes = {};
+    rows.forEach(r=>{
+      if(!allLlistes[r.categoria]) allLlistes[r.categoria]=[];
+      allLlistes[r.categoria].push({id:r.id, valor:r.valor, ordre:r.ordre});
+    });
+  }catch(e){ toast('Error carregant llistes: '+e.message,'err'); }
+  renderModuls();
+  selectModul(MODULS[0].key, document.getElementById('m-'+MODULS[0].key));
+}
+
+// ── PANEL ESQUERRE ─────────────────────────────────────────────────────────
+function renderModuls(){
+  document.getElementById('ll-moduls').innerHTML = MODULS.map(m=>`
+    <div class="ll-grup-item" id="m-${m.key}" onclick="selectModul('${m.key}',this)">
+      <span class="ll-grup-ico">${m.ico}</span>
+      <div class="ll-grup-info">
+        <div class="ll-grup-nom">${m.nom}</div>
+        <div class="ll-grup-desc">${m.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selectModul(key, el){
+  curModul = key;
+  document.querySelectorAll('.ll-grup-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const m = MODULS.find(x=>x.key===key);
+  document.getElementById('content-title').textContent = 'Llistes — ' + m.nom;
+  renderBlocs(m);
+}
+
+// ── PANEL DRET ─────────────────────────────────────────────────────────────
+function renderBlocs(m){
+  document.getElementById('ll-blocs').innerHTML = m.llistes.map(l=>{
+    const items = allLlistes[l.cat] || [];
+    const itemsHtml = items.length
+      ? `<ul>${items.map(it=>`
+          <li class="ll-item">
+            <span>${esc(it.valor)}</span>
+            <button class="ll-del" onclick="removeItem(${it.id},'${l.cat}')" title="Eliminar">×</button>
+          </li>`).join('')}</ul>`
+      : `<p class="ll-empty">Cap valor definit</p>`;
+    return `
+      <div class="ll-bloc">
+        <span class="ll-bloc-hdr">${l.nom}</span>
+        ${itemsHtml}
+        <div class="ll-add">
+          <input type="text" id="inp-${l.cat}" placeholder="Afegir..." onkeydown="if(event.key==='Enter')addItem('${l.cat}','${curModul}')">
+          <button onclick="addItem('${l.cat}','${curModul}')">+</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── CRUD ──────────────────────────────────────────────────────────────────
+async function addItem(cat, modul){
+  const inp = document.getElementById('inp-'+cat);
+  const v = inp.value.trim().toUpperCase();
+  if(!v){ inp.focus(); return; }
+  const exists = (allLlistes[cat]||[]).some(x=>x.valor===v);
+  if(exists){ toast('Ja existeix','inf'); inp.focus(); return; }
+  try{
+    const ordre = (allLlistes[cat]||[]).length;
+    const res = await sbPost('llistes',{modul, categoria:cat, valor:v, ordre});
+    if(!allLlistes[cat]) allLlistes[cat]=[];
+    allLlistes[cat].push({id:res[0].id, valor:v, ordre});
+    inp.value='';
+    toast('Afegit','ok');
+    selectModul(curModul, document.getElementById('m-'+curModul));
+  }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+async function removeItem(id, cat){
+  if(!confirm('Eliminar aquest valor?')) return;
+  try{
+    await sbDel('llistes', id);
+    allLlistes[cat] = (allLlistes[cat]||[]).filter(x=>x.id!==id);
+    toast('Eliminat','ok');
+    selectModul(curModul, document.getElementById('m-'+curModul));
+  }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function toast(msg,type='inf'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(()=>el.remove(),2800);
+}
+
+function doLogout(){
+  if(typeof signOut==='function') signOut();
+  else location.href='login.html';
+}
+
+init();
+</script>
+</body>
+</html>
