@@ -286,11 +286,13 @@ input[type=number]{-moz-appearance:textfield}
 
     <!-- TAB FACTURA -->
     <div class="tab-panel on" id="tp-fra">
-      <div class="grid3">
-        <div class="sec">Identificació</div>
+
+      <!-- IDENTIFICACIÓ -->
+      <div style="display:grid;grid-template-columns:120px 1fr 200px;gap:12px;margin-bottom:16px">
+        <div class="sec" style="grid-column:1/-1">Identificació</div>
         <div class="fg">
           <label>Nº Sèrie *</label>
-          <input type="text" id="m-no" placeholder="FR-2026-001">
+          <input type="text" id="m-no" placeholder="26001">
         </div>
         <div class="fg">
           <label>Nº Fra. proveïdor</label>
@@ -305,52 +307,74 @@ input[type=number]{-moz-appearance:textfield}
             <option value="VENCUDA">Vençuda</option>
           </select>
         </div>
+      </div>
 
-        <div class="sec">Proveïdor i dates</div>
-        <div class="fg full">
-          <label>Proveïdor</label>
-          <select id="m-prov" onchange="onProvChange()">
-            <option value="">— Selecciona proveïdor —</option>
-          </select>
+      <!-- PROVEÏDOR -->
+      <div style="margin-bottom:16px">
+        <div class="sec" style="margin-bottom:10px">Proveïdor</div>
+        <div style="display:grid;grid-template-columns:1fr 100px 160px;gap:12px;margin-bottom:10px">
+          <div class="fg">
+            <label>Proveïdor</label>
+            <select id="m-prov" onchange="onProvChange()">
+              <option value="">— Selecciona proveïdor —</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Codi</label>
+            <div id="m-prov-codi" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#f8f9fa;color:var(--muted);min-height:34px">—</div>
+          </div>
+          <div class="fg">
+            <label>Sinònim</label>
+            <div id="m-prov-sinonim" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#f8f9fa;color:var(--muted);min-height:34px">—</div>
+          </div>
         </div>
-        <div class="fg">
-          <label>Data factura *</label>
-          <input type="date" id="m-data">
-        </div>
-        <div class="fg">
-          <label>Data termini pagament</label>
-          <input type="date" id="m-termini">
-        </div>
-
-        <div class="sec">Imports</div>
-        <div class="fg full">
-          <label>Concepte</label>
-          <input type="text" id="m-concepte" placeholder="Descripció del servei o producte...">
-        </div>
-        <div class="fg">
-          <label>Base Imposable (EUR)</label>
-          <input type="number" id="m-bi" step="0.01" value="0" onchange="recalc()">
-        </div>
-        <div class="fg">
-          <label>Divisa</label>
-          <select id="m-div" onchange="calcBiFromDivisa()">
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="MXN">MXN</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Import en divisa</label>
-          <input type="number" id="m-bi-div" step="0.01" value="" placeholder="—" oninput="calcBiFromDivisa()">
-        </div>
-        <div class="fg">
-          <label>Exchange rate</label>
-          <input type="number" id="m-tc" step="0.00001" value="1" oninput="calcBiFromDivisa()">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg">
+            <label>Data factura *</label>
+            <input type="date" id="m-data">
+          </div>
+          <div class="fg">
+            <label>Data termini pagament</label>
+            <input type="date" id="m-termini">
+          </div>
         </div>
       </div>
 
-      <div id="div-note" style="display:none;margin-top:8px;padding:8px 12px;background:#fffbe6;border:1px solid #ffe082;border-radius:5px;font-size:11.5px;color:#6b4f00;line-height:1.5">
+      <!-- IMPORTS -->
+      <div style="margin-bottom:8px">
+        <div class="sec" style="margin-bottom:10px">Imports</div>
+        <div style="margin-bottom:10px">
+          <div class="fg">
+            <label>Concepte</label>
+            <input type="text" id="m-concepte" placeholder="Descripció del servei o producte...">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 90px 1fr 120px;gap:12px">
+          <div class="fg">
+            <label>Base Imposable (EUR)</label>
+            <input type="number" id="m-bi" step="0.01" value="0" onchange="recalc()">
+          </div>
+          <div class="fg">
+            <label>Divisa</label>
+            <select id="m-div" onchange="calcBiFromDivisa()">
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="MXN">MXN</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Import en divisa</label>
+            <input type="number" id="m-bi-div" step="0.01" placeholder="—" oninput="calcBiFromDivisa()">
+          </div>
+          <div class="fg">
+            <label>Exchange rate</label>
+            <input type="number" id="m-tc" step="0.00001" value="1" oninput="calcBiFromDivisa()">
+          </div>
+        </div>
+      </div>
+
+      <div id="div-note" style="display:none;margin-bottom:8px;padding:8px 12px;background:#fffbe6;border:1px solid #ffe082;border-radius:5px;font-size:11.5px;color:#6b4f00;line-height:1.5">
         Per a la comptabilització, el tipus de canvi a aplicar hauria de ser el de la data de meritació de la factura (no la data de pagament). Normalment s'agafa el tipus de referència del BCE o del Banco de España d'aquell dia — no un tipus qualsevol de mercat.
       </div>
 
@@ -530,10 +554,12 @@ async function loadProveidors(){
     allProv.forEach(p=>{
       const o=document.createElement('option');
       o.value=p.codi; o.textContent=p.rao_social+(p.sinonim?` (${p.sinonim})`:'');
-      o.dataset.iva   = p.tipus_iva ?? 21;
-      o.dataset.irpf  = p.tipus_irpf ?? 0;
-      o.dataset.cnce  = p.cnce || '';
-      o.dataset.divisa= p.divisa || 'EUR';
+      o.dataset.iva    = p.tipus_iva ?? 21;
+      o.dataset.irpf   = p.tipus_irpf ?? 0;
+      o.dataset.cnce   = p.cnce || '';
+      o.dataset.divisa = p.divisa || 'EUR';
+      o.dataset.codi   = p.codi || '';
+      o.dataset.sinonim= p.sinonim || '';
       sel.appendChild(o);
     });
   }catch(e){console.error(e)}
@@ -541,7 +567,10 @@ async function loadProveidors(){
 
 function onProvChange(){
   const opt = document.getElementById('m-prov').selectedOptions[0];
-  if(!opt || !opt.value) return;
+  const hasProv = opt && opt.value;
+  document.getElementById('m-prov-codi').textContent   = hasProv ? (opt.dataset.codi    || '—') : '—';
+  document.getElementById('m-prov-sinonim').textContent= hasProv ? (opt.dataset.sinonim || '—') : '—';
+  if(!hasProv) return;
   const cnce = opt.dataset.cnce || 'CN';
   const noTax = cnce === 'CE' || cnce === 'EX';
   document.getElementById('t-iva-pct').value  = noTax ? 0 : (opt.dataset.iva  ?? 21);
@@ -745,6 +774,10 @@ function fillForm(fr){
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'')};
   s('m-no',fr.no_seriefra); s('m-no-prov',fr.no_fra_prov); s('m-estat',fr.estat);
   s('m-prov',fr.codi_prov); s('m-data',fr.data_fra); s('m-termini',fr.data_termini1);
+  // omplir codi i sinònim del proveïdor
+  const provOpt=document.querySelector(`#m-prov option[value="${fr.codi_prov}"]`);
+  document.getElementById('m-prov-codi').textContent    = provOpt?.dataset.codi    || fr.codi_prov || '—';
+  document.getElementById('m-prov-sinonim').textContent = provOpt?.dataset.sinonim || '—';
   s('m-concepte',fr.notes); s('m-bi',fr.base_imposable??0);
   s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fr.divisa_canvi??1);
   s('m-bi-div', fr.import_divisa??'');
@@ -764,6 +797,8 @@ function resetForm(){
   document.getElementById('m-no-prov').value='';
   document.getElementById('m-estat').value='PENDENT';
   document.getElementById('m-prov').value='';
+  document.getElementById('m-prov-codi').textContent='—';
+  document.getElementById('m-prov-sinonim').textContent='—';
   document.getElementById('m-data').value=today;
   document.getElementById('m-termini').value='';
   document.getElementById('m-concepte').value='';
