@@ -449,6 +449,9 @@ input[type=number]{-moz-appearance:textfield}
           <span class="tl">Pendent</span>
           <span class="tv" id="pp-pendent">—</span>
         </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <button class="btn btn-green" style="width:100%;justify-content:center" onclick="marcarPagat()">✓ Marcar com a Pagat</button>
+        </div>
       </div>
     </div>
 
@@ -949,6 +952,40 @@ async function addPagament(){
   document.getElementById('np-import').value='';
   document.getElementById('np-banc').value='';
   document.getElementById('np-desp').value=0;
+  renderPagaments();
+}
+
+async function marcarPagat(){
+  const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
+  const irpfPc=parseFloat(document.getElementById('t-irpf-pct').value)||0;
+  const tot=Math.round((curBi+curBi*ivaPc/100-curBi*irpfPc/100)*100)/100;
+  const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
+  const pendent=Math.round((tot-pagat)*100)/100;
+  if(pendent<=0){ toast('La factura ja està totalment pagada','inf'); return; }
+  const today=new Date().toISOString().split('T')[0];
+  const pag={
+    data_pag:today,
+    forma_pag:document.getElementById('np-fpag').value||'Transferència',
+    import:pendent,
+    banc:document.getElementById('np-banc').value||null,
+    despeses_banc:0,
+  };
+  if(curId){
+    try{
+      pag.id_factura=curId;
+      const res=await sbPost('pagaments_proveidors',pag);
+      curPagaments.push(res[0]);
+      await sbPatch('factures_rebudes',curId,{import_pagat:tot,estat:'PAGAT'});
+      document.getElementById('m-estat').value='PAGAT';
+      updateBadge();
+      toast('Pagament registrat — factura marcada com a Pagada','ok');
+    }catch(e){ toast('Error: '+e.message,'err'); return; }
+  } else {
+    pag.id_factura=null;
+    curPagaments.push(pag);
+    document.getElementById('m-estat').value='PAGAT';
+    updateBadge();
+  }
   renderPagaments();
 }
 
