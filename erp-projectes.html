@@ -1136,14 +1136,14 @@ async function loadSeguiment(){
     const rows=await sbGet('projectes_seguiment',`select=id,data,notes&id_projecte=eq.${encodeURIComponent(curIdPJ)}&order=data.desc,id.desc`);
     if(!rows.length){el.innerHTML='<p style="color:var(--muted);padding:8px 0">Sense entrades de seguiment.</p>';return;}
     const fd=d=>new Date(d+'T00:00:00').toLocaleDateString('ca-ES',{day:'2-digit',month:'2-digit',year:'2-digit'});
-    el.innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">
-      ${rows.map(r=>`<div style="display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:start;padding:10px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid var(--blue)">
-        <div style="font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;padding-top:1px">${fd(r.data)}</div>
-        <div style="font-size:13px;white-space:pre-wrap;line-height:1.5">${r.notes||''}</div>
+    el.innerHTML=`<div style="display:flex;flex-direction:column;gap:3px">
+      ${rows.map(r=>`<div style="display:grid;grid-template-columns:72px 1fr auto;gap:8px;align-items:center;padding:4px 8px;background:#f8f9fa;border-radius:4px;border-left:3px solid var(--blue)">
+        <div style="font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap">${fd(r.data)}</div>
+        <div style="font-size:12px;line-height:1.4">${r.notes||''}</div>
         <button class="btn btn-xs btn-danger" onclick="delSeguiment(${r.id})">✕</button>
       </div>`).join('')}
     </div>
-    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Total: ${rows.length}</p>`;
+    <p style="margin-top:8px;font-size:12px;color:var(--muted)">Total: ${rows.length}</p>`;
   }catch(e){el.innerHTML=`<p style="color:var(--red)">Error: ${e.message}</p>`;}
 }
 
