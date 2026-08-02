@@ -228,10 +228,6 @@ input[type=number]{-moz-appearance:textfield}
         <input type="text" id="f-cerca" placeholder="🔍  Cerca factura, proveïdor..." oninput="applyFilters()" style="min-width:220px">
         <select id="f-estat" onchange="applyFilters()">
           <option value="">Tots els estats</option>
-          <option value="PAGAT">Pagat</option>
-          <option value="PENDENT">Pendent</option>
-          <option value="PARCIALMENT">Parcialment pagat</option>
-          <option value="VENCUDA">Vençuda</option>
         </select>
         <input type="date" id="f-de" onchange="applyFilters()" title="Des de">
         <input type="date" id="f-fins" onchange="applyFilters()" title="Fins a">
@@ -302,12 +298,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>Estat</label>
-          <select id="m-estat" onchange="updateBadge()">
-            <option value="PENDENT">Pendent</option>
-            <option value="PARCIALMENT">Parcialment pagat</option>
-            <option value="PAGAT">Pagat</option>
-            <option value="VENCUDA">Vençuda</option>
-          </select>
+          <select id="m-estat" onchange="updateBadge()"></select>
         </div>
       </div>
 
@@ -358,12 +349,7 @@ input[type=number]{-moz-appearance:textfield}
           </div>
           <div class="fg">
             <label>Divisa</label>
-            <select id="m-div" onchange="calcBiFromDivisa()">
-              <option value="EUR">EUR</option>
-              <option value="USD">USD</option>
-              <option value="GBP">GBP</option>
-              <option value="MXN">MXN</option>
-            </select>
+            <select id="m-div" onchange="calcBiFromDivisa()"></select>
           </div>
           <div class="fg">
             <label>Import en divisa</label>
@@ -424,12 +410,7 @@ input[type=number]{-moz-appearance:textfield}
         <!-- Nova fila pagament -->
         <div class="add-pag-row" id="add-pag-row">
           <input type="date" id="np-data">
-          <select id="np-fpag">
-            <option>Transferència</option>
-            <option>Rebut domiciliat</option>
-            <option>Efectiu</option>
-            <option>Xec</option>
-          </select>
+          <select id="np-fpag"></select>
           <input type="number" id="np-import" step="0.01" placeholder="0,00" style="text-align:right">
           <input type="text" id="np-banc" placeholder="Banc">
           <input type="number" id="np-desp" step="0.01" value="0" style="text-align:right">
@@ -548,7 +529,14 @@ let allFra=[], allProv=[], curId=null, curPagaments=[], curBi=0;
 
 async function init(){
   if(!requireAuth()) return;
-  await Promise.all([loadProveidors(), loadFactures()]);
+  await Promise.all([
+    loadProveidors(),
+    loadFactures(),
+    loadLlista('fra_rebudes_estat', 'm-estat',  undefined,        'fra_rebudes'),
+    loadLlista('fra_rebudes_estat', 'f-estat',  'Tots els estats', 'fra_rebudes'),
+    loadLlista('divises',           'm-div',    undefined,        'fra_rebudes'),
+    loadLlista('forma_pag',         'np-fpag', undefined, 'proveidors'),
+  ]);
 }
 
 async function loadProveidors(){

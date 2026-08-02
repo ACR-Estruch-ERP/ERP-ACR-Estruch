@@ -335,12 +335,7 @@ input[type=number]{-moz-appearance:textfield}
         <div class="sec">Condicions de pagament</div>
         <div class="fg">
           <label>Forma de pagament</label>
-          <select id="m-fpag">
-            <option>Transferència</option>
-            <option>Rebut domiciliat</option>
-            <option>Efectiu</option>
-            <option>Xec</option>
-          </select>
+          <select id="m-fpag"></select>
         </div>
         <div class="fg">
           <label>Dies de pagament</label>
@@ -348,12 +343,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>Divisa habitual</label>
-          <select id="m-div">
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="MXN">MXN</option>
-          </select>
+          <select id="m-div"></select>
         </div>
         <div class="sec">Fiscalitat</div>
         <div class="fg">
@@ -366,12 +356,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>CNCE (classificació fiscal)</label>
-          <select id="m-cnce">
-            <option value="">— No definit —</option>
-            <option value="PN">PN — Nacional</option>
-            <option value="PE">PE — Estranger</option>
-            <option value="EX">EX — Extracomunitari</option>
-          </select>
+          <select id="m-cnce"></select>
         </div>
         <div class="sec">Dades bancàries</div>
         <div class="fg">
@@ -439,7 +424,13 @@ function toggleGroup(g){
 
 async function init(){
   if(!requireAuth()) return;
-  await Promise.all([loadProveidors(), loadCatTags()]);
+  await Promise.all([
+    loadProveidors(),
+    loadCatTags(),
+    loadLlista('forma_pag', 'm-fpag', undefined,   'proveidors'),
+    loadLlista('divises',   'm-div'),
+    loadLlista('prov_cnce', 'm-cnce', 'No definit', 'proveidors'),
+  ]);
 }
 
 async function loadCatTags(){

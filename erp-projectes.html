@@ -196,10 +196,6 @@ input[type=number]{-moz-appearance:textfield}
         <input type="text" id="f-cerca" placeholder="🔍  Cerca codi, descripció, client..." oninput="applyFilters()" style="min-width:220px">
         <select id="f-estat" onchange="applyFilters()">
           <option value="">Tots els estats</option>
-          <option value="ACTIU">Actiu</option>
-          <option value="COMPLETAT">Completat</option>
-          <option value="PAUSAT">Pausat</option>
-          <option value="CANCEL·LAT">Cancel·lat</option>
         </select>
         <button class="btn btn-secondary btn-sm" onclick="clearFilters()">✕ Netejar</button>
         <span id="f-count" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
@@ -285,13 +281,7 @@ input[type=number]{-moz-appearance:textfield}
             </div>
             <div class="fg">
               <label>Tipus PJ</label>
-              <select id="m-tipus-pj">
-                <option value="">— Selecciona —</option>
-                <option value="CONSULTING">CONSULTING</option>
-                <option value="SALUT">SALUT</option>
-                <option value="SERVEIS">SERVEIS</option>
-                <option value="TRADING">TRADING</option>
-              </select>
+              <select id="m-tipus-pj"></select>
             </div>
           </div>
           <div class="fg">
@@ -352,12 +342,7 @@ input[type=number]{-moz-appearance:textfield}
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
           <div class="fg">
             <label>Estat</label>
-            <select id="m-estat" onchange="onEstatChange()">
-              <option value="ACTIU">ACTIU</option>
-              <option value="COMPLETAT">COMPLETAT</option>
-              <option value="PAUSAT">PAUSAT</option>
-              <option value="CANCEL·LAT">CANCEL·LAT</option>
-            </select>
+            <select id="m-estat" onchange="onEstatChange()"></select>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div class="fg">
@@ -613,7 +598,11 @@ function badgeHtml(estat){
 
 async function init(){
   if(!requireAuth()) return;
-  await Promise.all([loadClients(), loadEntitats(), loadPaisos(), loadProveniments(), loadProjectes(), loadTags()]);
+  await Promise.all([loadClients(), loadEntitats(), loadPaisos(), loadProveniments(), loadProjectes(), loadTags(),
+    loadLlista('projectes_tipus', 'm-tipus-pj', 'Selecciona',    'projectes'),
+    loadLlista('projectes_estat', 'm-estat',    undefined,        'projectes'),
+    loadLlista('projectes_estat', 'f-estat',    'Tots els estats','projectes'),
+  ]);
   const urlPJ=new URLSearchParams(location.search).get('pj');
   if(urlPJ) openModal(urlPJ);
 }

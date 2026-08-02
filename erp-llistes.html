@@ -144,10 +144,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 // ── DEFINICIÓ DE MÒDULS I LLISTES ──────────────────────────────────────────
 const MODULS = [
   {
-    key: 'clients', nom: 'Clients', ico: '👥', desc: 'Situació · Grup',
+    key: 'clients', nom: 'Clients', ico: '👥', desc: 'Situació · Grup · CNCE',
     llistes: [
-      { cat: 'clients_situacio', nom: 'Situació' },
-      { cat: 'clients_grup',     nom: 'Grup / Categoria' },
+      { cat: 'clients_situacio',            nom: 'Situació' },
+      { cat: 'clients_grup',                nom: 'Grup / Categoria' },
+      { cat: 'CNCE (classificació fiscal)', nom: 'CNCE' },
     ]
   },
   {
@@ -158,10 +159,10 @@ const MODULS = [
     ]
   },
   {
-    key: 'facturacio', nom: 'Facturació emeses', ico: '🧾', desc: 'Estat · Forma pagament',
+    key: 'facturacio', nom: 'Facturació emeses', ico: '🧾', desc: 'Estat · Forma cobrament',
     llistes: [
       { cat: 'factures_estat', nom: 'Estat factura' },
-      { cat: 'forma_pag',      nom: 'Forma de pagament' },
+      { cat: 'forma_pag',      nom: 'Forma de cobrament' },
     ]
   },
   {
@@ -181,25 +182,27 @@ const MODULS = [
   {
     key: 'proveidors', nom: 'Proveïdors', ico: '🏭', desc: 'Forma pagament · CNCE',
     llistes: [
-      { cat: 'forma_pag',  nom: 'Forma de pagament' },
-      { cat: 'prov_cnce',  nom: 'CNCE' },
+      { cat: 'forma_pag', nom: 'Forma de pagament' },
+      { cat: 'prov_cnce', nom: 'CNCE' },
     ]
   },
 ];
 
 // ── ESTAT ──────────────────────────────────────────────────────────────────
-let allLlistes = {};   // { cat: [{id, valor, ordre}, ...] }
+// Clau: "modul::categoria" per evitar barrejar forma_pag de facturacio i proveidors
+let allLlistes = {};
 let curModul = MODULS[0].key;
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function init(){
   await ensureSession();
   try{
-    const rows = await sbGet('llistes','select=id,modul,categoria,valor,ordre&order=categoria,ordre,valor');
+    const rows = await sbGet('llistes','select=id,modul,categoria,valor,ordre&order=modul,categoria,ordre,valor');
     allLlistes = {};
     rows.forEach(r=>{
-      if(!allLlistes[r.categoria]) allLlistes[r.categoria]=[];
-      allLlistes[r.categoria].push({id:r.id, valor:r.valor, ordre:r.ordre});
+      const k = r.modul + '::' + r.categoria;
+      if(!allLlistes[k]) allLlistes[k]=[];
+      allLlistes[k].push({id:r.id, valor:r.valor, ordre:r.ordre});
     });
   }catch(e){ toast('Error carregant llistes: '+e.message,'err'); }
   renderModuls();
@@ -228,14 +231,18 @@ function selectModul(key, el){
 }
 
 // ── PANEL DRET ─────────────────────────────────────────────────────────────
+function sid(cat){ return cat.replace(/[^a-zA-Z0-9_-]/g,'_'); }
+
 function renderBlocs(m){
   document.getElementById('ll-blocs').innerHTML = m.llistes.map(l=>{
-    const items = allLlistes[l.cat] || [];
+    const k = m.key + '::' + l.cat;
+    const inputId = 'inp-' + sid(l.cat);
+    const items = allLlistes[k] || [];
     const itemsHtml = items.length
       ? `<ul>${items.map(it=>`
           <li class="ll-item">
             <span>${esc(it.valor)}</span>
-            <button class="ll-del" onclick="removeItem(${it.id},'${l.cat}')" title="Eliminar">×</button>
+            <button class="ll-del" data-id="${it.id}" data-k="${esc(k)}" onclick="removeItem(this)" title="Eliminar">×</button>
           </li>`).join('')}</ul>`
       : `<p class="ll-empty">Cap valor definit</p>`;
     return `
@@ -243,43 +250,50 @@ function renderBlocs(m){
         <span class="ll-bloc-hdr">${l.nom}</span>
         ${itemsHtml}
         <div class="ll-add">
-          <input type="text" id="inp-${l.cat}" placeholder="Afegir..." onkeydown="if(event.key==='Enter')addItem('${l.cat}','${curModul}')">
-          <button onclick="addItem('${l.cat}','${curModul}')">+</button>
+          <input type="text" id="${inputId}" placeholder="Afegir..."
+            data-k="${esc(k)}" data-cat="${esc(l.cat)}" data-modul="${m.key}"
+            onkeydown="if(event.key==='Enter')addItem('${inputId}')">
+          <button onclick="addItem('${inputId}')">+</button>
         </div>
       </div>`;
   }).join('');
 }
 
 // ── CRUD ──────────────────────────────────────────────────────────────────
-async function addItem(cat, modul){
-  const inp = document.getElementById('inp-'+cat);
-  const v = inp.value.trim().toUpperCase();
+async function addItem(inputId){
+  const inp = document.getElementById(inputId);
+  const v = inp.value.trim();
   if(!v){ inp.focus(); return; }
-  const exists = (allLlistes[cat]||[]).some(x=>x.valor===v);
+  const k    = inp.dataset.k;
+  const cat  = inp.dataset.cat;
+  const modul= inp.dataset.modul;
+  const exists = (allLlistes[k]||[]).some(x=>x.valor===v);
   if(exists){ toast('Ja existeix','inf'); inp.focus(); return; }
   try{
-    const ordre = (allLlistes[cat]||[]).length;
+    const ordre = (allLlistes[k]||[]).length + 1;
     const res = await sbPost('llistes',{modul, categoria:cat, valor:v, ordre});
-    if(!allLlistes[cat]) allLlistes[cat]=[];
-    allLlistes[cat].push({id:res[0].id, valor:v, ordre});
+    if(!allLlistes[k]) allLlistes[k]=[];
+    allLlistes[k].push({id:res[0].id, valor:v, ordre});
     inp.value='';
     toast('Afegit','ok');
     selectModul(curModul, document.getElementById('m-'+curModul));
   }catch(e){ toast('Error: '+e.message,'err'); }
 }
 
-async function removeItem(id, cat){
+async function removeItem(btn){
   if(!confirm('Eliminar aquest valor?')) return;
+  const id = parseInt(btn.dataset.id);
+  const k  = btn.dataset.k;
   try{
     await sbDel('llistes', id);
-    allLlistes[cat] = (allLlistes[cat]||[]).filter(x=>x.id!==id);
+    allLlistes[k] = (allLlistes[k]||[]).filter(x=>x.id!==id);
     toast('Eliminat','ok');
     selectModul(curModul, document.getElementById('m-'+curModul));
   }catch(e){ toast('Error: '+e.message,'err'); }
 }
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function toast(msg,type='inf'){
   const el=document.createElement('div');

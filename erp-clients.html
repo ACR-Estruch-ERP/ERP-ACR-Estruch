@@ -302,11 +302,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>Situació</label>
-          <select id="m-sit">
-            <option value="ACT">ACT — Actiu</option>
-            <option value="N/A">N/A</option>
-            <option value="NUL">NUL — Anul·lat</option>
-          </select>
+          <select id="m-sit"></select>
         </div>
       </div>
       <div class="sec" style="margin-bottom:12px">Adreça</div>
@@ -384,12 +380,7 @@ input[type=number]{-moz-appearance:textfield}
         <div class="sec">Condicions de pagament</div>
         <div class="fg">
           <label>Forma de pagament</label>
-          <select id="m-fpag">
-            <option>Transferència</option>
-            <option>Rebut domiciliat</option>
-            <option>Efectiu</option>
-            <option>Xec</option>
-          </select>
+          <select id="m-fpag"></select>
         </div>
         <div class="fg">
           <label>Dies de pagament</label>
@@ -397,12 +388,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>Divisa</label>
-          <select id="m-div">
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="MXN">MXN</option>
-          </select>
+          <select id="m-div"></select>
         </div>
 
         <div class="sec">Fiscalitat</div>
@@ -416,12 +402,7 @@ input[type=number]{-moz-appearance:textfield}
         </div>
         <div class="fg">
           <label>CNCE (classificació fiscal)</label>
-          <select id="m-cnce">
-            <option value="">— No definit —</option>
-            <option value="CN">CN — Nacional</option>
-            <option value="CE">CE — Comunitari (UE)</option>
-            <option value="EX">EX — Extracomunitari</option>
-          </select>
+          <select id="m-cnce"></select>
         </div>
 
         <div class="sec">Dades bancàries</div>
@@ -491,19 +472,14 @@ function toggleGroup(g){
 
 async function init(){
   if(!requireAuth()) return;
-  await Promise.all([loadClients(), loadGrupTags()]);
-}
-
-async function loadGrupTags(){
-  try{
-    const tags=await sbGet('tags','select=nom&tipus=eq.CLIENTS&order=nom');
-    const sel=document.getElementById('m-grup');
-    tags.forEach(t=>{
-      const o=document.createElement('option');
-      o.value=t.nom; o.textContent=t.nom;
-      sel.appendChild(o);
-    });
-  }catch(e){ console.warn('No s\'han pogut carregar grups:',e.message); }
+  await Promise.all([
+    loadClients(),
+    loadLlista('clients_grup',             'm-grup', 'Sense grup', 'clients'),
+    loadLlista('clients_situacio',         'm-sit',  undefined,   'clients'),
+    loadLlista('forma_pag',                'm-fpag', undefined,   'facturacio'),
+    loadLlista('divises',                  'm-div'),
+    loadLlista('CNCE (classificació fiscal)','m-cnce','No definit','clients'),
+  ]);
 }
 
 async function loadClients(){

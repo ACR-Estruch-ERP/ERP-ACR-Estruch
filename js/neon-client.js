@@ -113,3 +113,30 @@ async function sbDelWhere(t,col,val){
   const r = await fetch(`${NEON_DATA_API_URL}/${t}?${col}=eq.${encodeURIComponent(val)}`, { method:'DELETE', headers:getHDR() });
   if(!r.ok) throw new Error(await r.text());
 }
+
+// Carrega valors d'una categoria de llistes en un o més selects
+async function loadLlista(categoria, selectIds, emptyLabel, modul) {
+  try {
+    let q = `select=valor,ordre&categoria=eq.${encodeURIComponent(categoria)}&order=ordre.asc`;
+    if (modul) q += `&modul=eq.${encodeURIComponent(modul)}`;
+    const rows = await sbGet('llistes', q);
+    const seen = new Set();
+    const vals = [];
+    for (const r of rows) {
+      if (!seen.has(r.valor)) { seen.add(r.valor); vals.push(r.valor); }
+    }
+    const ids = Array.isArray(selectIds) ? selectIds : [selectIds];
+    for (const id of ids) {
+      const sel = document.getElementById(id);
+      if (!sel) continue;
+      const cur = sel.value;
+      sel.innerHTML = (emptyLabel !== undefined) ? `<option value="">— ${emptyLabel} —</option>` : '';
+      vals.forEach(v => {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        if (v === cur) o.selected = true;
+        sel.appendChild(o);
+      });
+    }
+  } catch(e) { console.error('loadLlista', categoria, e); }
+}

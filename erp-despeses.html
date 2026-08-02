@@ -364,18 +364,11 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
         </div>
         <div class="form-group">
           <label>Tipus</label>
-          <select id="mt-tipus">
-            <option value="AL">AL — Altres</option>
-            <option value="DP">DP — Desplaçaments propis</option>
-            <option value="SP">SP — Desplaçaments suplerts</option>
-          </select>
+          <select id="mt-tipus"></select>
         </div>
         <div class="form-group">
           <label>CNCE</label>
-          <select id="mt-cnce">
-            <option value="CN">CN — Nacional</option>
-            <option value="CE">CE — Exportació</option>
-          </select>
+          <select id="mt-cnce"></select>
         </div>
       </div>
       <div class="form-row" style="margin-bottom:12px">
@@ -942,8 +935,12 @@ async function init(){
     });
   }catch(e){}
 
+  await Promise.all([
+    loadLlista('tickets_tipus', 'mt-tipus'),
+    loadLlista('prov_cnce',     'mt-cnce'),
+  ]);
+
   // Filtres tickets: buits per defecte → carrega tots els registres
-  // (l'usuari pot filtrar manualment si vol)
   document.getElementById('tk-de').value='';
   document.getElementById('tk-fins').value='';
 
