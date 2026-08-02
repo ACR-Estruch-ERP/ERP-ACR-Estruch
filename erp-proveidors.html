@@ -259,6 +259,10 @@ input[type=number]{-moz-appearance:textfield}
             <option value="">— Sense categoria —</option>
           </select>
         </div>
+        <div class="fg">
+          <label>Situació</label>
+          <select id="m-sit"></select>
+        </div>
         <div class="sec">Adreça</div>
         <div class="fg full">
           <label>Adreça</label>
@@ -427,9 +431,10 @@ async function init(){
   await Promise.all([
     loadProveidors(),
     loadCatTags(),
-    loadLlista('forma_pag', 'm-fpag', undefined,   'proveidors'),
-    loadLlista('divises',   'm-div'),
-    loadLlista('prov_cnce', 'm-cnce', 'No definit', 'proveidors'),
+    loadLlista('forma_pag',     'm-fpag', undefined,   'proveidors'),
+    loadLlista('divises',       'm-div'),
+    loadLlista('prov_cnce',     'm-cnce', 'No definit', 'proveidors'),
+    loadLlista('prov_situacio', 'm-sit',  undefined,    'proveidors'),
   ]);
 }
 
@@ -574,13 +579,14 @@ function fillForm(p){
   s('m-cnce',p.cnce||'');
   s('m-banc',p.banc); s('m-iban',p.iban_bic);
   s('m-categoria',p.categoria);
+  s('m-sit',p.situacio);
   s('m-notes',p.notes);
 }
 
 function resetForm(){
   ['m-nom','m-sin','m-codi','m-nif','m-adr','m-cp','m-ciu','m-provincia','m-pais',
    'm-tel','m-email','m-web','m-cnt-nom','m-cnt-cog','m-cnt-carrec','m-cnt-idioma',
-   'm-cnt-mobil','m-cnt-email','m-cnt-adr','m-banc','m-iban','m-categoria','m-notes']
+   'm-cnt-mobil','m-cnt-email','m-cnt-adr','m-banc','m-iban','m-categoria','m-sit','m-notes']
   .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('m-fpag').value='Transferència';
   document.getElementById('m-dies').value=30;
@@ -622,6 +628,7 @@ async function saveProv(){
     banc:document.getElementById('m-banc').value||null,
     iban_bic:document.getElementById('m-iban').value||null,
     categoria:document.getElementById('m-categoria').value||null,
+    situacio:document.getElementById('m-sit').value||null,
     notes:document.getElementById('m-notes').value||null,
   };
   const btn=document.getElementById('btn-save');
