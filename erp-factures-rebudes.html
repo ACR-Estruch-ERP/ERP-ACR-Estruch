@@ -598,46 +598,55 @@ function toggleYear(year){
 
 // ── ESTAT ──
 function getEstat(fr){
-  if(fr.estat==='PAGAT') return 'PAGAT';
+  if(estatCode(fr.estat)==='PAG') return 'PAG';
   const today=new Date(); today.setHours(0,0,0,0);
-  if(!fr.data_termini1) return 'PENDENT';
+  if(!fr.data_termini1) return 'PEND';
   const t=new Date(fr.data_termini1+'T00:00:00');
-  if(t<today) return 'VENCUDA';
+  if(t<today) return 'VENC';
   if((t-today)/864e5<=7) return 'PROXIM';
-  if(fr.import_pagat>0) return 'PARCIALMENT';
-  return 'PENDENT';
+  if(fr.import_pagat>0) return 'PARC';
+  return 'PEND';
 }
 const ESTAT_MAP={
-  PAGAT:      ['bg','PAG'],
-  PENDENT:    ['br','PEND'],
-  PARCIALMENT:['bp','PEND parcial'],
-  PROXIM:     ['ba','PEND'],
-  VENCUDA:    ['br','Vençuda'],
+  PAG:    ['bg','PAG'],
+  PEND:   ['br','PEND'],
+  PARC:   ['bp','PEND parcial'],
+  PROXIM: ['ba','PEND'],
+  VENC:   ['br','Vençuda'],
 };
+function estatCode(v){
+  if(!v) return 'PEND';
+  const c=String(v).split(' ')[0];
+  return {PAGAT:'PAG',PENDENT:'PEND',PARCIALMENT:'PARC',VENCUDA:'VENC'}[c]||c;
+}
+function setEstatSel(id,code){
+  const sel=document.getElementById(id);if(!sel)return;
+  for(const o of sel.options){if(estatCode(o.value)===code){sel.value=o.value;return;}}
+  sel.value=code;
+}
 function badgeHtml(fr){
-  const [cls,lbl]=ESTAT_MAP[getEstat(fr)]||['bx',fr.estat];
+  const [cls,lbl]=ESTAT_MAP[getEstat(fr)]||['bx',estatCode(fr.estat)];
   return `<span class="badge ${cls}">${lbl}</span>`;
 }
 
 // ── STATS ──
 function renderStats(){
-  let n={PAGAT:0,PENDENT:0,PROXIM:0,VENCUDA:0};
-  let e={PAGAT:0,PENDENT:0,PROXIM:0,VENCUDA:0};
+  let n={PAG:0,PEND:0,PROXIM:0,VENC:0};
+  let e={PAG:0,PEND:0,PROXIM:0,VENC:0};
   allFra.forEach(fr=>{
     const s=getEstat(fr); const tot=fr.total_factura||0;
-    if(s==='PARCIALMENT'){n.PENDENT++;e.PENDENT+=tot;}
+    if(s==='PARC'){n.PEND++;e.PEND+=tot;}
     else if(n[s]!==undefined){n[s]++;e[s]+=tot;}
-    else if(s==='PROXIM'){n.PROXIM++;e.PROXIM+=tot;}
   });
   const f=v=>v.toLocaleString('ca-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-  document.getElementById('s-pag').textContent=n.PAGAT;
-  document.getElementById('s-pag-e').textContent=f(e.PAGAT);
-  document.getElementById('s-pen').textContent=n.PENDENT;
-  document.getElementById('s-pen-e').textContent=f(e.PENDENT);
+  document.getElementById('s-pag').textContent=n.PAG;
+  document.getElementById('s-pag-e').textContent=f(e.PAG);
+  document.getElementById('s-pen').textContent=n.PEND;
+  document.getElementById('s-pen-e').textContent=f(e.PEND);
   document.getElementById('s-prx').textContent=n.PROXIM;
   document.getElementById('s-prx-e').textContent=f(e.PROXIM);
-  document.getElementById('s-ven').textContent=n.VENCUDA;
-  document.getElementById('s-ven-e').textContent=f(e.VENCUDA);
+  document.getElementById('s-ven').textContent=n.VENC;
+  document.getElementById('s-ven-e').textContent=f(e.VENC);
 }
 
 // ── TAULA ──
@@ -704,7 +713,7 @@ function renderTable(rows){
         <td onclick="event.stopPropagation()" style="white-space:nowrap">
           <button class="btn btn-secondary btn-xs" onclick="openModal(${fr.id})">✏️</button>
           <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarFra(${fr.id})" title="Duplicar">⧉</button>
-          ${['PAGAT','RECTIFICATIVA'].includes(fr.estat)
+          ${['PAG'].includes(estatCode(fr.estat))
             ? `<button class="btn btn-xs" style="margin-left:4px;background:var(--grey-bg);color:var(--grey);border:1px solid var(--border);cursor:default" title="No es pot eliminar" disabled>✕</button>`
             : `<button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel(${fr.id})" title="Eliminar">✕</button>`
           }
@@ -724,7 +733,7 @@ function applyFilters(){
   const res=allFra.filter(fr=>{
     const pnom=fr.proveidors?.rao_social||'';
     const mc=!cerca||String(fr.no_seriefra||'').toLowerCase().includes(cerca)||(fr.no_fra_prov||'').toLowerCase().includes(cerca)||pnom.toLowerCase().includes(cerca)||(fr.notes||'').toLowerCase().includes(cerca);
-    const me=!est||getEstat(fr)===est||fr.estat===est;
+    const estCode=est?estatCode(est):''; const me=!est||getEstat(fr)===estCode;
     const md=!de||(fr.data_fra>=de);
     const mf=!fins||(fr.data_fra<=fins);
     return mc&&me&&md&&mf;
@@ -766,7 +775,7 @@ function closeModal(){ document.getElementById('overlay').classList.remove('open
 
 function fillForm(fr){
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'')};
-  s('m-no',fr.no_seriefra); s('m-no-prov',fr.no_fra_prov); s('m-estat',fr.estat);
+  s('m-no',fr.no_seriefra); s('m-no-prov',fr.no_fra_prov); setEstatSel('m-estat',estatCode(fr.estat));
   s('m-prov',fr.codi_prov); s('m-data',fr.data_fra); s('m-termini',fr.data_termini1);
   // omplir codi i sinònim del proveïdor
   const provOpt=document.querySelector(`#m-prov option[value="${fr.codi_prov}"]`);
@@ -789,7 +798,7 @@ function resetForm(){
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('m-no').value=nextNoIntern();
   document.getElementById('m-no-prov').value='';
-  document.getElementById('m-estat').value='PENDENT';
+  setEstatSel('m-estat','PEND');
   document.getElementById('m-prov').value='';
   document.getElementById('m-prov-codi').textContent='—';
   document.getElementById('m-prov-sinonim').textContent='—';
@@ -813,8 +822,8 @@ function resetForm(){
 }
 
 function updateBadge(){
-  const e=document.getElementById('m-estat').value;
-  const [cls,lbl]=ESTAT_MAP[e]||['bx',e];
+  const code=estatCode(document.getElementById('m-estat').value);
+  const [cls,lbl]=ESTAT_MAP[code]||['bx',code];
   document.getElementById('m-badge').innerHTML=`<span class="badge ${cls}">${lbl}</span>`;
 }
 
@@ -927,9 +936,10 @@ async function addPagament(){
       const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
       const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
       const tot=Math.round((curBi+curBi*ivaPc/100)*100)/100;
-      const nouEstat=pagat>=tot?'PAGAT':pagat>0?'PARCIALMENT':'PENDENT';
+      const nouCode=pagat>=tot?'PAG':pagat>0?'PARC':'PEND';
+      setEstatSel('m-estat',nouCode);
+      const nouEstat=document.getElementById('m-estat').value||nouCode;
       await sbPatch('factures_rebudes',curId,{import_pagat:pagat,estat:nouEstat});
-      document.getElementById('m-estat').value=nouEstat;
       updateBadge();
       toast('Pagament afegit','ok');
     }catch(e){ toast('Error: '+e.message,'err'); return; }
@@ -967,15 +977,16 @@ async function marcarPagat(){
       pag.id_factura=curId;
       const res=await sbPost('pagaments_proveidors',pag);
       curPagaments.push(res[0]);
-      await sbPatch('factures_rebudes',curId,{import_pagat:tot,estat:'PAGAT'});
-      document.getElementById('m-estat').value='PAGAT';
+      setEstatSel('m-estat','PAG');
+      const nouEstat=document.getElementById('m-estat').value||'PAG';
+      await sbPatch('factures_rebudes',curId,{import_pagat:tot,estat:nouEstat});
       updateBadge();
       toast('Pagament registrat — factura marcada com a Pagada','ok');
     }catch(e){ toast('Error: '+e.message,'err'); return; }
   } else {
     pag.id_factura=null;
     curPagaments.push(pag);
-    document.getElementById('m-estat').value='PAGAT';
+    setEstatSel('m-estat','PAG');
     updateBadge();
   }
   renderPagaments();
@@ -994,9 +1005,10 @@ async function delPagament(i){
     const pagat=curPagaments.reduce((s,p)=>s+(p.import||0),0);
     const ivaPc=parseFloat(document.getElementById('t-iva-pct').value)||0;
     const tot=Math.round((curBi+curBi*ivaPc/100)*100)/100;
-    const nouEstat=pagat>=tot&&tot>0?'PAGAT':pagat>0?'PARCIALMENT':'PENDENT';
+    const nouCode=pagat>=tot&&tot>0?'PAG':pagat>0?'PARC':'PEND';
+    setEstatSel('m-estat',nouCode);
+    const nouEstat=document.getElementById('m-estat').value||nouCode;
     await sbPatch('factures_rebudes',curId,{import_pagat:pagat,estat:nouEstat});
-    document.getElementById('m-estat').value=nouEstat;
     updateBadge();
   }
   renderPagaments();

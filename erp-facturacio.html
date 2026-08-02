@@ -442,11 +442,11 @@ input[type=number]{-moz-appearance:textfield}
         <input class="f-search" type="text" id="f-cerca" placeholder="🔍  Cerca factura, client, projecte..." oninput="applyFilters()">
         <select id="f-estat" onchange="applyFilters()">
           <option value="">Tots els estats</option>
-          <option value="COBRAT">COB — Cobrat</option>
-          <option value="PENDENT">PEND — Pendent</option>
-          <option value="PARCIAL">PARC — Cobrat parcialment</option>
+          <option value="COB">COB — Cobrat</option>
+          <option value="PEND">PEND — Pendent</option>
+          <option value="PARC">PARC — Cobrat parcialment</option>
           <option value="PROXIM">VENÇ &lt;7 — Proper venciment</option>
-          <option value="RECTIFICATIVA">RECTF — Rectificativa</option>
+          <option value="RECTF">RECTF — Rectificativa</option>
         </select>
         <input type="date" id="f-de" onchange="applyFilters()" title="Des de (data factura)">
         <input type="date" id="f-fins" onchange="applyFilters()" title="Fins a (data factura)">
@@ -972,24 +972,37 @@ async function refreshData(){
 // ESTAT SEMÀFOR
 // ════════════════════════════════════════════════
 function getEstat(inv){
-  if(inv.estat === 'COBRAT')        return 'COBRAT';
-  if(inv.estat === 'PARCIAL')       return 'PARCIAL';
-  if(inv.estat === 'RECTIFICATIVA') return 'RECTIFICATIVA';
-  const today = new Date(); today.setHours(0,0,0,0);
-  if(!inv.data_venciment)           return 'PENDENT';
-  const venc = new Date(inv.data_venciment + 'T00:00:00');
-  const dies = (venc - today) / 864e5;
-  if(dies > 0 && dies <= 7)         return 'PROXIM';
-  return 'PENDENT'; // inclou vençudes — tot el no cobrat és PEND
+  const code=estatCode(inv.estat);
+  if(code==='COB')   return 'COB';
+  if(code==='PARC')  return 'PARC';
+  if(code==='RECTF') return 'RECTF';
+  if(code==='PROF')  return 'PROF';
+  const today=new Date(); today.setHours(0,0,0,0);
+  if(!inv.data_venciment) return 'PEND';
+  const venc=new Date(inv.data_venciment+'T00:00:00');
+  const dies=(venc-today)/864e5;
+  if(dies>0&&dies<=7) return 'PROXIM';
+  return 'PEND';
 }
 
 const ESTAT_MAP = {
-  COBRAT:       ['bg','COB'],
-  PARCIAL:      ['ba','PARC'],
-  PENDENT:      ['br','PEND'],
-  PROXIM:       ['br','VENÇ <7'],
-  RECTIFICATIVA:['bx','RECTF'],
+  COB:   ['bg','COB'],
+  PARC:  ['ba','PARC'],
+  PEND:  ['br','PEND'],
+  PROXIM:['br','VENÇ <7'],
+  RECTF: ['bx','RECTF'],
+  PROF:  ['bx','PROF'],
 };
+function estatCode(v){
+  if(!v) return 'PEND';
+  const c=String(v).split(' ')[0];
+  return {COBRAT:'COB',PENDENT:'PEND',PARCIAL:'PARC',RECTIFICATIVA:'RECTF'}[c]||c;
+}
+function setEstatSel(id,code){
+  const sel=document.getElementById(id);if(!sel)return;
+  for(const o of sel.options){if(estatCode(o.value)===code){sel.value=o.value;return;}}
+  sel.value=code;
+}
 
 function badgeHtml(inv){
   const [cls, lbl] = ESTAT_MAP[getEstat(inv)] || ['bx', inv.estat];
@@ -1013,22 +1026,22 @@ function invTotal(inv){
 }
 
 function renderStats(){
-  let n={COBRAT:0,PENDENT:0,PARCIAL:0,PROXIM:0,RECTIFICATIVA:0};
-  let e={COBRAT:0,PENDENT:0,PARCIAL:0,PROXIM:0,RECTIFICATIVA:0};
+  let n={COB:0,PEND:0,PARC:0,PROXIM:0,RECTF:0};
+  let e={COB:0,PEND:0,PARC:0,PROXIM:0,RECTF:0};
   allInvoices.forEach(inv=>{
-    const s = getEstat(inv);
+    const s=getEstat(inv);
     if(n[s]!==undefined){ n[s]++; e[s]+=invTotal(inv); }
   });
-  n.PENDENT += n.PARCIAL; e.PENDENT += e.PARCIAL;
-  const f = v => v.toLocaleString('ca-ES',{minimumFractionDigits:2})+' €';
-  document.getElementById('s-cob').textContent = n.COBRAT;
-  document.getElementById('s-cob-e').textContent = f(e.COBRAT);
-  document.getElementById('s-pen').textContent = n.PENDENT;
-  document.getElementById('s-pen-e').textContent = f(e.PENDENT);
-  document.getElementById('s-prx').textContent = n.PROXIM;
-  document.getElementById('s-prx-e').textContent = f(e.PROXIM);
-  document.getElementById('s-ven').textContent = n.RECTIFICATIVA;
-  document.getElementById('s-ven-e').textContent = f(e.RECTIFICATIVA);
+  n.PEND+=n.PARC; e.PEND+=e.PARC;
+  const f=v=>v.toLocaleString('ca-ES',{minimumFractionDigits:2})+' €';
+  document.getElementById('s-cob').textContent=n.COB;
+  document.getElementById('s-cob-e').textContent=f(e.COB);
+  document.getElementById('s-pen').textContent=n.PEND;
+  document.getElementById('s-pen-e').textContent=f(e.PEND);
+  document.getElementById('s-prx').textContent=n.PROXIM;
+  document.getElementById('s-prx-e').textContent=f(e.PROXIM);
+  document.getElementById('s-ven').textContent=n.RECTF;
+  document.getElementById('s-ven-e').textContent=f(e.RECTF);
 }
 
 // ════════════════════════════════════════════════
@@ -1096,12 +1109,12 @@ function renderTable(rows){
         <td class="amt" style="color:${cob>=tot&&tot>0?'var(--green)':'var(--muted)'}">${fe(cob)}</td>
         <td>${badgeHtml(inv)}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap">
-          ${['COBRAT','RECTIFICATIVA'].includes(inv.estat)
+          ${['COB','RECTF'].includes(estatCode(inv.estat))
             ? `<button class="btn btn-xs" style="background:#e9ecef;color:#adb5bd;border:1px solid #dee2e6" onclick="editProtected(${inv.id})" title="Factura cobrada — edició protegida per PIN">✏️</button>`
             : `<button class="btn btn-secondary btn-xs" onclick="openModal(${inv.id})">✏️</button>`
           }
           <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarFactura(${inv.id})" title="Duplicar">⧉</button>
-          ${['COBRAT','RECTIFICATIVA'].includes(inv.estat)
+          ${['COB','RECTF'].includes(estatCode(inv.estat))
             ? `<button class="btn btn-xs" style="margin-left:4px;background:var(--grey-bg);color:var(--grey);border:1px solid var(--border);cursor:default" title="No es pot eliminar" disabled>✕</button>`
             : `<button class="btn btn-xs btn-danger" style="margin-left:4px" onclick="confirmDel(${inv.id})" title="Eliminar">✕</button>`
           }
@@ -1125,7 +1138,7 @@ function applyFilters(){
     const mc = !cerca || inv.no_factura.toLowerCase().includes(cerca)
                       || cnom.toLowerCase().includes(cerca)
                       || (inv.id_projecte||'').toLowerCase().includes(cerca);
-    const me = !est || getEstat(inv)===est || inv.estat===est;
+    const me = !est || getEstat(inv)===est;
     const md = !de   || (inv.data_fra >= de);
     const mf = !fins || (inv.data_fra <= fins);
     return mc&&me&&md&&mf;
@@ -1220,7 +1233,7 @@ function fillForm(inv){
   s('m-no', inv.no_factura);
   s('m-data', inv.data_fra);
   s('m-venc', inv.data_venciment);
-  s('m-estat', inv.estat);       s('m-estat-fin', inv.estat);
+  setEstatSel('m-estat',estatCode(inv.estat)); setEstatSel('m-estat-fin',estatCode(inv.estat));
   s('m-client', inv.id_client);
   const nrefVal = String(inv.n_ref || inv.id_projecte || '').padStart(8,'0').replace(/^0{8}$/,'');
   document.getElementById('m-nref').value = nrefVal;
@@ -1264,7 +1277,7 @@ function resetForm(){
   document.getElementById('m-data').min='';
   document.getElementById('m-venc').value=today;
   document.getElementById('m-venc').min=today;
-  document.getElementById('m-estat').value='PENDENT';     document.getElementById('m-estat-fin').value='PENDENT';
+  setEstatSel('m-estat','PEND');  setEstatSel('m-estat-fin','PEND');
   document.getElementById('m-client').value='';
   document.getElementById('m-nref').value='';
   document.getElementById('m-sref').value='';             document.getElementById('m-sref-fin').value='';
@@ -1303,9 +1316,9 @@ function resetForm(){
 }
 
 function updateBadge(){
-  const e = document.getElementById('m-estat').value;
-  const [cls,lbl] = ESTAT_MAP[e]||['bx',e];
-  document.getElementById('m-badge').innerHTML = `<span class="badge ${cls}">${lbl}</span>`;
+  const code=estatCode(document.getElementById('m-estat').value);
+  const [cls,lbl]=ESTAT_MAP[code]||['bx',code];
+  document.getElementById('m-badge').innerHTML=`<span class="badge ${cls}">${lbl}</span>`;
 }
 
 // ════════════════════════════════════════════════
@@ -1407,15 +1420,15 @@ function recalcCob(){
 
   if(tot > 0){
     const estatEl = document.getElementById('m-estat');
-    if(estatEl.value !== 'RECTIFICATIVA'){
-      if(cob <= 0){
-        estatEl.value = 'PENDENT';
-      } else if(cob >= tot){
-        estatEl.value = 'COBRAT';
+    if(estatCode(estatEl.value)!=='RECTF'){
+      if(cob<=0){
+        setEstatSel('m-estat','PEND');
+      } else if(cob>=tot){
+        setEstatSel('m-estat','COB');
         if(!document.getElementById('m-dcob').value)
-          document.getElementById('m-dcob').value = new Date().toISOString().slice(0,10);
+          document.getElementById('m-dcob').value=new Date().toISOString().slice(0,10);
       } else {
-        estatEl.value = 'PARCIAL';
+        setEstatSel('m-estat','PARC');
       }
       updateBadge();
     }
