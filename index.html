@@ -279,8 +279,11 @@ function estatCodeReb(v){
 }
 
 function getEstatFra(inv){
-  if(estatCodeFra(inv.estat)==='COB')return'COBRAT';
-  if((inv.total_factura||0)<0)return'COBRAT';
+  const code=estatCodeFra(inv.estat);
+  if(code==='COB'||code==='RECTF'||code==='PROF')return'COBRAT';
+  const total=inv.total_factura||0;
+  const cobrat=inv.import_cobrat||0;
+  if(total<=0||cobrat>=total)return'COBRAT';
   const today=new Date();today.setHours(0,0,0,0);
   if(!inv.data_venciment)return'PENDENT';
   const v=new Date(inv.data_venciment+'T00:00:00');
@@ -325,7 +328,8 @@ async function init(){
     // KPIs factures rebudes
     let pagar=0,pagarE=0;
     reb.forEach(f=>{
-      if(estatCodeReb(f.estat)!=='PAG'){pagar++;pagarE+=(f.total_factura||0)-(f.import_pagat||0);}
+      const pagat=estatCodeReb(f.estat)==='PAG'||(f.import_pagat||0)>=(f.total_factura||0)&&(f.total_factura||0)>0;
+      if(!pagat){pagar++;pagarE+=(f.total_factura||0)-(f.import_pagat||0);}
     });
     document.getElementById('k-pagar').textContent=pagar;
     document.getElementById('k-pagar-e').textContent=fe(pagarE)+' €';
@@ -377,7 +381,7 @@ async function init(){
 
     // Factures rebudes properes
     const rebProp=reb.filter(f=>{
-      if(estatCodeReb(f.estat)==='PAG')return false;
+      if(estatCodeReb(f.estat)==='PAG'||(f.import_pagat||0)>=(f.total_factura||0)&&(f.total_factura||0)>0)return false;
       if(!f.data_termini1)return true;
       const t=new Date(f.data_termini1+'T00:00:00');
       return t<=in30;
