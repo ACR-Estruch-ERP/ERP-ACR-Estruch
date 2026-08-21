@@ -448,7 +448,7 @@ async function openImprimirFactura() {
   if (!facturesCache) {
     document.getElementById('modal-fra-hint').textContent = 'Carregant factures…';
     try {
-      const res = await sbGet('factures', 'select=no_factura,clients(rao_social)&order=no_factura.desc&limit=1000');
+      const res = await sbGet('factures', 'select=no_factura,clients(rao_social)&order=id_in.desc.nullslast,data_fra.desc&limit=1000');
       facturesCache = res;
       const dl = document.getElementById('dl-factures');
       dl.innerHTML = res.map(f => {
