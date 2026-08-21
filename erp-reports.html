@@ -97,7 +97,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl tr.total-final td{background:#1a3a6b;color:#fff;font-weight:700;font-size:12px}
 .rtbl tr.total-final td.r{text-align:right}
 
-/* EXPLOTACIÓ REAL — files col·lapsables */
+/* P&L — files col·lapsables */
 .rtbl tr.ex-grp{cursor:pointer;user-select:none}
 .rtbl tr.ex-lvl0 td{background:#e9eff8;font-weight:700;color:var(--blue)}
 .rtbl tr.ex-lvl1 td{background:#f2f5fb;font-weight:600;color:var(--blue)}
@@ -202,7 +202,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
       <button class="main-tab" onclick="showTab('tab-desp-viatge')">✈️ Despeses Viatge</button>
       <button class="main-tab" onclick="showTab('tab-desp-tickets')">📋 Llistat Despeses</button>
       <button class="main-tab" onclick="showTab('tab-projectes')">📋 Estat Projectes</button>
-      <button class="main-tab" onclick="showTab('tab-explotacio')">💰 Explotació Real</button>
+      <button class="main-tab" onclick="showTab('tab-explotacio')">💰 P&amp;L</button>
     </div>
 
     <!-- ══ TAB: LLISTAT FACTURES ══ -->
@@ -461,7 +461,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
       </div>
     </div>
 
-    <!-- ══ TAB: EXPLOTACIÓ REAL ══ -->
+    <!-- ══ TAB: P&L ══ -->
     <div class="tab-content" id="tab-explotacio">
       <div class="print-header">
         <div class="ph-logo"><div class="brand">ACR|Estruch</div><div class="tag">export &amp; consulting</div></div>
@@ -482,7 +482,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
         </div>
       </div>
       <div class="report-area">
-        <div class="report-header"><h2>Explotació Real — ACR PNL per Any</h2></div>
+        <div class="report-header"><h2>P&amp;L — ACR PNL per Any</h2></div>
         <div class="report-body" id="rpt-explotacio"><div class="rpt-empty"><div class="eico">🔒</div><p>Accés protegit per PIN</p></div></div>
       </div>
     </div>
@@ -519,7 +519,7 @@ const EXPLOTACIO_PIN = '0511';
 let activeTab = 'tab-llistat';
 function showTab(id){
   if(id==='tab-explotacio'){
-    const pin = prompt('🔒 PIN per accedir a Explotació Real:');
+    const pin = prompt('🔒 PIN per accedir a P&L:');
     if(pin === null) return;
     if(pin !== EXPLOTACIO_PIN){ toast('PIN incorrecte','err'); return; }
   }
@@ -1105,7 +1105,7 @@ async function init(){
 init();
 
 // ══════════════════════════════
-// EXPLOTACIÓ REAL (ACR PNL)
+// P&L (ACR PNL)
 // ══════════════════════════════
 // Marge ACR per factura = camp acr_pnl de la pròpia factura (pestanya "Liquidació" de
 // Facturació), ja calculat i desat: base − en_c − dg_c − cb_c − tr_pf. És el desglossament
