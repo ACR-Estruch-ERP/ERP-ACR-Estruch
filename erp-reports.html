@@ -1142,11 +1142,9 @@ async function runExplotacio(){
 
     exData = rows.filter(r=>r.data_fra).map(r=>{
       const base = parseFloat(r.base_imposable)||0;
-      const key = r.id_projecte;
-      const matched = !!key && Object.prototype.hasOwnProperty.call(pjPct, key);
-      const pct = matched ? pjPct[key] : 0;
+      const pct  = pjPct[r.id_projecte] ?? 0;
       return { no_factura:r.no_factura, data_fra:r.data_fra, client:r.clients?.rao_social||'—',
-        base, pnl: base*pct, marge: pct*100, matched, id_projecte:key };
+        base, pnl: base*pct, marge: pct*100 };
     });
     renderExplotacio();
   }catch(e){ el.innerHTML = `<div class="rpt-empty">Error: ${e.message}</div>`; }
@@ -1162,19 +1160,6 @@ function renderExplotacio(){
   const rows = exData;
   const sumRows = arr => arr.reduce((s,r)=>({base:s.base+r.base,pnl:s.pnl+r.pnl}),{base:0,pnl:0});
   const margeOf = (pnl,base) => base ? (pnl/base*100) : 0;
-
-  // Diagnòstic: factures sense projecte vinculat o amb el projecte sense import/acr_import
-  const unmatched = rows.filter(r=>!r.matched);
-  let banner = '';
-  if(unmatched.length){
-    const byYear = {};
-    unmatched.forEach(r=>{ const y=r.data_fra.slice(0,4); byYear[y]=(byYear[y]||0)+1; });
-    const perAny = Object.keys(byYear).sort().map(y=>`${y}: ${byYear[y]}`).join(' · ');
-    banner = `<div style="background:#fff3cd;color:#664d03;padding:10px 14px;font-size:12px;border-bottom:1px solid #ffe69c">
-      ⚠️ ${unmatched.length} de ${rows.length} factures sense marge calculat (projecte no vinculat, o vinculat però sense import/acr_import a Neon).<br>
-      Per any: ${perAny}
-    </div>`;
-  }
 
   // Arbre: any -> trimestre -> mes -> [factures]
   const tree = {};
@@ -1243,7 +1228,7 @@ function renderExplotacio(){
     <td class="r">${fm(grand.base)}</td><td class="r">${fm(grand.pnl)}</td>
     <td class="r">${fm(margeOf(grand.pnl,grand.base),2)}%</td>
   </tr></tfoot></table>`;
-  el.innerHTML = banner + html;
+  el.innerHTML = html;
 }
 
 // ══════════════════════════════
