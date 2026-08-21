@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebut — ACR Estruch</title>
+<style>
+/* ── CONTROL BAR (screen only) ── */
+.ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
+.ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
+.ctrl label{color:#9aaccc}
+.ctrl input[type=text]{padding:4px 8px;border-radius:5px;border:1px solid #3a4a6a;background:#2a3550;color:#fff;font-size:12.5px;width:130px}
+.ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
+.btn-print{background:#0d6efd;color:#fff;font-weight:600}
+.btn-print:hover{background:#0b5ed7}
+.btn-close{background:#3a4060;color:#ccc}
+.btn-close:hover{background:#4a5070;color:#fff}
+.ctrl-status{color:#6a8aaa;font-size:11.5px;margin-left:4px}
+@media print{.ctrl{display:none}}
+
+/* ── PRINT PAGE ── */
+@page{size:A4;margin:14mm}
+body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ecef;color:#1a1a1a}
+.page{background:#fff;max-width:190mm;margin:14px auto;box-sizing:border-box;min-height:120mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+@media print{body{background:#fff}.page{margin:0;max-width:none;min-height:0;box-shadow:none}}
+</style>
+</head>
+<body>
+
+<!-- Control bar (screen only, not printed) -->
+<div class="ctrl">
+  <span class="ctrl-title">🧾 Rebut</span>
+  <label>Núm. Factura:</label>
+  <input type="text" id="ctrl-no" placeholder="Ex: 26017">
+  <button class="btn-print" style="background:#28a745" onclick="loadData()">Aplicar</button>
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+  <button class="btn-close" onclick="window.close()">✕ Tancar</button>
+  <span class="ctrl-status" id="ctrl-status"></span>
+</div>
+
+<div class="page" id="rebut-page">
+  <div style="padding:6mm;color:#888;text-align:center">Indica un número de factura i clica Aplicar</div>
+</div>
+
+<script src="js/neon-client.js"></script>
+<script>
+requireAuth();
+
+const urlParams = new URLSearchParams(location.search);
+const ctrlNo = document.getElementById('ctrl-no');
+const initialNo = urlParams.get('no') || '';
+ctrlNo.value = initialNo;
+
+const fm = (n,d=2) => {
+  if(n===null||n===undefined||isNaN(n)) return '—';
+  return Number(n).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+};
+const fd = s => {
+  if(!s) return '—';
+  const d = new Date(s+'T00:00:00');
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+};
+
+async function loadData() {
+  const noFra = ctrlNo.value.trim();
+  const page = document.getElementById('rebut-page');
+  if (!noFra) { alert('Indica el número de factura'); return; }
+  page.innerHTML = '<div style="padding:6mm;color:#888;text-align:center">⏳ Carregant...</div>';
+  document.getElementById('ctrl-status').textContent = '';
+
+  try {
+    const rows = await sbGet('factures',
+      `select=*,clients(codi,rao_social,nif_vat,adreca,cp,ciutat,pais)&no_factura=eq.${encodeURIComponent(noFra)}`);
+    if (!rows.length) {
+      page.innerHTML = '<div style="padding:10mm;color:#888;text-align:center">❌ Factura no trobada</div>';
+      document.getElementById('ctrl-status').textContent = 'No trobada';
+      return;
+    }
+    const r = rows[0];
+    const cli = r.clients || {};
+    const adr = [cli.adreca, cli.cp ? `ES-${cli.cp}` : '', cli.ciutat, cli.pais && cli.pais !== 'ESP' ? cli.pais : ''].filter(Boolean);
+    page.innerHTML = `
+    <div style="display:flex;gap:0;padding:20px 30px 30px">
+      <!-- Esquerra: ACR -->
+      <div style="width:200px;flex-shrink:0;padding-right:20px;border-right:1px solid #ddd">
+        <div style="font-size:22px;font-weight:900;color:#1a3a6b;letter-spacing:-1px">ACR|Estruch</div>
+        <div style="font-size:10px;color:#666;font-style:italic;margin-bottom:12px">export &amp; consulting</div>
+        <div style="font-size:10px;line-height:1.7;color:#444">
+          Muntaner, 440, 1-1B.<br>08006 Barcelona<br>Tel. +34 609 852 478<br>
+          Jaume Estruch Sánchez.<br>NIF-VAT No. ES38549541-T
+        </div>
+        <div style="margin-top:16px;font-size:32px;color:#1a3a6b;font-style:italic;font-family:Georgia,serif">Jaume Estruch</div>
+      </div>
+      <!-- Dreta: REBUT -->
+      <div style="flex:1;padding-left:28px">
+        <div style="font-size:18px;font-weight:800;color:#1a3a6b;border-bottom:2px solid #1a3a6b;padding-bottom:6px;margin-bottom:14px">RECEIP</div>
+        <div style="font-weight:700;font-size:13px">${cli.rao_social || '—'}</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:10px">
+          ${cli.codi || ''}<br>${cli.nif_vat ? `ES-${cli.nif_vat}` : ''}<br>${adr.join('<br>')}
+        </div>
+        <div style="font-size:11px;color:#888;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ddd">${r.id_projecte || ''}</div>
+        <table style="font-size:12px;border-collapse:collapse;width:100%">
+          <tr><td style="padding:4px 0;color:#555;width:140px">Invoice no.</td><td style="font-weight:700;font-size:14px">${r.no_factura}</td></tr>
+          <tr><td style="padding:4px 0;color:#555">Invoice date</td><td>${fd(r.data_fra)}</td></tr>
+          <tr><td style="padding:4px 0;color:#555">Payment term</td><td style="text-transform:uppercase">${r.forma_pag || '—'}</td></tr>
+          <tr><td style="padding:4px 0;color:#555">Import</td><td>${fm(r.total_factura)} €</td></tr>
+        </table>
+        <div style="margin-top:14px;font-weight:700;font-size:12px">Paid on</div>
+        <div style="margin-top:4px;height:2px;width:100%;background:#1a3a6b;max-width:200px"></div>
+        ${r.data_cob ? `<div style="margin-top:6px;font-size:13px;font-weight:700;color:#1a8c42">${fd(r.data_cob)}</div>` : ''}
+      </div>
+    </div>`;
+    document.getElementById('ctrl-status').textContent = `Factura ${r.no_factura}`;
+  } catch(e) {
+    page.innerHTML = `<div style="padding:10mm;color:#c00;text-align:center">Error: ${e.message}</div>`;
+    document.getElementById('ctrl-status').textContent = 'Error de càrrega';
+  }
+}
+
+// ── Start ──────────────────────────────────────────────────────────────────
+if (initialNo) loadData();
+</script>
+</body>
+</html>
