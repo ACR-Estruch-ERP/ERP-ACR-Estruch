@@ -242,9 +242,12 @@ async function loadData() {
   }
 }
 
-function estatIco(estat) {
-  if (estat === 'COBRAT')  return '<span class="estat-ico cobrat">✓</span>';
-  if (estat === 'PARCIAL') return '<span class="estat-ico parcial">~</span>';
+function estatIco(inv) {
+  const estat  = inv.estat;
+  const total  = parseFloat(inv.total_factura) || 0;
+  const cobrat = parseFloat(inv.import_cobrat) || 0;
+  if (estat === 'COBRAT' || (total > 0 && cobrat >= total)) return '<span class="estat-ico cobrat">✓</span>';
+  if (estat === 'PARCIAL' || cobrat > 0) return '<span class="estat-ico parcial">~</span>';
   return '<span class="estat-ico pendent">✗</span>';
 }
 
@@ -264,7 +267,7 @@ function rowHtml(inv, extraClass='') {
     <td class="r">${fN(iva)}</td>
     <td class="r">${irpf ? '-' + fN(irpf) : fN(0)}</td>
     <td class="r">${fN(total)}</td>
-    <td>${estatIco(inv.estat)}</td>
+    <td>${estatIco(inv)}</td>
   </tr>`;
 }
 
