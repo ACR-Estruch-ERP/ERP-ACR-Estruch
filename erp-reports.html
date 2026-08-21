@@ -765,7 +765,7 @@ async function runPendent(){
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
     const allRows = await sbGet('factures',
-      `select=*,clients(codi,rao_social)&estat=neq.ANULADA&estat=neq.RECTIFICATIVA&order=no_factura.asc,data_fra.asc`);
+      `select=*,clients(codi,rao_social)&estat=neq.COBRAT&estat=neq.ANULADA&estat=neq.RECTIFICATIVA&order=no_factura.asc,data_fra.asc`);
     const rows = allRows.filter(r=>(parseFloat(r.total_factura)||0)-(parseFloat(r.import_cobrat)||0)>0.01);
     if(!rows.length){ el.innerHTML='<div class="rpt-empty"><div class="eico">✅</div><p>Tot cobrat!</p></div>'; return; }
     // Agrupar per client
@@ -827,7 +827,7 @@ async function runPend1Cli(){
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
     const allRows = await sbGet('factures',
-      `select=*,clients(codi,rao_social)&id_client=eq.${cliId}&estat=neq.ANULADA&order=data_fra.asc,no_factura.asc`);
+      `select=*,clients(codi,rao_social)&id_client=eq.${cliId}&estat=neq.COBRAT&estat=neq.ANULADA&order=data_fra.asc,no_factura.asc`);
     const rows = allRows.filter(r=>(parseFloat(r.total_factura)||0)-(parseFloat(r.import_cobrat)||0)>0.01);
     if(!rows.length){ el.innerHTML='<div class="rpt-empty"><div class="eico">✅</div><p>Cap pendent per aquest client</p></div>'; return; }
     let totImp=0,totCob=0,totSaldo=0;
