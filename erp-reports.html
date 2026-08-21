@@ -530,7 +530,7 @@ async function runLlistat(){
   const el = document.getElementById('rpt-llistat');
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
-    let qs = 'select=*,clients(codi,rao_social)&order=no_factura.desc,data_fra.desc';
+    let qs = 'select=*,clients(codi,rao_social)&order=id_in.desc.nullslast,data_fra.desc';
     const de = document.getElementById('ll-de').value;
     const fins = document.getElementById('ll-fins').value;
     if(de) qs += `&data_fra=gte.${de}`;
@@ -641,7 +641,7 @@ async function runClients(){
   const el = document.getElementById('rpt-clients');
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
-    let qs = 'select=*,clients(codi,rao_social)&order=no_factura.desc,data_fra.desc';
+    let qs = 'select=*,clients(codi,rao_social)&order=id_in.desc.nullslast,data_fra.desc';
     const de = document.getElementById('cli-de').value;
     const fins = document.getElementById('cli-fins').value;
     if(de) qs += `&data_fra=gte.${de}`;
