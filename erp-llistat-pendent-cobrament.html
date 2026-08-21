@@ -3,15 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Llistat Factures — ACR Estruch</title>
+<title>Pendent Cobrament — ACR Estruch</title>
 <style>
 /* ── CONTROL BAR (screen only) ── */
 .ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
 .ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
 .ctrl label{color:#9aaccc}
 .ctrl select,.ctrl input[type=date]{padding:4px 8px;border-radius:5px;border:1px solid #3a4a6a;background:#2a3550;color:#fff;font-size:12.5px;cursor:pointer}
-.ctrl input[type=date]{cursor:text;min-width:120px}
-.ctrl input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
 .ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
 .btn-print{background:#0d6efd;color:#fff;font-weight:600}
 .btn-print:hover{background:#0b5ed7}
@@ -39,40 +37,29 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 .fra-table th.r,.fra-table td.r{text-align:right}
 .fra-table td{padding:.15mm 3px;vertical-align:top;border:none;line-height:1.25;font-size:7.5pt;color:#595959}
 
-/* Column widths (10 cols: +Estat al final) */
+/* Column widths (9 cols) */
 .fra-table th:nth-child(1),.fra-table td:nth-child(1){width:8%}
 .fra-table th:nth-child(2),.fra-table td:nth-child(2){width:22%;text-transform:uppercase}
-.fra-table th:nth-child(3),.fra-table td:nth-child(3){width:8%}
-.fra-table th:nth-child(4),.fra-table td:nth-child(4){width:8%}
-.fra-table th:nth-child(5),.fra-table td:nth-child(5){width:10%}
-.fra-table th:nth-child(6),.fra-table td:nth-child(6){width:13%}
-.fra-table th:nth-child(7),.fra-table td:nth-child(7){width:9%}
-.fra-table th:nth-child(8),.fra-table td:nth-child(8){width:8%}
-.fra-table th:nth-child(9),.fra-table td:nth-child(9){width:9%}
-.fra-table th:nth-child(10),.fra-table td:nth-child(10){width:5%;text-align:center}
+.fra-table th:nth-child(3),.fra-table td:nth-child(3){width:9%}
+.fra-table th:nth-child(4),.fra-table td:nth-child(4){width:9%}
+.fra-table th:nth-child(5),.fra-table td:nth-child(5){width:9%}
+.fra-table th:nth-child(6),.fra-table td:nth-child(6){width:10%}
+.fra-table th:nth-child(7),.fra-table td:nth-child(7){width:11%}
+.fra-table th:nth-child(8),.fra-table td:nth-child(8){width:11%}
+.fra-table th:nth-child(9),.fra-table td:nth-child(9){width:11%}
 
-/* Estat icon */
-.estat-ico{display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;font-size:7.5px;font-weight:900;line-height:1;color:#fff;vertical-align:middle}
-.estat-ico.cobrat{background:#28a745}
-.estat-ico.pendent{background:#dc3545}
-.estat-ico.parcial{background:#fd7e14}
+.fra-table td.neg{color:#b00}
 
-/* Monthly subtotal row — igual que el total general */
+/* Subtotal per client */
 .fra-table tr.subtotal td{background:none;font-weight:700;border:none;color:#595959;padding-top:.8mm;padding-bottom:.8mm;font-size:7.5pt}
-/* Label 'No.factures: X' — informatiu, petit i gris */
 .fra-table tr.subtotal td.lbl{font-size:7pt;color:#aaa;font-weight:400;font-style:normal}
-
-/* Espai entre subtotal i primer registre del mes següent */
 .fra-table tr.grp-first td{padding-top:3.5mm}
-
-/* Una sola ratlla fina just abans dels totals */
 .fra-table tfoot td{font-weight:700;border-top:.8px solid #888;padding-top:1.8mm;color:#595959;font-size:7.5pt}
 
-/* ── FOOTER (fixat al peu de pàgina) ── */
+/* ── FOOTER ── */
 .doc-footer{position:fixed;bottom:10mm;left:14mm;right:14mm;display:flex;align-items:baseline;justify-content:space-between;font-size:7pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif}
 .doc-footer-addr{text-align:center;flex:1}
 .doc-footer-info{white-space:nowrap;font-size:6.5pt}
-/* Screen: empeny el footer al fons dins .page */
 @media screen{
   .doc-footer{position:static;margin-top:auto;padding-top:8mm;display:flex}
   .page{display:flex;flex-direction:column}
@@ -83,14 +70,10 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 
 <!-- Control bar (screen only, not printed) -->
 <div class="ctrl">
-  <span class="ctrl-title">📋 Llistat Factures</span>
+  <span class="ctrl-title">⏳ Pendent Cobrament</span>
   <span class="ctrl-status" id="ctrl-mode-label"></span>
   <label id="ctrl-client-lbl" style="display:none">Client:</label>
   <select id="ctrl-client" style="display:none;min-width:220px"><option value="">— Selecciona —</option></select>
-  <label>De:</label>
-  <input type="date" id="ctrl-from">
-  <label>Fins:</label>
-  <input type="date" id="ctrl-to">
   <button class="btn-print" style="background:#28a745" onclick="loadData()">Aplicar</button>
   <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
   <button class="btn-close" onclick="window.close()">✕ Tancar</button>
@@ -105,7 +88,7 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
   </div>
 
   <!-- Title -->
-  <span class="doc-title" id="doc-title">LLISTAT FACTURES</span>
+  <span class="doc-title" id="doc-title">FACTURES PENDENTS COBRAMENT</span>
 
   <!-- Table -->
   <table class="fra-table">
@@ -113,18 +96,17 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
       <tr>
         <th>IdClient</th>
         <th>Client</th>
-        <th>NoFactura</th>
+        <th>NoFact</th>
+        <th>DataVenc</th>
         <th>DataFact</th>
         <th>PJ</th>
-        <th class="r">Base Imp</th>
-        <th class="r">IVA</th>
-        <th class="r">IRPF</th>
-        <th class="r">Import</th>
-        <th></th>
+        <th class="r">Total Fra</th>
+        <th class="r">Cobrat</th>
+        <th class="r">Pendent</th>
       </tr>
     </thead>
     <tbody id="fra-tbody">
-      <tr><td colspan="10" style="padding:6mm;color:#888;text-align:center">Carregant…</td></tr>
+      <tr><td colspan="9" style="padding:6mm;color:#888;text-align:center">Carregant…</td></tr>
     </tbody>
     <tfoot id="fra-tfoot"></tfoot>
   </table>
@@ -142,25 +124,13 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 requireAuth();
 
 const urlParams = new URLSearchParams(location.search);
-const mode = urlParams.get('mode') || 'simple'; // 'simple' | 'monthly'
+const mode = urlParams.get('mode') || 'all'; // 'all' | 'client'
+const isClient = (mode === 'client');
 
-// ── Init date range (default: 1 Jan current year → today) ─────────────────
-const curYear = new Date().getFullYear();
-const fromInp = document.getElementById('ctrl-from');
-const toInp   = document.getElementById('ctrl-to');
-
-const isMonthly = (mode === 'monthly');
-const isClient  = (mode === 'client');
-const defaultFrom = urlParams.get('from') || (isClient ? '' : `${curYear}-01-01`);
-const defaultTo   = urlParams.get('to')   || (isClient ? '' : new Date().toISOString().slice(0,10));
-fromInp.value = defaultFrom;
-toInp.value   = defaultTo;
-
-// ── Mode label & title ─────────────────────────────────────────────────────
-document.getElementById('ctrl-mode-label').textContent = isMonthly ? 'Totals mensuals' : (isClient ? '1 Client' : 'Llistat');
-document.getElementById('doc-title').textContent = isMonthly
-  ? 'LLISTAT FACTURES EMESES. TOTALS MENSUALS'
-  : (isClient ? 'FACTURES 1 CLIENT' : 'LLISTAT FACTURES');
+document.getElementById('ctrl-mode-label').textContent = isClient ? '1 Client' : 'Tots els clients';
+document.getElementById('doc-title').textContent = isClient
+  ? 'FACTURES PENDENTS COBRAMENT — 1 CLIENT'
+  : 'FACTURES PENDENTS COBRAMENT';
 
 const ctrlClientLbl = document.getElementById('ctrl-client-lbl');
 const ctrlClientSel = document.getElementById('ctrl-client');
@@ -179,11 +149,8 @@ if (isClient) {
   });
 }
 
-// (helpers de Neon a js/neon-client.js)
-
-function fN(n, dec=2) {
-  if (n == null || n === '') return '';
-  return Number(n).toLocaleString('ca-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+function fN(n) {
+  return Number(n || 0).toLocaleString('ca-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function fDate(s) {
@@ -192,27 +159,10 @@ function fDate(s) {
   return `${d}/${m}/${String(y).slice(2)}`;
 }
 
-function invBase(inv) {
-  const ls = inv.factura_lines || [];
-  if (ls.length) return ls.reduce((s, l) => s + (+(l.import_linia) || 0), 0);
-  return +(inv.base_imposable) || 0;
-}
-
-function invCalc(inv) {
-  const base  = invBase(inv);
-  const iva   = base * (+(inv.tipus_iva  ?? 21)) / 100;
-  const irpf  = base * (+(inv.tipus_irpf ??  0)) / 100;
-  const total = base + iva - irpf;
-  return { base, iva, irpf, total };
-}
-
 // ── Main render ────────────────────────────────────────────────────────────
 async function loadData() {
-  const from = fromInp.value;
-  const to   = toInp.value;
   const clientId = isClient ? ctrlClientSel.value : '';
   if (isClient && !clientId) { alert('Selecciona un client'); return; }
-  if (!isClient && (!from || !to)) { alert('Indica les dues dates'); return; }
   const tbody = document.getElementById('fra-tbody');
   const tfoot = document.getElementById('fra-tfoot');
 
@@ -221,114 +171,111 @@ async function loadData() {
   document.getElementById('ctrl-status').textContent = '';
 
   try {
-    let qs = `select=*,clients(rao_social,codi),factura_lines(import_linia)&order=no_factura.asc,data_fra.asc`;
-    if (from) qs += `&data_fra=gte.${from}`;
-    if (to)   qs += `&data_fra=lte.${to}`;
+    let qs = `select=*,clients(codi,rao_social)&estat=neq.COBRAT&estat=neq.ANULADA&estat=neq.RECTIFICATIVA&order=no_factura.asc,data_fra.asc`;
     if (clientId) qs += `&id_client=eq.${clientId}`;
-    const rows = await sbGet('factures', qs);
+    const allRows = await sbGet('factures', qs);
+    // Filtre addicional per import real pendent: exclou factures on l'estat
+    // no s'ha marcat COBRAT però l'import cobrat ja iguala el total.
+    const rows = allRows.filter(r => (parseFloat(r.total_factura) || 0) - (parseFloat(r.import_cobrat) || 0) > 0.01);
 
-    if (isClient && rows.length) {
-      document.getElementById('doc-title').textContent = `FACTURES CLIENT — ${rows[0].clients?.rao_social || ''}`;
+    if (isClient && allRows.length) {
+      document.getElementById('doc-title').textContent =
+        `FACTURES PENDENTS COBRAMENT — ${allRows[0].clients?.rao_social || ''}`;
     }
 
     renderTable(rows);
-    document.getElementById('ctrl-status').textContent = `${rows.length} factures carregades`;
+    document.getElementById('ctrl-status').textContent = rows.length
+      ? `${rows.length} factures pendents`
+      : 'Cap factura pendent';
     document.getElementById('page-info').textContent =
       `${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - qa_IN_list`;
 
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="10" style="color:#c00;padding:6mm">Error: ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="color:#c00;padding:6mm">Error: ${e.message}</td></tr>`;
     document.getElementById('ctrl-status').textContent = 'Error de càrrega';
   }
 }
 
-function estatIco(estat) {
-  if (estat === 'COBRAT')  return '<span class="estat-ico cobrat">✓</span>';
-  if (estat === 'PARCIAL') return '<span class="estat-ico parcial">~</span>';
-  return '<span class="estat-ico pendent">✗</span>';
-}
-
 function rowHtml(inv, extraClass='') {
-  const { base, iva, irpf, total } = invCalc(inv);
-  const pj     = inv.n_ref || inv.id_projecte || '';
+  const imp  = parseFloat(inv.total_factura) || 0;
+  const cob  = parseFloat(inv.import_cobrat) || 0;
+  const pend = imp - cob;
   const codi   = inv.clients?.codi || inv.id_client || '';
   const client = inv.clients?.rao_social || '';
-  const cls    = extraClass ? ` class="${extraClass}"` : '';
+  const cls = extraClass ? ` class="${extraClass}"` : '';
   return `<tr${cls}>
     <td>${codi}</td>
     <td>${client}</td>
     <td>${inv.no_factura || ''}</td>
+    <td>${fDate(inv.data_venciment)}</td>
     <td>${fDate(inv.data_fra)}</td>
-    <td>${pj}</td>
-    <td class="r">${fN(base)}</td>
-    <td class="r">${fN(iva)}</td>
-    <td class="r">${irpf ? '-' + fN(irpf) : fN(0)}</td>
-    <td class="r">${fN(total)}</td>
-    <td>${estatIco(inv.estat)}</td>
+    <td>${inv.id_projecte || ''}</td>
+    <td class="r">${fN(imp)}</td>
+    <td class="r">${cob ? fN(cob) : '—'}</td>
+    <td class="r neg">${fN(pend)}</td>
   </tr>`;
 }
 
-function subtotalHtml(n, base, iva, irpf, total) {
+function subtotalHtml(n, imp, cob, pend) {
   return `<tr class="subtotal">
-    <td class="lbl" colspan="5">No.factures: ${n}</td>
-    <td class="r">${fN(base)}</td>
-    <td class="r">${fN(iva)}</td>
-    <td class="r">${irpf ? '-' + fN(irpf) : fN(0)}</td>
-    <td class="r">${fN(total)}</td>
-    <td></td>
+    <td class="lbl" colspan="6">No.factures: ${n}</td>
+    <td class="r">${fN(imp)}</td>
+    <td class="r">${fN(cob)}</td>
+    <td class="r">${fN(pend)}</td>
   </tr>`;
 }
 
 function renderTable(rows) {
   const tbody = document.getElementById('fra-tbody');
   const tfoot = document.getElementById('fra-tfoot');
-  let html = '';
-  let totBase = 0, totIva = 0, totIrpf = 0, totTotal = 0;
 
-  if (isMonthly) {
-    // Group by YYYY-MM
-    const byMonth = {};
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="padding:6mm;color:#888;text-align:center">✅ Cap factura pendent de cobrament</td></tr>';
+    tfoot.innerHTML = '';
+    return;
+  }
+
+  let html = '';
+  let totImp = 0, totCob = 0, totPend = 0;
+
+  if (isClient) {
     rows.forEach(inv => {
-      const m = (inv.data_fra || '').slice(0, 7);
-      if (!byMonth[m]) byMonth[m] = [];
-      byMonth[m].push(inv);
+      html += rowHtml(inv);
+      totImp += parseFloat(inv.total_factura) || 0;
+      totCob += parseFloat(inv.import_cobrat) || 0;
+    });
+    totPend = totImp - totCob;
+  } else {
+    // Agrupar per client
+    const byClient = {};
+    rows.forEach(inv => {
+      const ck = inv.id_client;
+      if (!byClient[ck]) byClient[ck] = [];
+      byClient[ck].push(inv);
     });
 
     let isFirstGroup = true;
-    Object.keys(byMonth).sort().forEach(m => {
-      const group = byMonth[m];
-      let mBase = 0, mIva = 0, mIrpf = 0, mTotal = 0;
-
+    Object.values(byClient).forEach(group => {
+      let gImp = 0, gCob = 0;
       group.forEach((inv, i) => {
-        const c = invCalc(inv);
-        // espai de separació al primer del grup (menys al primer grup de tot)
         const cls = (i === 0 && !isFirstGroup) ? 'grp-first' : '';
         html += rowHtml(inv, cls);
-        mBase += c.base; mIva += c.iva; mIrpf += c.irpf; mTotal += c.total;
+        gImp += parseFloat(inv.total_factura) || 0;
+        gCob += parseFloat(inv.import_cobrat) || 0;
       });
-
-      html += subtotalHtml(group.length, mBase, mIva, mIrpf, mTotal);
-      totBase += mBase; totIva += mIva; totIrpf += mIrpf; totTotal += mTotal;
+      html += subtotalHtml(group.length, gImp, gCob, gImp - gCob);
+      totImp += gImp; totCob += gCob;
       isFirstGroup = false;
     });
-
-  } else {
-    rows.forEach(inv => {
-      const c = invCalc(inv);
-      html += rowHtml(inv);
-      totBase += c.base; totIva += c.iva; totIrpf += c.irpf; totTotal += c.total;
-    });
+    totPend = totImp - totCob;
   }
 
   tbody.innerHTML = html;
   tfoot.innerHTML = `<tr>
-    <td colspan="4" style="font-style:italic">Total facturas: ${rows.length}</td>
-    <td></td>
-    <td class="r">${fN(totBase)}</td>
-    <td class="r">${fN(totIva)}</td>
-    <td class="r">${totIrpf ? '-' + fN(totIrpf) : fN(0)}</td>
-    <td class="r">${fN(totTotal)}</td>
-    <td></td>
+    <td colspan="6" style="font-style:italic">Total factures: ${rows.length}</td>
+    <td class="r">${fN(totImp)}</td>
+    <td class="r">${fN(totCob)}</td>
+    <td class="r">${fN(totPend)}</td>
   </tr>`;
 }
 
@@ -336,7 +283,7 @@ function renderTable(rows) {
 if (!isClient) loadData();
 else if (!urlParams.get('client')) {
   document.getElementById('fra-tbody').innerHTML =
-    '<tr><td colspan="10" style="padding:6mm;color:#888;text-align:center">Selecciona un client i clica Aplicar</td></tr>';
+    '<tr><td colspan="9" style="padding:6mm;color:#888;text-align:center">Selecciona un client i clica Aplicar</td></tr>';
 }
 </script>
 </body>
