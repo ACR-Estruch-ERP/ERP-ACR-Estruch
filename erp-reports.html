@@ -188,6 +188,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
       <button class="main-tab" onclick="showTab('tab-desp-viatge')">✈️ Despeses Viatge</button>
       <button class="main-tab" onclick="showTab('tab-desp-tickets')">📋 Llistat Despeses</button>
       <button class="main-tab" onclick="showTab('tab-projectes')">📋 Estat Projectes</button>
+      <button class="main-tab" onclick="showTab('tab-explotacio')">💰 Explotació Real</button>
     </div>
 
     <!-- ══ TAB: LLISTAT FACTURES ══ -->
@@ -446,6 +447,32 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
       </div>
     </div>
 
+    <!-- ══ TAB: EXPLOTACIÓ REAL ══ -->
+    <div class="tab-content" id="tab-explotacio">
+      <div class="print-header">
+        <div class="ph-logo"><div class="brand">ACR|Estruch</div><div class="tag">export &amp; consulting</div></div>
+        <div class="ph-info">Muntaner, 440, 1-1B · 08006 Barcelona<br>+34 609852478 · info@acrestruch.com</div>
+      </div>
+      <div class="report-selector">
+        <div class="report-selector-row">
+          <div class="form-group">
+            <label>Des de</label>
+            <input type="date" id="ex-de">
+          </div>
+          <div class="form-group">
+            <label>Fins a</label>
+            <input type="date" id="ex-fins">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="runExplotacio()">▶ Generar</button>
+          <button class="btn btn-secondary btn-sm" onclick="clearDates('ex-de','ex-fins');runExplotacio()">✕ Netejar</button>
+        </div>
+      </div>
+      <div class="report-area">
+        <div class="report-header"><h2>Explotació Real — ACR PNL per Any</h2></div>
+        <div class="report-body" id="rpt-explotacio"><div class="rpt-empty"><div class="eico">🔒</div><p>Accés protegit per PIN</p></div></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
 </div>
@@ -474,8 +501,14 @@ const fmes = s => {
 };
 
 // Pestanyes
+const EXPLOTACIO_PIN = '0511';
 let activeTab = 'tab-llistat';
 function showTab(id){
+  if(id==='tab-explotacio'){
+    const pin = prompt('🔒 PIN per accedir a Explotació Real:');
+    if(pin === null) return;
+    if(pin !== EXPLOTACIO_PIN){ toast('PIN incorrecte','err'); return; }
+  }
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -486,6 +519,7 @@ function showTab(id){
   if(id==='tab-pendfra' && !document.getElementById('rpt-pendfra').dataset.loaded) runPendFra();
   if(id==='tab-mes' && !document.getElementById('rpt-mes').dataset.loaded) runMes();
   if(id==='tab-projectes' && !document.getElementById('rpt-projectes').dataset.loaded){document.getElementById('rpt-projectes').dataset.loaded='1';runProjectes();}
+  if(id==='tab-explotacio') runExplotacio();
 }
 
 function exportExcel(){
@@ -1055,6 +1089,74 @@ async function init(){
 }
 
 init();
+
+// ══════════════════════════════
+// EXPLOTACIÓ REAL (ACR PNL)
+// ══════════════════════════════
+// Marge ACR per factura = base_imposable × (acr_import / import) del projecte vinculat.
+// El % es deriva del propi projecte, així si un projecte es factura en diverses factures
+// (potser en anys diferents), cada factura s'emporta la seva part proporcional al mateix
+// tipus de marge — sense dependre del camp acr_pc, que no sempre queda desat.
+async function runExplotacio(){
+  const el = document.getElementById('rpt-explotacio');
+  el.innerHTML = '<div class="rpt-loading">⏳ Carregant...</div>';
+  const de = document.getElementById('ex-de').value;
+  const fins = document.getElementById('ex-fins').value;
+  try{
+    let qs = 'select=data_fra,base_imposable,id_projecte&estat=neq.ANULADA&order=data_fra.asc';
+    if(de) qs += `&data_fra=gte.${de}`;
+    if(fins) qs += `&data_fra=lte.${fins}`;
+    const [rows, pjs] = await Promise.all([
+      sbGet('factures', qs),
+      sbGet('projectes', 'select=IdPJ,import,acr_import')
+    ]);
+    if(!rows.length){ el.innerHTML='<div class="rpt-empty"><div class="eico">📭</div><p>Sense resultats</p></div>'; return; }
+
+    const pjPct = {};
+    pjs.forEach(p=>{
+      const key = String(p.IdPJ||'').padStart(8,'0');
+      const imp = parseFloat(p.import)||0;
+      const acr = parseFloat(p.acr_import)||0;
+      pjPct[key] = imp>0 ? acr/imp : 0;
+    });
+
+    const grups = {};
+    rows.forEach(r=>{
+      const any = (r.data_fra||'').slice(0,4);
+      if(!any) return;
+      if(!grups[any]) grups[any] = {base:0,pnl:0,n:0};
+      const bi = parseFloat(r.base_imposable)||0;
+      const pct = pjPct[r.id_projecte] ?? 0;
+      grups[any].base += bi;
+      grups[any].pnl  += bi*pct;
+      grups[any].n++;
+    });
+
+    let totBase=0, totPnl=0, totN=0;
+    let html = `<table class="rtbl"><thead><tr>
+      <th>Any</th><th class="r">Vendes (Base)</th><th class="r">ACR PNL</th><th class="r">Marge %</th>
+    </tr></thead><tbody>`;
+    Object.keys(grups).sort().forEach(any=>{
+      const g = grups[any];
+      totBase += g.base; totPnl += g.pnl; totN += g.n;
+      const marge = g.base ? (g.pnl/g.base*100) : 0;
+      html += `<tr>
+        <td class="bold">${any}</td>
+        <td class="r">${fm(g.base)}</td>
+        <td class="r">${fm(g.pnl)}</td>
+        <td class="r">${fm(marge,1)}%</td>
+      </tr>`;
+    });
+    const totMarge = totBase ? (totPnl/totBase*100) : 0;
+    html += `</tbody><tfoot><tr class="total-final">
+      <td>Total (${totN} factures)</td>
+      <td class="r">${fm(totBase)}</td>
+      <td class="r">${fm(totPnl)}</td>
+      <td class="r">${fm(totMarge,1)}%</td>
+    </tr></tfoot></table>`;
+    el.innerHTML = html;
+  }catch(e){ el.innerHTML = `<div class="rpt-empty">Error: ${e.message}</div>`; }
+}
 
 // ══════════════════════════════
 // DESPESES VIATGE — REPORT
