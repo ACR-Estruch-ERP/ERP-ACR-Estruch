@@ -97,6 +97,16 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl tr.total-final td{background:#1a3a6b;color:#fff;font-weight:700;font-size:12px}
 .rtbl tr.total-final td.r{text-align:right}
 
+/* EXPLOTACIÓ REAL — files col·lapsables */
+.rtbl tr.ex-grp{cursor:pointer;user-select:none}
+.rtbl tr.ex-lvl0 td{background:#e9eff8;font-weight:700;color:var(--blue)}
+.rtbl tr.ex-lvl1 td{background:#f2f5fb;font-weight:600;color:var(--blue)}
+.rtbl tr.ex-lvl2 td{background:#f8fafc;font-weight:600;color:#555}
+.rtbl tr.ex-lvl3 td{color:var(--muted);font-size:11.5px}
+.rtbl td.ex-ind1{padding-left:26px}
+.rtbl td.ex-ind2{padding-left:42px}
+.rtbl td.ex-ind3{padding-left:58px}
+
 /* PENDENT en vermell */
 .neg{color:var(--red);font-weight:600}
 .pos{color:var(--green)}
@@ -1093,17 +1103,23 @@ init();
 // ══════════════════════════════
 // EXPLOTACIÓ REAL (ACR PNL)
 // ══════════════════════════════
-// Marge ACR per factura = base_imposable × (acr_import / import) del projecte vinculat.
+// Marge ACR per factura = base_imposable × (acr_import/import) del projecte vinculat.
 // El % es deriva del propi projecte, així si un projecte es factura en diverses factures
 // (potser en anys diferents), cada factura s'emporta la seva part proporcional al mateix
 // tipus de marge — sense dependre del camp acr_pc, que no sempre queda desat.
+// Arbre col·lapsable Any → Trimestre → Mes → Factura, com la taula dinàmica d'Excel.
+let exData = null;
+let exExpanded = new Set();
+const EX_MESOS = ['Gen','Febr','Març','Abr','Maig','Juny','Jul','Ag','Set','Oct','Nov','Des'];
+
 async function runExplotacio(){
   const el = document.getElementById('rpt-explotacio');
   el.innerHTML = '<div class="rpt-loading">⏳ Carregant...</div>';
   const de = document.getElementById('ex-de').value;
   const fins = document.getElementById('ex-fins').value;
+  exExpanded = new Set();
   try{
-    let qs = 'select=data_fra,base_imposable,id_projecte&estat=neq.ANULADA&order=data_fra.asc';
+    let qs = 'select=no_factura,data_fra,base_imposable,id_projecte,clients(rao_social)&estat=neq.ANULADA&order=data_fra.asc';
     if(de) qs += `&data_fra=gte.${de}`;
     if(fins) qs += `&data_fra=lte.${fins}`;
     const [rows, pjs] = await Promise.all([
@@ -1120,42 +1136,97 @@ async function runExplotacio(){
       pjPct[key] = imp>0 ? acr/imp : 0;
     });
 
-    const grups = {};
-    rows.forEach(r=>{
-      const any = (r.data_fra||'').slice(0,4);
-      if(!any) return;
-      if(!grups[any]) grups[any] = {base:0,pnl:0,n:0};
-      const bi = parseFloat(r.base_imposable)||0;
-      const pct = pjPct[r.id_projecte] ?? 0;
-      grups[any].base += bi;
-      grups[any].pnl  += bi*pct;
-      grups[any].n++;
+    exData = rows.filter(r=>r.data_fra).map(r=>{
+      const base = parseFloat(r.base_imposable)||0;
+      const pct  = pjPct[r.id_projecte] ?? 0;
+      return { no_factura:r.no_factura, data_fra:r.data_fra, client:r.clients?.rao_social||'—',
+        base, pnl: base*pct, marge: pct*100 };
     });
-
-    let totBase=0, totPnl=0, totN=0;
-    let html = `<table class="rtbl"><thead><tr>
-      <th>Any</th><th class="r">Vendes (Base)</th><th class="r">ACR PNL</th><th class="r">Marge %</th>
-    </tr></thead><tbody>`;
-    Object.keys(grups).sort().forEach(any=>{
-      const g = grups[any];
-      totBase += g.base; totPnl += g.pnl; totN += g.n;
-      const marge = g.base ? (g.pnl/g.base*100) : 0;
-      html += `<tr>
-        <td class="bold">${any}</td>
-        <td class="r">${fm(g.base)}</td>
-        <td class="r">${fm(g.pnl)}</td>
-        <td class="r">${fm(marge,1)}%</td>
-      </tr>`;
-    });
-    const totMarge = totBase ? (totPnl/totBase*100) : 0;
-    html += `</tbody><tfoot><tr class="total-final">
-      <td>Total (${totN} factures)</td>
-      <td class="r">${fm(totBase)}</td>
-      <td class="r">${fm(totPnl)}</td>
-      <td class="r">${fm(totMarge,1)}%</td>
-    </tr></tfoot></table>`;
-    el.innerHTML = html;
+    renderExplotacio();
   }catch(e){ el.innerHTML = `<div class="rpt-empty">Error: ${e.message}</div>`; }
+}
+
+function exToggle(path){
+  if(exExpanded.has(path)) exExpanded.delete(path); else exExpanded.add(path);
+  renderExplotacio();
+}
+
+function renderExplotacio(){
+  const el = document.getElementById('rpt-explotacio');
+  const rows = exData;
+  const totPnl = rows.reduce((s,r)=>s+r.pnl,0);
+  const sumRows = arr => arr.reduce((s,r)=>({base:s.base+r.base,pnl:s.pnl+r.pnl}),{base:0,pnl:0});
+  const pctOf   = pnl => totPnl ? (pnl/totPnl*100) : 0;
+  const margeOf = (pnl,base) => base ? (pnl/base*100) : 0;
+
+  // Arbre: any -> trimestre -> mes -> [factures]
+  const tree = {};
+  rows.forEach(r=>{
+    const y = r.data_fra.slice(0,4);
+    const m = parseInt(r.data_fra.slice(5,7),10);
+    const q = 'Trim.' + (Math.floor((m-1)/3)+1);
+    (tree[y] ??= {})[q] ??= {};
+    (tree[y][q][m] ??= []).push(r);
+  });
+
+  let html = `<table class="rtbl"><thead><tr>
+    <th>Període / Factura</th><th>Client</th><th>Data</th>
+    <th class="r">Base</th><th class="r">ACR PNL</th><th class="r">% Total</th><th class="r">Marge %</th>
+  </tr></thead><tbody>`;
+
+  Object.keys(tree).sort().forEach(y=>{
+    const yRows = Object.values(tree[y]).flatMap(q=>Object.values(q).flat());
+    const yS = sumRows(yRows);
+    const yOpen = exExpanded.has(y);
+    html += `<tr class="ex-grp ex-lvl0" onclick="exToggle('${y}')">
+      <td>${yOpen?'▾':'▸'} ${y}</td><td></td><td></td>
+      <td class="r">${fm(yS.base)}</td><td class="r">${fm(yS.pnl)}</td>
+      <td class="r">${fm(pctOf(yS.pnl),2)}%</td><td class="r">${fm(margeOf(yS.pnl,yS.base),1)}%</td>
+    </tr>`;
+    if(!yOpen) return;
+
+    Object.keys(tree[y]).sort().forEach(q=>{
+      const qPath = y+'|'+q;
+      const qRows = Object.values(tree[y][q]).flat();
+      const qS = sumRows(qRows);
+      const qOpen = exExpanded.has(qPath);
+      html += `<tr class="ex-grp ex-lvl1" onclick="exToggle('${qPath}')">
+        <td class="ex-ind1">${qOpen?'▾':'▸'} ${q}</td><td></td><td></td>
+        <td class="r">${fm(qS.base)}</td><td class="r">${fm(qS.pnl)}</td>
+        <td class="r">${fm(pctOf(qS.pnl),2)}%</td><td class="r">${fm(margeOf(qS.pnl,qS.base),1)}%</td>
+      </tr>`;
+      if(!qOpen) return;
+
+      Object.keys(tree[y][q]).sort((a,b)=>a-b).forEach(m=>{
+        const mPath = qPath+'|'+m;
+        const mRows = tree[y][q][m];
+        const mS = sumRows(mRows);
+        const mOpen = exExpanded.has(mPath);
+        html += `<tr class="ex-grp ex-lvl2" onclick="exToggle('${mPath}')">
+          <td class="ex-ind2">${mOpen?'▾':'▸'} ${EX_MESOS[m-1]}</td><td></td><td></td>
+          <td class="r">${fm(mS.base)}</td><td class="r">${fm(mS.pnl)}</td>
+          <td class="r">${fm(pctOf(mS.pnl),2)}%</td><td class="r">${fm(margeOf(mS.pnl,mS.base),1)}%</td>
+        </tr>`;
+        if(!mOpen) return;
+
+        mRows.forEach(r=>{
+          html += `<tr class="ex-lvl3">
+            <td class="ex-ind3">${r.no_factura}</td><td>${r.client}</td><td>${fd(r.data_fra)}</td>
+            <td class="r">${fm(r.base)}</td><td class="r">${fm(r.pnl)}</td>
+            <td class="r">${fm(pctOf(r.pnl),2)}%</td><td class="r">${fm(r.marge,1)}%</td>
+          </tr>`;
+        });
+      });
+    });
+  });
+
+  const grand = sumRows(rows);
+  html += `</tbody><tfoot><tr class="total-final">
+    <td colspan="3">Total (${rows.length} factures)</td>
+    <td class="r">${fm(grand.base)}</td><td class="r">${fm(grand.pnl)}</td>
+    <td class="r">100,0%</td><td class="r">${fm(margeOf(grand.pnl,grand.base),1)}%</td>
+  </tr></tfoot></table>`;
+  el.innerHTML = html;
 }
 
 // ══════════════════════════════
