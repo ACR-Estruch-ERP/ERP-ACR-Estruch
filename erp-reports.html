@@ -106,6 +106,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl td.ex-ind1{padding-left:26px}
 .rtbl td.ex-ind2{padding-left:42px}
 .rtbl td.ex-ind3{padding-left:58px}
+.explo-tbl{width:auto;min-width:0}
+.explo-tbl th,.explo-tbl td{white-space:nowrap}
+.explo-tbl th:first-child,.explo-tbl td:first-child{min-width:160px}
+.explo-tbl th:nth-child(2),.explo-tbl td:nth-child(2){min-width:180px}
 
 /* PENDENT en vermell */
 .neg{color:var(--red);font-weight:600}
@@ -1169,7 +1173,7 @@ function renderExplotacio(){
     (tree[y][q][m] ??= []).push(r);
   });
 
-  let html = `<table class="rtbl"><thead><tr>
+  let html = `<table class="rtbl explo-tbl"><thead><tr>
     <th>Període / Factura</th><th>Client</th><th>Data</th>
     <th class="r">Base</th><th class="r">ACR PNL</th><th class="r">% Total</th><th class="r">Marge %</th>
   </tr></thead><tbody>`;
