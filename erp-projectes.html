@@ -158,6 +158,7 @@ input[type=number]{-moz-appearance:textfield}
   <header id="topbar">
     <h1>Projectes</h1>
     <button class="btn btn-secondary btn-sm" onclick="refreshData()">↻ Actualitzar</button>
+    <button class="btn btn-secondary btn-sm" onclick="exportProjectesExcel()">📥 Excel</button>
     <button class="btn btn-primary" onclick="openModal(null)">+ Nou projecte</button>
     <span id="user-email" style="font-size:12px;color:var(--muted);margin-right:4px"></span>
     <button class="btn btn-sm" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;margin-right:4px" onclick="doLogout()">⏻ Sortir</button>
@@ -703,6 +704,46 @@ async function loadProjectes(){
 }
 
 async function refreshData(){toast('Actualitzant...','inf');await loadProjectes();toast('Actualitzat','ok');}
+
+function exportProjectesExcel(){
+  if(!allPJ || !allPJ.length){ toast('No hi ha projectes carregats','err'); return; }
+  const cliByCodi = {};
+  (allClients||[]).forEach(c=>{ cliByCodi[c.codi]=c.rao_social; });
+  const pctSPJ = (nominal, total) => { const t=parseFloat(total)||0; return t>0 ? (parseFloat(nominal)||0)/t*100 : 0; };
+
+  let table = '<table><thead><tr>' +
+    ['IdPJ','Descripció','Client','Import PJ','EN Import','EN %S/PJ','DG Import','DG %S/PJ','CB Import','CB %S/PJ','ACR Import','ACR %S/PJ']
+      .map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+  allPJ.forEach(p=>{
+    const imp = parseFloat(p.import)||0;
+    table += `<tr>
+      <td>${p.IdPJ?String(p.IdPJ).padStart(8,'0'):''}</td>
+      <td>${p.Descripcio||''}</td>
+      <td>${cliByCodi[p.idclient]||p.idclient||''}</td>
+      <td>${imp}</td>
+      <td>${parseFloat(p.en_import)||0}</td><td>${pctSPJ(p.en_import,imp).toFixed(2)}</td>
+      <td>${parseFloat(p.dg_import)||0}</td><td>${pctSPJ(p.dg_import,imp).toFixed(2)}</td>
+      <td>${parseFloat(p.cb_import)||0}</td><td>${pctSPJ(p.cb_import,imp).toFixed(2)}</td>
+      <td>${parseFloat(p.acr_import)||0}</td><td>${pctSPJ(p.acr_import,imp).toFixed(2)}</td>
+    </tr>`;
+  });
+  table += '</tbody></table>';
+
+  const html = `<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8">
+<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+<x:Name>Projectes</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+</head><body>${table}</body></html>`;
+  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Projectes_${new Date().toISOString().slice(0,10)}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 function renderStats(){
   let act=0,actE=0,com=0,comE=0,pau=0,pauE=0;
