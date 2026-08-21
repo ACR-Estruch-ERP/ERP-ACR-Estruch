@@ -1107,10 +1107,9 @@ init();
 // ══════════════════════════════
 // EXPLOTACIÓ REAL (ACR PNL)
 // ══════════════════════════════
-// Marge ACR per factura = base_imposable × (acr_import/import) del projecte vinculat.
-// El % es deriva del propi projecte, així si un projecte es factura en diverses factures
-// (potser en anys diferents), cada factura s'emporta la seva part proporcional al mateix
-// tipus de marge — sense dependre del camp acr_pc, que no sempre queda desat.
+// Marge ACR per factura = camp acr_pnl de la pròpia factura (pestanya "Liquidació" de
+// Facturació), ja calculat i desat: base − en_c − dg_c − cb_c − tr_pf. És el desglossament
+// REAL per factura, diferent del pressupost (%) que es defineix a nivell de projecte.
 // Arbre col·lapsable Any → Trimestre → Mes → Factura, com la taula dinàmica d'Excel.
 let exData = null;
 let exExpanded = new Set();
@@ -1123,28 +1122,17 @@ async function runExplotacio(){
   const fins = document.getElementById('ex-fins').value;
   exExpanded = new Set();
   try{
-    let qs = 'select=no_factura,data_fra,base_imposable,id_projecte,clients(rao_social)&estat=neq.ANULADA&order=data_fra.asc';
+    let qs = 'select=no_factura,data_fra,base_imposable,acr_pnl,clients(rao_social)&estat=neq.ANULADA&order=data_fra.asc';
     if(de) qs += `&data_fra=gte.${de}`;
     if(fins) qs += `&data_fra=lte.${fins}`;
-    const [rows, pjs] = await Promise.all([
-      sbGet('factures', qs),
-      sbGet('projectes', 'select=IdPJ,import,acr_import')
-    ]);
+    const rows = await sbGet('factures', qs);
     if(!rows.length){ el.innerHTML='<div class="rpt-empty"><div class="eico">📭</div><p>Sense resultats</p></div>'; return; }
-
-    const pjPct = {};
-    pjs.forEach(p=>{
-      const key = String(p.IdPJ||'').padStart(8,'0');
-      const imp = parseFloat(p.import)||0;
-      const acr = parseFloat(p.acr_import)||0;
-      pjPct[key] = imp>0 ? acr/imp : 0;
-    });
 
     exData = rows.filter(r=>r.data_fra).map(r=>{
       const base = parseFloat(r.base_imposable)||0;
-      const pct  = pjPct[r.id_projecte] ?? 0;
+      const pnl  = parseFloat(r.acr_pnl)||0;
       return { no_factura:r.no_factura, data_fra:r.data_fra, client:r.clients?.rao_social||'—',
-        base, pnl: base*pct, marge: pct*100 };
+        base, pnl, marge: base ? (pnl/base*100) : 0 };
     });
     renderExplotacio();
   }catch(e){ el.innerHTML = `<div class="rpt-empty">Error: ${e.message}</div>`; }
