@@ -525,7 +525,7 @@ input[type=number]{-moz-appearance:textfield}
           </div>
           <div class="fra-field">
             <label>N/Ref</label>
-            <select id="m-nref">
+            <select id="m-nref" onchange="onNrefChange()">
               <option value="">— Sense projecte —</option>
             </select>
           </div>
@@ -1443,6 +1443,30 @@ function cobrarAra(){
   document.getElementById('m-cobrat').value = tot.toFixed(2);
   document.getElementById('m-dcob').value = new Date().toISOString().slice(0,10);
   recalcCob();
+}
+
+// Preomplena els % EN/DG/CB de la Liquidació a partir del pressupost del projecte
+// vinculat — només si encara estan a 0 (factura nova / no liquidada), per no
+// sobreescriure mai una factura ja liquidada.
+async function onNrefChange(){
+  const idpj = document.getElementById('m-nref').value;
+  if(!idpj) return;
+  const enPc = parseFloat(document.getElementById('m-en-pc').value)||0;
+  const dgPc = parseFloat(document.getElementById('m-dg-pc').value)||0;
+  const cbPc = parseFloat(document.getElementById('m-cb-pc').value)||0;
+  if(enPc!==0 || dgPc!==0 || cbPc!==0) return; // ja hi ha valors, no toquem res
+  try{
+    const rows = await sbGet('projectes', `select=import,en_import,dg_import,cb_import&IdPJ=eq.${encodeURIComponent(idpj)}`);
+    if(!rows.length) return;
+    const p = rows[0];
+    const imp = parseFloat(p.import)||0;
+    if(imp<=0) return;
+    const pct = v => Math.round((parseFloat(v)||0)/imp*10000)/100;
+    document.getElementById('m-en-pc').value = pct(p.en_import);
+    document.getElementById('m-dg-pc').value = pct(p.dg_import);
+    document.getElementById('m-cb-pc').value = pct(p.cb_import);
+    recalcLiq();
+  }catch(e){ console.warn('No s\'ha pogut preomplir la liquidació des del projecte:', e.message); }
 }
 
 function recalcLiq(){
