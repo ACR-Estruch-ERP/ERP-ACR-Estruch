@@ -973,10 +973,16 @@ async function refreshData(){
 // ════════════════════════════════════════════════
 function getEstat(inv){
   const code=estatCode(inv.estat);
-  if(code==='COB')   return 'COB';
-  if(code==='PARC')  return 'PARC';
   if(code==='RECTF') return 'RECTF';
   if(code==='PROF')  return 'PROF';
+  // L'import cobrat mana sobre el camp estat (que sovint queda desactualitzat):
+  // si ja cobreix el total (marge d'1 cèntim per arrodoniments), és COB encara
+  // que l'estat desat digui PARC/PEND.
+  const total=parseFloat(inv.total_factura)||0;
+  const cobrat=parseFloat(inv.import_cobrat)||0;
+  if(total>0 && cobrat>=total-0.01) return 'COB';
+  if(code==='COB')   return 'COB';
+  if(code==='PARC')  return 'PARC';
   const today=new Date(); today.setHours(0,0,0,0);
   if(!inv.data_venciment) return 'PEND';
   const venc=new Date(inv.data_venciment+'T00:00:00');
