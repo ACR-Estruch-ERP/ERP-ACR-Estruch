@@ -1454,7 +1454,7 @@ function recalcLiq(){
   const enC   = bi * enPc/100;
   const dgC   = bi * dgPc/100;
   const cbC   = bi * cbPc/100;
-  const acrPnl = bi - enC - dgC - cbC - tr;
+  const acrPnl = tr!==0 ? tr : (bi - enC - dgC - cbC);
   const acrPc  = bi>0 ? acrPnl/bi*100 : 0;
   const fe = n=>n.toLocaleString('ca-ES',{minimumFractionDigits:2})+' EUR';
   document.getElementById('m-en-c').value   = fe(enC);
@@ -1611,10 +1611,11 @@ async function saveInvoice(){
     cb_pc:  parseFloat(document.getElementById('m-cb-pc').value)||0,
     cb_c:   curBi * (parseFloat(document.getElementById('m-cb-pc').value)||0)/100,
     tr_pf:  parseFloat(document.getElementById('m-tr').value)||0,
-    acr_pnl: curBi - curBi*(parseFloat(document.getElementById('m-en-pc').value)||0)/100
-                   - curBi*(parseFloat(document.getElementById('m-dg-pc').value)||0)/100
-                   - curBi*(parseFloat(document.getElementById('m-cb-pc').value)||0)/100
-                   - (parseFloat(document.getElementById('m-tr').value)||0),
+    acr_pnl: (parseFloat(document.getElementById('m-tr').value)||0) !== 0
+                   ? (parseFloat(document.getElementById('m-tr').value)||0)
+                   : curBi - curBi*(parseFloat(document.getElementById('m-en-pc').value)||0)/100
+                           - curBi*(parseFloat(document.getElementById('m-dg-pc').value)||0)/100
+                           - curBi*(parseFloat(document.getElementById('m-cb-pc').value)||0)/100,
     acr_pc:  0,
     liquidada:   document.getElementById('m-liq').value==='true',
     notes_liquidacio: document.getElementById('m-notes-liq').value,
