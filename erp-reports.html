@@ -103,6 +103,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl tr.ex-lvl1 td{background:#f2f5fb;font-weight:600;color:var(--blue)}
 .rtbl tr.ex-lvl2 td{background:#f8fafc;font-weight:600;color:#555}
 .rtbl tr.ex-lvl3 td{color:var(--muted);font-size:11.5px}
+.rtbl tr.ex-lvl3.neg td{color:var(--red);font-weight:600}
 .rtbl td.ex-ind1{padding-left:26px}
 .rtbl td.ex-ind2{padding-left:42px}
 .rtbl td.ex-ind3{padding-left:58px}
@@ -1204,7 +1205,8 @@ function renderExplotacio(){
         if(!mOpen) return;
 
         mRows.forEach(r=>{
-          html += `<tr class="ex-lvl3">
+          const negCls = r.base<0 ? ' neg' : '';
+          html += `<tr class="ex-lvl3${negCls}">
             <td class="ex-ind3">${r.no_factura}</td><td>${r.client}</td><td>${fd(r.data_fra)}</td>
             <td class="r">${fm(r.base)}</td><td class="r">${fm(r.pnl)}</td>
             <td class="r">${fm(r.marge,2)}%</td>
