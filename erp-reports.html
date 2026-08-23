@@ -1133,6 +1133,10 @@ async function runExplotacio(){
       const pnl  = parseFloat(r.acr_pnl)||0;
       return { no_factura:r.no_factura, data_fra:r.data_fra, client:r.clients?.rao_social||'—',
         base, pnl, marge: base ? (pnl/base*100) : 0 };
+    }).sort((a,b)=>{
+      const d = a.data_fra.localeCompare(b.data_fra);
+      if(d) return d;
+      return String(a.no_factura).localeCompare(String(b.no_factura), undefined, {numeric:true});
     });
     renderExplotacio();
   }catch(e){ el.innerHTML = `<div class="rpt-empty">Error: ${e.message}</div>`; }
