@@ -548,8 +548,9 @@ const FPAG={'1':'Transferència','2':'Rebut domiciliat','3':'Efectiu','4':'Xec'}
 function formaText(v){ return FPAG[v]||v||'—'; }
 
 function sitBadge(s){
+  const code=String(s||'ACT').split(' ')[0];
   const map={ACT:['sit-act','ACT'],'N/A':['sit-na','N/A'],NUL:['sit-nul','NUL']};
-  const [cls,lbl]=map[s]||['sit-na',s||'ACT'];
+  const [cls,lbl]=map[code]||['sit-na',code];
   return `<span class="sit ${cls}">${lbl}</span>`;
 }
 
@@ -574,7 +575,7 @@ function rowHtml(c, grpKey, hidden){
     <td style="font-size:12px">${c.tel||'—'}</td>
     <td style="text-align:right">${c.tipus_iva??21}%</td>
     <td style="text-align:right">${c.tipus_irpf??0}%</td>
-    <td>${c.cnce||'—'}</td>
+    <td>${c.cnce ? c.cnce.slice(0,2) : '—'}</td>
     <td>${formaText(c.forma_pag)}</td>
     <td onclick="event.stopPropagation()" style="white-space:nowrap">
       <button class="btn btn-secondary btn-xs" onclick="openModal(${c.id})">✏️</button>
