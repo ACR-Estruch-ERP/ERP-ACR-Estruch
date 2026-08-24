@@ -60,6 +60,14 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
 .main-tbl tbody tr:hover td{background:var(--blue-light);cursor:pointer}
 .main-tbl tbody tr:last-child td{border-bottom:none}
 .ent-nom{font-weight:700;color:var(--blue)}
+.notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
+.notes-badge:hover{opacity:.85}
+.note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
+.note-modal-bg.show{display:flex}
+.note-modal{background:#fff;border-radius:10px;max-width:420px;width:90%;padding:20px 22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.note-modal h3{font-size:13px;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.note-modal p{font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:50vh;overflow-y:auto}
+.note-modal .btn{margin-top:16px}
 .tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:var(--blue-light);color:var(--blue)}
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty .eico{font-size:42px;margin-bottom:12px;opacity:.5}
@@ -321,6 +329,15 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
 </div>
 </div>
 
+<!-- Nota (vista ràpida) -->
+<div class="note-modal-bg" id="note-modal-bg" onclick="if(event.target===this)closeNote()">
+  <div class="note-modal">
+    <h3>Nota</h3>
+    <p id="note-content"></p>
+    <button class="btn btn-secondary btn-sm" onclick="closeNote()">Tancar</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="js/neon-client.js"></script>
@@ -369,6 +386,14 @@ function populateFilters(){
   tipus.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;if(t===curTipus)o.selected=true;selTipus.appendChild(o);});
 }
 
+function showNote(id){
+  const e = allEnt.find(x=>x.id===id);
+  if(!e || !e['en_Notes']) return;
+  document.getElementById('note-content').textContent = e['en_Notes'];
+  document.getElementById('note-modal-bg').classList.add('show');
+}
+function closeNote(){ document.getElementById('note-modal-bg').classList.remove('show'); }
+
 function renderTable(rows){
   document.getElementById('f-count').textContent=rows.length+' entitats';
   const tbody=document.getElementById('tbl-body');
@@ -377,7 +402,7 @@ function renderTable(rows){
     return;
   }
   tbody.innerHTML=rows.map(e=>`<tr onclick="openModal(${e.id})">
-    <td><span class="ent-nom">${e['en_RaoSocial']||'—'}</span></td>
+    <td><span class="ent-nom">${e['en_RaoSocial']||'—'}</span>${e['en_Notes'] ? `<span class="notes-badge" onclick="event.stopPropagation();showNote(${e.id})" title="Veure nota">NOTES</span>` : ''}</td>
     <td style="color:var(--muted)">${e['en_IdSP']||'—'}</td>
     <td style="font-size:12px">${'—'}</td>
     <td>${e['en_CNCE']?`<span class="tag">${e['en_CNCE']}</span>`:'—'}</td>
