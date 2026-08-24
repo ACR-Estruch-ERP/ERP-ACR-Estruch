@@ -757,7 +757,7 @@ function applyFilters(){
   const fins=document.getElementById('f-fins').value;
   const res=allFra.filter(fr=>{
     const pnom=fr.proveidors?.rao_social||'';
-    const mc=!cerca||String(fr.no_seriefra||'').toLowerCase().includes(cerca)||(fr.no_fra_prov||'').toLowerCase().includes(cerca)||pnom.toLowerCase().includes(cerca)||(fr.notes||'').toLowerCase().includes(cerca);
+    const mc=!cerca||String(fr.no_seriefra||'').toLowerCase().includes(cerca)||(fr.no_fra_prov||'').toLowerCase().includes(cerca)||pnom.toLowerCase().includes(cerca)||(fr.concepte||'').toLowerCase().includes(cerca)||(fr.notes||'').toLowerCase().includes(cerca);
     const estCode=est?estatCode(est):''; const me=!est||getEstat(fr)===estCode;
     const md=!de||(fr.data_fra>=de);
     const mf=!fins||(fr.data_fra<=fins);
@@ -806,7 +806,7 @@ function fillForm(fr){
   const provOpt=document.querySelector(`#m-prov option[value="${fr.codi_prov}"]`);
   document.getElementById('m-prov-codi').textContent    = provOpt?.dataset.codi    || fr.codi_prov || '—';
   document.getElementById('m-prov-sinonim').textContent = provOpt?.dataset.sinonim || '—';
-  s('m-concepte',fr.notes); s('m-bi',fmtN(fr.base_imposable??0));
+  s('m-concepte',fr.concepte); s('m-bi',fmtN(fr.base_imposable??0));
   s('m-div',fr.divisa_fra||'EUR'); s('m-tc',fmtN(fr.divisa_canvi??1,5));
   s('m-bi-div', fmtN(fr.import_divisa));
   document.getElementById('div-note').style.display=(fr.divisa_fra&&fr.divisa_fra!=='EUR')?'':'none';
@@ -1139,7 +1139,8 @@ async function saveFactura(){
     total_factura:tot,
     estat:document.getElementById('m-estat').value,
     import_pagat:pagat,
-    notes:document.getElementById('m-concepte').value||null,
+    concepte:document.getElementById('m-concepte').value||null,
+    notes:document.getElementById('m-notes').value||null,
     tipus_irpf:parseFloat(document.getElementById('t-irpf-pct').value)||0,
     import_irpf:Math.round(curBi*(parseFloat(document.getElementById('t-irpf-pct').value)||0)/100*100)/100,
     compte_prov:document.getElementById('m-cte-prov').value,
@@ -1184,7 +1185,7 @@ async function duplicarFra(id){
   await openModal(null);
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.value=(v??'');};
   s('m-prov',     fr.codi_prov);
-  s('m-concepte', fr.notes);
+  s('m-concepte', fr.concepte);
   s('m-bi',       fmtN(fr.base_imposable??0));
   s('m-div',      fr.divisa_fra||'EUR');
   s('m-tc',       fmtN(fr.divisa_canvi??1,5));
