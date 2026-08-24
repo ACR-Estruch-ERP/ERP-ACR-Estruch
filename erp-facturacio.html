@@ -219,6 +219,16 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
 td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
 th.amt{text-align:right}
 
+/* ── NOTES BADGE ── */
+.notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
+.notes-badge:hover{opacity:.85}
+.note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
+.note-modal-bg.show{display:flex}
+.note-modal{background:#fff;border-radius:10px;max-width:420px;width:90%;padding:20px 22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.note-modal h3{font-size:13px;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.note-modal p{font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:50vh;overflow-y:auto}
+.note-modal .btn{margin-top:16px}
+
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
 .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
@@ -833,11 +843,28 @@ input[type=number]{-moz-appearance:textfield}
 </div><!-- /modal -->
 </div><!-- /overlay -->
 
+<!-- Nota privada (vista ràpida) -->
+<div class="note-modal-bg" id="note-modal-bg" onclick="if(event.target===this)closeNote()">
+  <div class="note-modal">
+    <h3>Nota privada</h3>
+    <p id="note-content"></p>
+    <button class="btn btn-secondary btn-sm" onclick="closeNote()">Tancar</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast"></div>
 
 <script src="js/neon-client.js"></script>
 <script>
+
+function showNote(id){
+  const inv = allInvoices.find(i=>i.id===id);
+  if(!inv || !inv.notes_privades) return;
+  document.getElementById('note-content').textContent = inv.notes_privades;
+  document.getElementById('note-modal-bg').classList.add('show');
+}
+function closeNote(){ document.getElementById('note-modal-bg').classList.remove('show'); }
 
 function toggleYear(year){
   if(collapsedYears.has(year)) collapsedYears.delete(year);
@@ -1105,7 +1132,7 @@ function renderTable(rows){
       const cli = inv.clients?.rao_social || '—';
       html += `<tr data-yr="${yr}" style="${collapsed?'display:none':''}" onclick="openModal(${inv.id})">
         <td style="color:var(--muted);font-size:11px">${inv.id_in||''}</td>
-        <td><span class="no-fra">${inv.no_factura}</span></td>
+        <td><span class="no-fra">${inv.no_factura}</span>${inv.notes_privades ? `<span class="notes-badge" onclick="event.stopPropagation();showNote(${inv.id})" title="Veure nota privada">NOTES</span>` : ''}</td>
         <td>${fd(inv.data_fra)}</td>
         <td>${fd(inv.data_venciment)}</td>
         <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${cli}">${cli}</td>
