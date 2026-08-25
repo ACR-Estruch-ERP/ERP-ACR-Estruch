@@ -114,6 +114,16 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 
 /* PENDENT en vermell */
 .neg{color:var(--red);font-weight:600}
+
+/* NOTES BADGE */
+.notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
+.notes-badge:hover{opacity:.85}
+.note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
+.note-modal-bg.show{display:flex}
+.note-modal{background:#fff;border-radius:10px;max-width:420px;width:90%;padding:20px 22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.note-modal h3{font-size:13px;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.note-modal p{font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:50vh;overflow-y:auto}
+.note-modal .btn{margin-top:16px}
 .pos{color:var(--green)}
 
 /* LOADING / EMPTY */
@@ -490,6 +500,15 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 
   </div><!-- /content -->
 </main>
+</div>
+
+<!-- Nota (vista ràpida) -->
+<div class="note-modal-bg" id="note-modal-bg" onclick="if(event.target===this)closeNote()">
+  <div class="note-modal">
+    <h3>Nota del projecte</h3>
+    <p id="note-content"></p>
+    <button class="btn btn-secondary btn-sm" onclick="closeNote()">Tancar</button>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -915,18 +934,29 @@ async function runPend1Cli(){
 // ══════════════════════════════
 // PENDENT FACTURAR
 // ══════════════════════════════
+let pjNotesMap = {};
+function showNote(idpj){
+  const note = pjNotesMap[idpj];
+  if(!note) return;
+  document.getElementById('note-content').textContent = note;
+  document.getElementById('note-modal-bg').classList.add('show');
+}
+function closeNote(){ document.getElementById('note-modal-bg').classList.remove('show'); }
+
 async function runPendFra(){
   const el = document.getElementById('rpt-pendfra');
   el.dataset.loaded='1';
   el.innerHTML='<div class="rpt-loading">⏳ Carregant...</div>';
   try{
     const [pjsAll, cliAll] = await Promise.all([
-      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,en_import,en_pagat,en_dif_canvi,dg_pc,dg_import,dg_pagat,dg_dif_canvi,cb_pc,cb_import,cb_pagat,cb_dif_canvi,acr_pc,acr_import,cobrat,dif_canvi_cobrat,import_a_facturar,import_facturat,carpeta,entitat,mercat_desti,facturar&order=idclient.asc.nullslast,IdPJ.asc'),
+      sbGet('projectes','select=IdPJ,Descripcio,idclient,EmpresaPJ,TipusPJ,estat,import,en_pc,en_import,en_pagat,en_dif_canvi,dg_pc,dg_import,dg_pagat,dg_dif_canvi,cb_pc,cb_import,cb_pagat,cb_dif_canvi,acr_pc,acr_import,cobrat,dif_canvi_cobrat,import_a_facturar,import_facturat,carpeta,entitat,mercat_desti,facturar,anotacions&order=idclient.asc.nullslast,IdPJ.asc'),
       sbGet('clients','select=codi,rao_social,sinonim')
     ]);
 
     const cliMap = {};
     cliAll.forEach(c=>{ cliMap[c.codi]=c; });
+    pjNotesMap = {};
+    pjsAll.forEach(p=>{ if(p.anotacions) pjNotesMap[p.IdPJ]=p.anotacions; });
 
     const fmtId = id => id ? String(id).padStart(8,'0') : '—';
     const fe = n => Number(n||0).toLocaleString('ca-ES',{minimumFractionDigits:2});
@@ -973,7 +1003,7 @@ async function runPendFra(){
         <td style="font-size:12px">${p.idclient||''}</td>
         <td style="font-size:12px">${cli.sinonim||cli.rao_social||''}</td>
         <td class="bold"><a href="erp-projectes.html?pj=${p.IdPJ}" style="color:var(--blue);text-decoration:none" title="Obrir projecte">${fmtId(p.IdPJ)}</a></td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}${p.anotacions ? `<span class="notes-badge" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}</td>
         <td style="font-size:12px">${p.mercat_desti||'—'}</td>
         <td style="font-size:12px">${p.carpeta||p.entitat||'—'}</td>
         <td style="font-size:12px">${p.TipusPJ||'—'}</td>
