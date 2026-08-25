@@ -972,7 +972,7 @@ async function runPendFra(){
     }
 
     const colHead = `<tr>
-      <th>IdCli</th><th>Client</th><th>PJ</th><th>Empresa PJ</th>
+      <th>IdCli</th><th>Client</th><th>PJ</th><th></th><th>Empresa PJ</th>
       <th>País</th><th>Carpeta</th><th>Tipus</th>
       <th class="r">Import PJ</th><th class="r">Import Fra</th><th class="r">Pendent Fra</th>
       <th class="r">Pend. EN</th><th class="r">Pend. DG</th><th class="r">Pend. CB</th><th class="r">Pend. ACR</th>
@@ -1003,10 +1003,8 @@ async function runPendFra(){
         <td style="font-size:12px">${p.idclient||''}</td>
         <td style="font-size:12px">${cli.sinonim||cli.rao_social||''}</td>
         <td class="bold"><a href="erp-projectes.html?pj=${p.IdPJ}" style="color:var(--blue);text-decoration:none" title="Obrir projecte">${fmtId(p.IdPJ)}</a></td>
-        <td style="max-width:180px;display:flex;align-items:center;gap:4px" title="${p.EmpresaPJ||''}">
-          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${p.EmpresaPJ||p.Descripcio||'—'}</span>
-          ${p.anotacions ? `<span class="notes-badge" style="flex-shrink:0" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}
-        </td>
+        <td>${p.anotacions ? `<span class="notes-badge" style="margin-left:0" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}</td>
         <td style="font-size:12px">${p.mercat_desti||'—'}</td>
         <td style="font-size:12px">${p.carpeta||p.entitat||'—'}</td>
         <td style="font-size:12px">${p.TipusPJ||'—'}</td>
@@ -1021,12 +1019,12 @@ async function runPendFra(){
     };
 
     const subtotalRow = (n, imp, fra, pend, enN, dgN, cbN, acrN) =>
-      `<tr class="subtotal"><td colspan="7">Total: ${n} projecte${n!==1?'s':''}</td>
+      `<tr class="subtotal"><td colspan="8">Total: ${n} projecte${n!==1?'s':''}</td>
        <td class="r">${fe(imp)}</td><td class="r">${fe(fra)}</td><td class="r">${fe(pend)}</td>
        <td class="r">${fe(enN)}</td><td class="r">${fe(dgN)}</td><td class="r">${fe(cbN)}</td><td class="r">${fe(acrN)}</td></tr>`;
 
     const secHdr = txt =>
-      `<tr style="background:#dde6f5"><td colspan="14" style="padding:6px 12px;font-size:11px;font-weight:900;color:#1a3a6b;text-transform:uppercase;letter-spacing:.6px">${txt}</td></tr>`;
+      `<tr style="background:#dde6f5"><td colspan="15" style="padding:6px 12px;font-size:11px;font-weight:900;color:#1a3a6b;text-transform:uppercase;letter-spacing:.6px">${txt}</td></tr>`;
 
     let html = `<table class="rtbl"><thead>${colHead}</thead><tbody>`;
     let gImp=0,gFra=0,gPend=0,gEn=0,gDg=0,gCb=0,gAcr=0;
@@ -1057,7 +1055,7 @@ async function runPendFra(){
 
     const total = pendents.length+periodiques.length;
     html+=`<tr class="total-final">
-      <td colspan="7">TOTAL — ${total} projecte${total!==1?'s':''}</td>
+      <td colspan="8">TOTAL — ${total} projecte${total!==1?'s':''}</td>
       <td class="r">${fe(gImp)}</td><td class="r">${fe(gFra)}</td><td class="r">${fe(gPend)}</td>
       <td class="r">${fe(gEn)}</td><td class="r">${fe(gDg)}</td><td class="r">${fe(gCb)}</td><td class="r">${fe(gAcr)}</td>
     </tr></tbody></table>`;
