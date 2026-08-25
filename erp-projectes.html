@@ -807,7 +807,10 @@ function renderTable(rows){
       const pv=r2((p.import_a_facturar||0)-(p.import_facturat||0));
       return `<tr class="yr-${yy}" style="${disp}" onclick="openModal('${p.IdPJ}')">
       <td><span class="pj-codi">${fmtIdPJ(p.IdPJ)}</span></td>
-      <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.Descripcio||''}">${p.Descripcio||'—'}${p.anotacions ? `<span class="notes-badge" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}</td>
+      <td style="font-weight:600;max-width:200px;display:flex;align-items:center;gap:4px" title="${p.Descripcio||''}">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${p.Descripcio||'—'}</span>
+        ${p.anotacions ? `<span class="notes-badge" style="flex-shrink:0" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}
+      </td>
       <td style="color:var(--muted);font-size:12px">${p.client||'—'}</td>
       <td style="font-size:12px">${fd(p.data_entrada)}</td>
       <td style="font-size:12px">${fd(p.data_inici)}</td>

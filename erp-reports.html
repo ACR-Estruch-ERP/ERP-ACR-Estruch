@@ -1003,7 +1003,10 @@ async function runPendFra(){
         <td style="font-size:12px">${p.idclient||''}</td>
         <td style="font-size:12px">${cli.sinonim||cli.rao_social||''}</td>
         <td class="bold"><a href="erp-projectes.html?pj=${p.IdPJ}" style="color:var(--blue);text-decoration:none" title="Obrir projecte">${fmtId(p.IdPJ)}</a></td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.EmpresaPJ||''}">${p.EmpresaPJ||p.Descripcio||'—'}${p.anotacions ? `<span class="notes-badge" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}</td>
+        <td style="max-width:180px;display:flex;align-items:center;gap:4px" title="${p.EmpresaPJ||''}">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${p.EmpresaPJ||p.Descripcio||'—'}</span>
+          ${p.anotacions ? `<span class="notes-badge" style="flex-shrink:0" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}
+        </td>
         <td style="font-size:12px">${p.mercat_desti||'—'}</td>
         <td style="font-size:12px">${p.carpeta||p.entitat||'—'}</td>
         <td style="font-size:12px">${p.TipusPJ||'—'}</td>
