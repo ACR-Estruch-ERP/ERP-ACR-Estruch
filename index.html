@@ -55,7 +55,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .kpi.a{border-left-color:var(--amber)}.kpi.r{border-left-color:var(--red)}
 .kpi-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px}
 .kpi-val{font-size:26px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
-.kpi-sub{font-size:11px;color:var(--muted)}
+.kpi-sub{font-size:11px;color:var(--muted);line-height:1.5}
 .kpi-icon{float:right;font-size:24px;opacity:.15;margin-top:-4px}
 /* Sections */
 .dash-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
@@ -304,7 +304,7 @@ async function init(){
       sbGet('factures_rebudes','select=no_seriefra,data_termini1,estat,total_factura,import_pagat,proveidors!factures_rebudes_codi_prov_fkey(rao_social)&order=data_termini1'),
       sbGet('clients','select=id',),
       sbGet('proveidors','select=id'),
-      sbGet('projectes','select="IdPJ",estat,import'),
+      sbGet('projectes','select="IdPJ",estat,import,facturar'),
       sbGet('assentaments','select=id'),
       sbGet('pla_comptes','select=id'),
     ]);
@@ -334,11 +334,17 @@ async function init(){
     document.getElementById('k-pagar').textContent=pagar;
     document.getElementById('k-pagar-e').textContent=fe(pagarE)+' €';
 
-    // KPIs projectes
-    const projActius=pj.filter(p=>p.estat==='ACTIU');
-    const projVal=projActius.reduce((s,p)=>s+(p.import||0),0);
+    // KPIs projectes: mateixa lògica que Reports > Pendent Facturar (per
+    // 'facturar', no 'estat'), perquè els dos números sempre quadrin i les
+    // recurrents no emmascarin l'entrada real de projectes nous
+    const projPuntuals=pj.filter(p=>p.facturar==='SI'||p.facturar==='PENDENT');
+    const projPeriodiques=pj.filter(p=>p.facturar==='FRA. PERIÒDICA');
+    const projActius=[...projPuntuals,...projPeriodiques];
+    const projPuntualsVal=projPuntuals.reduce((s,p)=>s+(p.import||0),0);
+    const projPeriodiquesVal=projPeriodiques.reduce((s,p)=>s+(p.import||0),0);
     document.getElementById('k-proj').textContent=projActius.length;
-    document.getElementById('k-proj-e').textContent=fe(projVal)+' € valor total';
+    document.getElementById('k-proj-e').innerHTML=
+      `${projPuntuals.length} Projecte${projPuntuals.length!==1?'s':''} · ${fe(projPuntualsVal)} €<br>${projPeriodiques.length} Recurrent${projPeriodiques.length!==1?'s':''} · ${fe(projPeriodiquesVal)} €`;
 
     // Counts mòduls
     document.getElementById('m-fra').textContent=fra.length+' factures';
