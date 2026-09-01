@@ -156,7 +156,7 @@ const MODULS = [
     llistes: [
       { cat: 'projectes_estat',     nom: 'Estat' },
       { cat: 'projectes_tipus',     nom: 'Tipus' },
-      { cat: 'projectes_provinent', nom: 'Provinent' },
+      { cat: 'projectes_provinent', nom: 'Provinent', sortAlpha: true },
     ]
   },
   {
@@ -271,15 +271,32 @@ async function addItem(inputId){
   const modul= inp.dataset.modul;
   const exists = (allLlistes[k]||[]).some(x=>x.valor===v);
   if(exists){ toast('Ja existeix','inf'); inp.focus(); return; }
+  const llistaCfg = MODULS.find(m=>m.key===modul)?.llistes.find(l=>l.cat===cat);
   try{
     const ordre = (allLlistes[k]||[]).length + 1;
     const res = await sbPost('llistes',{modul, categoria:cat, valor:v, ordre});
     if(!allLlistes[k]) allLlistes[k]=[];
     allLlistes[k].push({id:res[0].id, valor:v, ordre});
+    if(llistaCfg?.sortAlpha) await resortAlpha(k);
     inp.value='';
     toast('Afegit','ok');
     selectModul(curModul, document.getElementById('m-'+curModul));
   }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+// Reordena alfabèticament tota la categoria i persisteix el nou 'ordre' de
+// cada fila (només per a llistes marcades sortAlpha — les altres mantenen
+// l'ordre manual d'inserció, p.ex. Estat no és alfabètic a propòsit)
+async function resortAlpha(k){
+  const items = allLlistes[k]||[];
+  const sorted = [...items].sort((a,b)=>a.valor.localeCompare(b.valor,'ca'));
+  const patches = [];
+  sorted.forEach((it,i)=>{
+    const nouOrdre = i+1;
+    if(it.ordre!==nouOrdre){ it.ordre=nouOrdre; patches.push(sbPatch('llistes', it.id, {ordre:nouOrdre})); }
+  });
+  await Promise.all(patches);
+  allLlistes[k] = sorted;
 }
 
 async function removeItem(btn){
