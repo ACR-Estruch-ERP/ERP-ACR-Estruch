@@ -616,10 +616,11 @@ function badgeHtml(estat){
 
 async function init(){
   if(!requireAuth()) return;
-  await Promise.all([loadClients(), loadEntitats(), loadPaisos(), loadProveniments(), loadProjectes(), loadTags(),
-    loadLlista('projectes_tipus', 'm-tipus-pj', 'Selecciona',    'projectes'),
-    loadLlista('projectes_estat', 'm-estat',    undefined,        'projectes'),
-    loadLlista('projectes_estat', 'f-estat',    'Tots els estats','projectes'),
+  await Promise.all([loadClients(), loadEntitats(), loadPaisos(), loadProjectes(), loadTags(),
+    loadLlista('projectes_tipus',     'm-tipus-pj',  'Selecciona',    'projectes'),
+    loadLlista('projectes_estat',     'm-estat',     undefined,        'projectes'),
+    loadLlista('projectes_estat',     'f-estat',     'Tots els estats','projectes'),
+    loadLlista('projectes_provinent', 'm-provinent', 'Selecciona',    'projectes'),
   ]);
   const urlPJ=new URLSearchParams(location.search).get('pj');
   if(urlPJ) openModal(urlPJ);
@@ -690,16 +691,6 @@ async function loadPaisos(){
   }catch(e){console.error('Error paisos:',e);}
 }
 
-async function loadProveniments(){
-  try{
-    const rows=await sbGet('proveniments','select=id,nom&order=nom');
-    const sel=document.getElementById('m-provinent');if(!sel)return;
-    const cur=sel.value;
-    sel.innerHTML='<option value="">— Selecciona —</option>';
-    rows.forEach(r=>{const o=document.createElement('option');o.value=r.nom;o.textContent=r.nom;sel.appendChild(o);});
-    sel.value=cur;
-  }catch(e){console.error('Error proveniments:',e);}
-}
 
 async function loadTags(){
   try{
@@ -1158,7 +1149,7 @@ async function saveProjecte(){
     if(curIdPJ){await sbPatch('projectes',curIdPJ,data);}
     else{await sbPost('projectes',data);}
     toast('Projecte guardat','ok');
-    await Promise.all([loadEntitats(),loadPaisos(),loadProveniments(),loadProjectes()]);
+    await Promise.all([loadEntitats(),loadPaisos(),loadLlista('projectes_provinent','m-provinent','Selecciona','projectes'),loadProjectes()]);
     closeModal();
   }catch(e){toast('Error: '+e.message,'err');}
   finally{btn.disabled=false;btn.innerHTML='💾 Guardar';}
