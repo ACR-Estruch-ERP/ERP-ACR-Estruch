@@ -369,6 +369,7 @@ const GRUPS = {
       {
         nom: 'Representades',
         hdr: '#0E7490',
+        bg: '#DFF3F4',
         items: [
           { nom: 'Representades Actives' },
           { nom: 'Representades Històric', cls: 'c-red' },
@@ -377,6 +378,7 @@ const GRUPS = {
       {
         nom: 'Proveïdors',
         hdr: '#7A4E2B',
+        bg: '#F0E4DA',
         items: [
           { nom: 'Fitxa Proveïdor', cls: 'c-red' },
           { nom: 'Ordenats per Nom' },
@@ -411,7 +413,7 @@ function renderBlocs(grupId) {
         sb.items.map(it => itemHtml(it)).join('')
       ).join('');
     }
-    const hdrStyle = bloc.hdr ? ` style="color:${bloc.hdr}"` : '';
+    const hdrStyle = (bloc.hdr || bloc.bg) ? ` style="${bloc.hdr?`color:${bloc.hdr};`:''}${bloc.bg?`background:${bloc.bg};`:''}"` : '';
     return `<div class="ll-bloc">
       <div class="ll-bloc-hdr"${hdrStyle}>${bloc.nom}</div>
       <ul>${itemsHtml}${subblocsHtml}</ul>
