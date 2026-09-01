@@ -290,23 +290,6 @@ const GRUPS = {
           { nom: 'Clients 1 Província', cls: 'c-blue' },
           { nom: 'Clients 1 Zona', cls: 'c-blue' },
           { nom: 'Clients 1 Representant', cls: 'c-blue' },
-        ],
-        subblocs: [
-          {
-            nom: 'Representades',
-            items: [
-              { nom: 'Representades Actives' },
-              { nom: 'Representades Històric', cls: 'c-red' },
-            ]
-          },
-          {
-            nom: 'Proveïdors',
-            items: [
-              { nom: 'Fitxa Proveïdor', cls: 'c-red' },
-              { nom: 'Ordenats per Nom' },
-              { nom: 'Ordenats per Codi' },
-            ]
-          }
         ]
       },
       {
@@ -383,6 +366,23 @@ const GRUPS = {
           { nom: 'Sectors' },
         ]
       },
+      {
+        nom: 'Representades',
+        hdr: '#0E7490',
+        items: [
+          { nom: 'Representades Actives' },
+          { nom: 'Representades Històric', cls: 'c-red' },
+        ]
+      },
+      {
+        nom: 'Proveïdors',
+        hdr: '#7A4E2B',
+        items: [
+          { nom: 'Fitxa Proveïdor', cls: 'c-red' },
+          { nom: 'Ordenats per Nom' },
+          { nom: 'Ordenats per Codi' },
+        ]
+      },
     ]
   }
 };
@@ -411,8 +411,9 @@ function renderBlocs(grupId) {
         sb.items.map(it => itemHtml(it)).join('')
       ).join('');
     }
+    const hdrStyle = bloc.hdr ? ` style="color:${bloc.hdr}"` : '';
     return `<div class="ll-bloc">
-      <div class="ll-bloc-hdr">${bloc.nom}</div>
+      <div class="ll-bloc-hdr"${hdrStyle}>${bloc.nom}</div>
       <ul>${itemsHtml}${subblocsHtml}</ul>
     </div>`;
   }).join('');
