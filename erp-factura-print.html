@@ -189,6 +189,7 @@ const T = {
 
 const fd  = d => d ? d.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3.$2.$1') : '';
 const fN  = (v,d=2) => (+v||0).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fLineAmt = v => (+v||0)===0 ? '' : fN(v)+' EUR';
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 function infoRow(k, v){
@@ -311,7 +312,7 @@ async function load(){
         h += `<tr>
           <td>${esc(l.article||'')}</td><td>${esc(l.descripcio||'')}</td>
           <td class="r">${fN(l.quantitat)}</td><td class="r">${fN(l.preu_unitari,4)}</td>
-          <td class="r">${fN(l.descompte,0)}</td><td class="r">${fN(l.import_linia)} EUR</td>
+          <td class="r">${fN(l.descompte,0)}</td><td class="r">${fLineAmt(l.import_linia)}</td>
         </tr>`;
       });
       h += `</tbody>${tfoot}</table>`;
@@ -322,7 +323,7 @@ async function load(){
       document.getElementById('lines-section').innerHTML = lines.map(l=>`
         <div class="line-row">
           <div class="line-desc">${esc(l.descripcio||'')}</div>
-          <div class="line-amt">${fN(l.import_linia)} EUR</div>
+          <div class="line-amt">${fLineAmt(l.import_linia)}</div>
         </div>`).join('');
       let html = '';
       if(fullBreakdown){

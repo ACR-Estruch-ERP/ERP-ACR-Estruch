@@ -114,6 +114,67 @@ async function sbDelWhere(t,col,val){
   if(!r.ok) throw new Error(await r.text());
 }
 
+// Modal de PIN reutilitzable: substitueix prompt() (que sempre mostra el
+// text en clar) per un input type=password. Mateix contracte que prompt():
+// retorna el valor introduït, o null si es cancel·la.
+function askPin(missatge){
+  return new Promise(resolve=>{
+    let modal = document.getElementById('pin-modal-bg');
+    if(!modal){
+      const style = document.createElement('style');
+      style.textContent = `
+        #pin-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center}
+        #pin-modal-bg.show{display:flex}
+        #pin-modal{background:#fff;border-radius:8px;padding:20px 22px;min-width:260px;box-shadow:0 8px 28px rgba(0,0,0,.25);font-family:inherit}
+        #pin-modal p{font-size:13px;margin:0 0 10px;color:#222}
+        #pin-modal input{width:100%;font-size:20px;letter-spacing:8px;text-align:center;padding:8px;border:1.5px solid #ccc;border-radius:6px;box-sizing:border-box}
+        #pin-modal input:focus{outline:none;border-color:#00387C}
+        #pin-modal .pin-btns{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+        #pin-modal button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+        #pin-btn-ok{background:#00387C;color:#fff}
+        #pin-btn-cancel{background:#e9ecef;color:#333}
+      `;
+      document.head.appendChild(style);
+      modal = document.createElement('div');
+      modal.id = 'pin-modal-bg';
+      modal.innerHTML = `
+        <div id="pin-modal">
+          <p id="pin-modal-msg"></p>
+          <input type="password" id="pin-modal-inp" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+          <div class="pin-btns">
+            <button id="pin-btn-cancel" type="button">Cancel·la</button>
+            <button id="pin-btn-ok" type="button">Acceptar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+    const inp = document.getElementById('pin-modal-inp');
+    const okBtn = document.getElementById('pin-btn-ok');
+    const cancelBtn = document.getElementById('pin-btn-cancel');
+    document.getElementById('pin-modal-msg').textContent = missatge;
+    inp.value = '';
+    modal.classList.add('show');
+    setTimeout(()=>inp.focus(), 30);
+
+    function cleanup(val){
+      modal.classList.remove('show');
+      inp.removeEventListener('keydown', onKey);
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(val);
+    }
+    function onOk(){ cleanup(inp.value); }
+    function onCancel(){ cleanup(null); }
+    function onKey(e){
+      if(e.key==='Enter'){ e.preventDefault(); onOk(); }
+      else if(e.key==='Escape'){ e.preventDefault(); onCancel(); }
+    }
+    inp.addEventListener('keydown', onKey);
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
 // Carrega valors d'una categoria de llistes en un o més selects
 async function loadLlista(categoria, selectIds, emptyLabel, modul) {
   try {

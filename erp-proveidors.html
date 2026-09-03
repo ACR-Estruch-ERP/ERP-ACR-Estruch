@@ -635,7 +635,7 @@ function resetForm(){
 }
 
 async function saveProv(){
-  if(curId!=null){const pin=prompt('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
+  if(curId!=null){const pin=await askPin('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
   const nom=document.getElementById('m-nom').value.trim();
   if(!nom){ toast('El nom és obligatori','err'); return; }
   const data={
@@ -681,7 +681,7 @@ async function saveProv(){
 }
 
 async function confirmDel(id){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   const p=allProv.find(x=>x.id===id);
   if(!p||!confirm(`Eliminar "${p.rao_social}"?`)) return;
   try{ await sbDel('proveidors',id); toast('Eliminat','ok'); await loadProveidors(); }

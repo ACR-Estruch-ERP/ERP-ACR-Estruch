@@ -356,7 +356,7 @@ function updateBalance(){
 }
 
 async function saveAss(){
-  if(curId!=null){const pin=prompt('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
+  if(curId!=null){const pin=await askPin('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
   const data=document.getElementById('m-data').value;
   if(!data){toast('La data és obligatòria','err');return;}
   const deure=curLines.reduce((s,l)=>s+(l.deure||0),0);
@@ -382,7 +382,7 @@ async function saveAss(){
 }
 
 async function confirmDel(id){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   if(!confirm('Eliminar aquest assentament?'))return;
   try{await sbDel('assentaments',id);toast('Eliminat','ok');await loadAss();}
   catch(e){toast('Error: '+e.message,'err');}

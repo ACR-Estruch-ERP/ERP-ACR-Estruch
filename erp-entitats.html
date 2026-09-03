@@ -487,7 +487,7 @@ function resetForm(){
 }
 
 async function saveEntitat(){
-  if(curId!=null){const pin=prompt('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
+  if(curId!=null){const pin=await askPin('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
   const nom=document.getElementById('m-nom').value.trim();
   if(!nom){ toast('El nom és obligatori','err'); return; }
   const data={
@@ -521,7 +521,7 @@ async function saveEntitat(){
 }
 
 async function confirmDel(id){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   const e=allEnt.find(x=>x.id===id);
   if(!e||!confirm(`Eliminar "${e.en_RaoSocial}"?`)) return;
   try{ await sbDel('entitats',id); toast('Eliminada','ok'); await loadEntitats(); }
@@ -529,7 +529,7 @@ async function confirmDel(id){
 }
 
 async function confirmDelCur(){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   if(curId) await confirmDel(curId);
   closeModal();
 }

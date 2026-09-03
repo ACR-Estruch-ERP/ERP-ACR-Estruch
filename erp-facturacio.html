@@ -1190,8 +1190,8 @@ function clearFilters(){
 // ════════════════════════════════════════════════
 const EDIT_PIN = '0511';
 
-function editProtected(id){
-  const pin = prompt('Factura cobrada — introdueix el PIN per editar:');
+async function editProtected(id){
+  const pin = await askPin('Factura cobrada — introdueix el PIN per editar:');
   if(pin === null) return;
   if(pin === EDIT_PIN) openModal(id);
   else toast('PIN incorrecte','err');
@@ -1398,7 +1398,11 @@ function renderLines(){
 }
 
 function upLine(i,field,val){
-  curLines[i][field] = (field==='descripcio'||field==='article') ? val : parseFloat(val)||0;
+  const isText = field==='descripcio'||field==='article';
+  curLines[i][field] = isText ? val : parseFloat(val)||0;
+  // Text: no afecta cap càlcul, no repintem (repintar aquí trenca el focus
+  // del textarea a cada tecla — l'usuari havia de reclicar lletra a lletra)
+  if(isText) return;
   const l = curLines[i];
   const dte = Math.max(0, Math.min(100, l.descompte||0));
   l.import_linia = Math.round((l.quantitat||1) * (l.preu_unitari||0) * (1 - dte/100) * 100) / 100;

@@ -1080,7 +1080,7 @@ function onFacturarChange(val){
 }
 
 async function saveProjecte(){
-  if(curIdPJ!=null){const pin=prompt('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
+  if(curIdPJ!=null){const pin=await askPin('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}}
   const idpj=document.getElementById('m-idpj').value.trim();
   const descripcio=document.getElementById('m-descripcio').value.trim();
   if(!descripcio){toast('La descripció és obligatòria','err');return;}
@@ -1167,7 +1167,7 @@ function duplicarProjecte(idpj){
 }
 
 async function confirmDel(idpj){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   const p=allPJ.find(x=>x.IdPJ===idpj);
   if(!p||!confirm(`Eliminar el projecte "${p.Descripcio}"?`))return;
   try{await sbDel('projectes',idpj);toast('Eliminat','ok');await loadProjectes();}
@@ -1214,7 +1214,7 @@ async function addSeguiment(){
 }
 
 async function delSeguiment(id){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   try{
     const s=await ensureSession();if(!s){location.replace('login.html');return;}
     const r=await fetch(`${NEON_DATA_API_URL}/projectes_seguiment?id=eq.${id}`,{method:'DELETE',headers:getHDR()});

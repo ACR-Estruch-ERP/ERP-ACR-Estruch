@@ -298,7 +298,7 @@ function openModal(id){
 function closeModal(){document.getElementById('overlay').classList.remove('open');curId=null;}
 
 async function saveCompte(){
-  const pin=prompt('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per guardar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   const compte=document.getElementById('m-compte').value.trim();
   const desc=document.getElementById('m-desc').value.trim();
   if(!compte||!desc){toast('Compte i descripció obligatoris','err');return;}
@@ -313,7 +313,7 @@ async function saveCompte(){
 }
 
 async function confirmDel(id){
-  const pin=prompt('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
+  const pin=await askPin('🔒 PIN per eliminar:');if(pin!==PIN){toast('PIN incorrecte','err');return;}
   const c=allComptes.find(x=>x.id===id);
   if(!c||!confirm(`Eliminar compte ${c.compte}?`))return;
   try{await sbDel('pla_comptes',id);toast('Eliminat','ok');await loadComptes();}
