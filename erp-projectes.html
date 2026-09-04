@@ -995,6 +995,10 @@ function recalcFromNom(pfx){
   const nom=parseAmt(document.getElementById(`m-${pfx}-nom`).value);
   const spj=imp?r2(nom/imp*100):0;
   document.getElementById(`m-${pfx}-spj`).value=fe(spj,2)+'%';
+  // El % editable (el que es desa a BD) també s'ha de sincronitzar quan
+  // s'introdueix el repartiment via nominal, no només via %.
+  const pcEl=document.getElementById(`m-${pfx}-pc`);
+  if(pcEl) pcEl.value=spj;
   if(pfx!=='acr') recalcACR(); else recalcTercers();
 }
 
