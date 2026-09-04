@@ -960,7 +960,11 @@ async function loadProjectesRef(demo){
   sel.innerHTML = '<option value="">— Sense projecte —</option>';
   if(demo) return;
   try{
-    const pjs = await sbGet('projectes','select=IdPJ,Descripcio&order=IdPJ.desc.nullslast');
+    const pjs = await sbGet('projectes','select=IdPJ,Descripcio');
+    // Ordenem amb el codi ja "empadded" a 8 dígits: alguns IdPJ antics (sèrie
+    // 2009) estan desats sense el zero inicial, i ordenar-los com a text cru
+    // ("9000900") els posava per davant dels de sèries més recents ("2608...").
+    pjs.sort((a,b)=>String(b.IdPJ||'').padStart(8,'0').localeCompare(String(a.IdPJ||'').padStart(8,'0')));
     pjs.forEach(p=>{
       const codi = String(p.IdPJ||'').padStart(8,'0');
       const o = document.createElement('option');
