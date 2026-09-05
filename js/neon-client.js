@@ -175,6 +175,51 @@ function askPin(missatge){
   });
 }
 
+// Recalcula el budget d'un projecte (import_facturat, en/dg/cb_pagat, cobrat)
+// a partir de TOTES les seves factures no anul·lades, sumant sempre de zero
+// (no incremental) perquè s'autocorregeixi sol si edites/esborres/reassignes
+// una factura. 'A Facturar' es deixa intacte (és la previsió manual).
+async function syncProjecteBudget(idpj){
+  if(!idpj) return;
+  try{
+    const [facs, projRows] = await Promise.all([
+      sbGet('factures', `select=base_imposable,total_factura,import_cobrat,en_c,dg_c,cb_c,acr_pnl,estat&n_ref=eq.${encodeURIComponent(idpj)}`),
+      sbGet('projectes', `select=import_a_facturar,facturar&IdPJ=eq.${encodeURIComponent(idpj)}`)
+    ]);
+    const proj = projRows[0];
+    if(!proj) return; // N/ref sense projecte real vinculat
+
+    const actives = facs.filter(f=>f.estat!=='ANULADA');
+    let facturat=0, enPagat=0, dgPagat=0, cbPagat=0, cobrat=0;
+    actives.forEach(f=>{
+      const tot = parseFloat(f.total_factura)||0;
+      const cob = parseFloat(f.import_cobrat)||0;
+      const ratio = tot>0 ? Math.min(cob/tot, 1) : 0;
+      facturat += parseFloat(f.base_imposable)||0;
+      enPagat  += (parseFloat(f.en_c)||0)  * ratio;
+      dgPagat  += (parseFloat(f.dg_c)||0)  * ratio;
+      cbPagat  += (parseFloat(f.cb_c)||0)  * ratio;
+      cobrat   += (parseFloat(f.acr_pnl)||0) * ratio;
+    });
+    const r2 = n => Math.round(n*100)/100;
+    const payload = {
+      import_facturat: r2(facturat),
+      en_pagat: r2(enPagat), dg_pagat: r2(dgPagat), cb_pagat: r2(cbPagat),
+      cobrat: r2(cobrat),
+    };
+    // Auto-classificació SI/PENDENT/FACTURAT, només si el projecte ja està
+    // en un d'aquests tres estats (mai toquem NO ni FRA. PERIÒDICA, que són
+    // categoritzacions manuals sense relació amb el progrés de facturació).
+    if(proj.facturar==='SI' || proj.facturar==='PENDENT' || proj.facturar==='FACTURAT'){
+      const afac = parseFloat(proj.import_a_facturar)||0;
+      if(afac>0){
+        payload.facturar = facturat<=0 ? 'SI' : (facturat<afac ? 'PENDENT' : 'FACTURAT');
+      }
+    }
+    await sbPatch('projectes', idpj, payload);
+  }catch(e){ console.warn('syncProjecteBudget', idpj, e.message); }
+}
+
 // Carrega valors d'una categoria de llistes en un o més selects
 async function loadLlista(categoria, selectIds, emptyLabel, modul) {
   try {

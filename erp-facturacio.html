@@ -1619,6 +1619,7 @@ function repeatInvoice(){
 }
 
 async function saveInvoice(){
+  const oldNref = curId ? (allInvoices.find(i=>i.id===curId)?.n_ref || null) : null;
   const noFra  = document.getElementById('m-no').value.trim();
   const dataFra= document.getElementById('m-data').value;
   if(!noFra || !dataFra){ toast('Número de factura i data són obligatoris','err'); return; }
@@ -1713,6 +1714,9 @@ async function saveInvoice(){
       curId = res[0]?.id;
     }
     await saveLines(noFra);
+    const newNref = data.n_ref || null;
+    if(newNref) await syncProjecteBudget(newNref);
+    if(oldNref && oldNref !== newNref) await syncProjecteBudget(oldNref);
     toast('Factura guardada correctament','ok');
     await loadInvoices(false);
     closeModal();
@@ -1749,6 +1753,7 @@ async function confirmDel(id){
   if(!confirm(`Eliminar la factura ${inv.no_factura}?\nAquesta acció no es pot desfer.`)) return;
   try{
     await sbDel('factures', id);
+    if(inv.n_ref) await syncProjecteBudget(inv.n_ref);
     toast('Factura eliminada','ok');
     await loadInvoices(false);
   } catch(e){ toast('Error: '+e.message,'err'); }
