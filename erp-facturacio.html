@@ -1701,6 +1701,25 @@ async function saveInvoice(){
   // acr_pc
   data.acr_pc = curBi>0 ? data.acr_pnl/curBi*100 : 0;
 
+  // Avís (no bloqueig) si aquesta factura supera el pendent de facturar del
+  // projecte vinculat — dona l'opció de cancel·lar per anar a rectificar el
+  // pressupost del projecte abans de desar-la.
+  if(data.n_ref){
+    try{
+      const projRows = await sbGet('projectes', `select=import_a_facturar,import_facturat&IdPJ=eq.${encodeURIComponent(data.n_ref)}`);
+      const proj = projRows[0];
+      if(proj){
+        const afac = parseFloat(proj.import_a_facturar)||0;
+        const facturatActual = parseFloat(proj.import_facturat)||0;
+        const baseAnterior = (oldNref===data.n_ref) ? (allInvoices.find(i=>i.id===curId)?.base_imposable||0) : 0;
+        const pendentAbans = afac - (facturatActual - baseAnterior);
+        if(curBi > pendentAbans){
+          const fmt = n => n.toLocaleString('ca-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
+          if(!confirm(`Aquesta factura (${fmt(curBi)} €) supera el pendent de facturar del projecte (${fmt(pendentAbans)} € pendents).\n\nVols continuar igualment?`)) return;
+        }
+      }
+    }catch(e){ console.warn('Comprovació pendent PJ:', e.message); }
+  }
 
   const btn = document.getElementById('btn-save');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Guardant...';
