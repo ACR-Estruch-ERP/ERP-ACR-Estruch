@@ -216,7 +216,13 @@ async function syncProjecteBudget(idpj){
         payload.facturar = facturat<=0 ? 'SI' : (facturat<afac ? 'PENDENT' : 'FACTURAT');
       }
     }
-    await sbPatch('projectes', idpj, payload);
+    // sbPatch genèric filtra per 'id', però la PK real de projectes és
+    // "IdPJ" — fem la crida directa amb el filtre correcte per no dependre
+    // d'aquest comportament ambigu.
+    const s = await ensureSession();
+    if(!s) return;
+    const r = await fetch(`${NEON_DATA_API_URL}/projectes?IdPJ=eq.${encodeURIComponent(idpj)}`, { method:'PATCH', headers:getHDR(), body:JSON.stringify(payload) });
+    if(!r.ok) throw new Error(await r.text());
   }catch(e){ console.warn('syncProjecteBudget', idpj, e.message); }
 }
 
