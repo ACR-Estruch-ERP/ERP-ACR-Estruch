@@ -798,7 +798,7 @@ function renderTable(rows){
       const pv=r2((p.import_a_facturar||0)-(p.import_facturat||0));
       return `<tr class="yr-${yy}" style="${disp}" onclick="openModal('${p.IdPJ}')">
       <td><span class="pj-codi">${fmtIdPJ(p.IdPJ)}</span></td>
-      <td style="font-weight:600;max-width:200px;display:flex;align-items:center;gap:4px" title="${p.Descripcio||''}">
+      <td style="font-weight:600;max-width:340px;display:flex;align-items:center;gap:4px" title="${p.Descripcio||''}">
         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${p.Descripcio||'—'}</span>
         ${p.anotacions ? `<span class="notes-badge" style="flex-shrink:0" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}
       </td>
