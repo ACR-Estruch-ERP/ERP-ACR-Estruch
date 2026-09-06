@@ -1452,7 +1452,7 @@ async function runProjectes(){
   el.innerHTML = '<div class="rpt-loading">Carregant...</div>';
 
   try{
-    let qs = 'select=IdPJ,Descripcio,EmpresaPJ,TipusPJ,estat,data_inici,data_entrada,data_finalitzat,import&order=IdPJ.desc.nullslast';
+    let qs = 'select=IdPJ,Descripcio,EmpresaPJ,TipusPJ,estat,facturar,data_inici,data_entrada,data_finalitzat,import&order=IdPJ.desc.nullslast';
     if(filtEstat) qs += `&estat=eq.${encodeURIComponent(filtEstat)}`;
     const pjs = await sbGet('projectes', qs);
 
@@ -1478,13 +1478,14 @@ async function runProjectes(){
       return;
     }
 
-    // Agrupar per estat en ordre: ACTIU → PAUSAT → COMPLETAT → CANCEL·LAT → altres
-    const ORDRE = ['ACTIU','PAUSAT','COMPLETAT','CANCEL·LAT'];
+    // Agrupar per Puntuals vs Periòdics (mateix criteri que el KPI del Dashboard
+    // i el report Pendent Facturar), no per Estat — Estat queda com a columna.
+    const puntuals  = rows.filter(p=>p.facturar!=='FRA. PERIÒDICA');
+    const periodics = rows.filter(p=>p.facturar==='FRA. PERIÒDICA');
     const grups = {};
-    rows.forEach(p => {
-      const k = p.estat || 'ALTRES';
-      (grups[k] = grups[k]||[]).push(p);
-    });
+    if(puntuals.length)  grups['PUNTUALS']  = puntuals;
+    if(periodics.length) grups['PERIODICS'] = periodics;
+    const GRUP_LBL = {PUNTUALS:'Projectes puntuals', PERIODICS:'Projectes periòdics'};
 
     const colHead = `<tr>
       <th>IdPJ</th><th>Descripció</th><th>Client / Empresa</th><th>Tipus</th>
@@ -1493,18 +1494,17 @@ async function runProjectes(){
     </tr>`;
 
     let html = '';
-    const keysOrdered = [...ORDRE.filter(k=>grups[k]), ...Object.keys(grups).filter(k=>!ORDRE.includes(k))];
+    const keysOrdered = Object.keys(grups);
     let grandTotal = 0;
 
-    keysOrdered.forEach(estat => {
-      const llista = grups[estat];
+    keysOrdered.forEach(grupKey => {
+      const llista = grups[grupKey];
       const subtotal = llista.reduce((s,p)=>s+(Number(p.import)||0),0);
       grandTotal += subtotal;
-      const cfg = ESTAT_CFG[estat]||{cls:'bx',lbl:estat};
       html += `
         <tr style="background:#eef2f8">
           <td colspan="9" style="padding:5px 12px;font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.5px">
-            ${cfg.lbl} — ${llista.length} projecte${llista.length!==1?'s':''}
+            ${GRUP_LBL[grupKey]} — ${llista.length} projecte${llista.length!==1?'s':''}
           </td>
         </tr>`;
       llista.forEach(p => {
