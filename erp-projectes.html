@@ -82,7 +82,7 @@ th.amt{text-align:right}
 .by{background:var(--yellow-bg);color:var(--yellow-txt)}
 .br{background:var(--red-bg);color:var(--red-txt)}
 .bx{background:var(--grey-bg);color:var(--grey-txt)}
-.bb{background:var(--blue);color:#fff}
+.bdark{background:var(--blue);color:#fff}
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty .eico{font-size:42px;margin-bottom:12px;opacity:.5}
 .empty p{margin-bottom:14px;font-size:14px}
@@ -604,7 +604,7 @@ const fd=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ca-ES',{day:'2-digit',
 
 const ESTAT_MAP={
   'ACTIU':      ['bg','ACT'],
-  'COMPLETAT':  ['bb','COM'],
+  'COMPLETAT':  ['bdark','COM'],
   'PAUSAT':     ['by','PAU'],
   'CANCEL·LAT': ['br','CAN'],
 };
