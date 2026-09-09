@@ -715,12 +715,24 @@ async function loadProvFactures(){
     }
     const fd = d=>d?new Date(d+'T00:00:00').toLocaleDateString('ca-ES',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
     const fe = n=>(n||0).toLocaleString('ca-ES',{minimumFractionDigits:2});
-    const estatCode = s=>String(s||'').split(' ')[0];
+    // Variants històriques desades a BD: "PAG", "PAGAT", "PAG Pagat"...
+    // totes comencen per "PAG" — normalitzem per prefix, no per paraula exacta.
+    const estatCode = s=>{
+      const v=String(s||'').toUpperCase();
+      if(v.startsWith('PAG')) return 'PAG';
+      if(v.startsWith('PARC')) return 'PARC';
+      if(v.startsWith('VENC')) return 'VENC';
+      if(v.startsWith('PEND')) return 'PEND';
+      return v.split(' ')[0];
+    };
     const EC = {PAG:'var(--green)',PARC:'#d97706',PEND:'var(--red)',VENC:'var(--red)'};
     const EL = {PAG:'PAG',PARC:'PARC',PEND:'PEND',VENC:'VENÇ'};
     const badge = s=>{const c=estatCode(s); return `<span style="font-size:11px;font-weight:700;color:${EC[c]||'var(--muted)'}">${EL[c]||c||'—'}</span>`;};
+    // Si l'estat diu pagat però import_pagat no es va arribar a registrar,
+    // considerem pagat el total (per no desquadrar Total = Pagat + Pendent).
+    const effPagat = f => estatCode(f.estat)==='PAG' ? (f.total_factura||0) : (f.import_pagat||0);
     const totImp = fras.reduce((s,f)=>s+(f.total_factura||0),0);
-    const totPag = fras.reduce((s,f)=>s+(f.import_pagat||0),0);
+    const totPag = fras.reduce((s,f)=>s+effPagat(f),0);
     const totPend = fras.reduce((s,f)=>estatCode(f.estat)==='PAG'?s:s+Math.max(0,(f.total_factura||0)-(f.import_pagat||0)),0);
     el.innerHTML=`
       <div style="display:flex;gap:24px;padding:12px 0 14px;font-size:13px;flex-wrap:wrap">
@@ -742,7 +754,7 @@ async function loadProvFactures(){
           <td>${fd(f.data_fra)}</td>
           <td style="color:var(--muted);font-size:12px">${f.id_pj||'—'}</td>
           <td style="text-align:right">${fe(f.total_factura)}</td>
-          <td style="text-align:right;color:var(--green)">${fe(f.import_pagat)}</td>
+          <td style="text-align:right;color:var(--green)">${fe(effPagat(f))}</td>
           <td style="text-align:right;color:var(--red-txt)">${fe(pend)}</td>
           <td>${badge(f.estat)}</td>
         </tr>`;
