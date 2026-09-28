@@ -215,8 +215,9 @@ input[type=number]{-moz-appearance:textfield}
       <div class="tbl-wrap">
         <table class="main-tbl">
           <colgroup>
-            <col style="width:90px"><col style="width:26%"><col style="width:16%">
-            <col style="width:95px"><col style="width:110px"><col style="width:100px">
+            <col style="width:75px"><col style="width:20%"><col style="width:13%">
+            <col style="width:100px">
+            <col style="width:90px"><col style="width:110px"><col style="width:100px">
             <col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:110px">
           </colgroup>
           <thead>
@@ -224,6 +225,7 @@ input[type=number]{-moz-appearance:textfield}
               <th>IdPJ</th>
               <th>Descripció</th>
               <th>Client</th>
+              <th>Mercat Destí</th>
               <th>Data Entrada</th>
               <th>Data Matchmaking</th>
               <th class="amt">Import PJ</th>
@@ -234,7 +236,7 @@ input[type=number]{-moz-appearance:textfield}
             </tr>
           </thead>
           <tbody id="tbl-body">
-            <tr><td colspan="10"><div class="empty"><div class="eico">🔄</div><p>Carregant...</p></div></td></tr>
+            <tr><td colspan="11"><div class="empty"><div class="eico">🔄</div><p>Carregant...</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -787,7 +789,7 @@ function renderTable(rows){
   document.getElementById('f-count').textContent=rows.length+' projectes';
   const tbody=document.getElementById('tbl-body');
   if(!rows.length){
-    tbody.innerHTML=`<tr><td colspan="10"><div class="empty"><div class="eico">📋</div><p>Cap projecte trobat.</p><button class="btn btn-primary" onclick="openModal(null)">+ Nou projecte</button></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="eico">📋</div><p>Cap projecte trobat.</p><button class="btn btn-primary" onclick="openModal(null)">+ Nou projecte</button></div></td></tr>`;
     return;
   }
   const currentYY=String(new Date().getFullYear()).slice(-2);
@@ -798,7 +800,7 @@ function renderTable(rows){
     const exp=yy===currentYY;
     const disp=exp?'':'display:none';
     const ico=exp?'▼':'▶';
-    const hdr=`<tr class="year-hdr" onclick="toggleYear('${yy}')"><td colspan="10"><span id="ych-${yy}">${ico}</span> Any 20${yy} — ${byYear[yy].length} projectes</td></tr>`;
+    const hdr=`<tr class="year-hdr" onclick="toggleYear('${yy}')"><td colspan="11"><span id="ych-${yy}">${ico}</span> Any 20${yy} — ${byYear[yy].length} projectes</td></tr>`;
     const rws=byYear[yy].map(p=>{
       const pv=r2((p.import_a_facturar||0)-(p.import_facturat||0));
       return `<tr class="yr-${yy}" style="${disp}" onclick="openModal('${p.IdPJ}')">
@@ -808,6 +810,7 @@ function renderTable(rows){
         ${p.anotacions ? `<span class="notes-badge" style="vertical-align:middle" onclick="event.stopPropagation();showNote('${p.IdPJ}')" title="Veure nota">NOTES</span>` : ''}
       </td>
       <td style="color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.client||''}">${p.client||'—'}</td>
+      <td style="color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.mercat_desti||''}">${p.mercat_desti||'—'}</td>
       <td style="font-size:12px">${fd(p.data_entrada)}</td>
       <td style="font-size:12px">${fd(p.data_inici)}</td>
       <td class="amt">${fe(p.import)}</td>
