@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PJ per Mercat Destí — ACR Estruch</title>
+<style>
+/* ── CONTROL BAR (screen only) ── */
+.ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
+.ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
+.ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
+.btn-print{background:#0d6efd;color:#fff;font-weight:600}
+.btn-print:hover{background:#0b5ed7}
+.btn-close{background:#3a4060;color:#ccc}
+.btn-close:hover{background:#4a5070;color:#fff}
+.ctrl-status{color:#6a8aaa;font-size:11.5px;margin-left:4px}
+@media print{.ctrl{display:none}}
+
+/* ── PRINT PAGE ── */
+@page{size:A4 landscape;margin:12mm 14mm 16mm 14mm}
+body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ecef;color:#1a1a1a}
+.page{background:#fff;max-width:269mm;margin:14px auto;padding:12mm 14mm 14mm;box-sizing:border-box;min-height:182mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+@media print{body{background:#fff}.page{margin:0;padding:0;max-width:none;min-height:0;box-shadow:none}}
+
+/* ── LOGO ── */
+.logo-area{text-align:center;margin-bottom:7mm}
+.logo-area img{height:30px;display:block;margin:0 auto}
+
+/* ── TITLE ── */
+.doc-title{font-size:9pt;font-weight:700;color:#1a3a6b;text-decoration:underline;margin-bottom:4mm;display:block;letter-spacing:.2px}
+
+/* ── TABLE ── */
+.fra-table{width:100%;border-collapse:collapse;font-size:7.5pt;font-family:'Segoe UI',Arial,sans-serif;color:#595959;table-layout:fixed}
+.fra-table th{font-weight:600;color:#595959;border:none;border-bottom:.8px solid #888;padding:1.2mm 3px 1.4mm;text-align:left;font-size:7.5pt;white-space:nowrap}
+.fra-table td{padding:.15mm 3px;vertical-align:top;border:none;line-height:1.25;font-size:7.5pt;color:#595959}
+
+/* Column widths (7 cols) */
+.fra-table th:nth-child(1),.fra-table td:nth-child(1){width:10%}
+.fra-table th:nth-child(2),.fra-table td:nth-child(2){width:28%}
+.fra-table th:nth-child(3),.fra-table td:nth-child(3){width:18%;text-transform:uppercase}
+.fra-table th:nth-child(4),.fra-table td:nth-child(4){width:12%}
+.fra-table th:nth-child(5),.fra-table td:nth-child(5){width:12%}
+.fra-table th:nth-child(6),.fra-table td:nth-child(6){width:10%}
+.fra-table th:nth-child(7),.fra-table td:nth-child(7){width:10%}
+
+.fra-table tfoot td{font-weight:700;border-top:.8px solid #888;padding-top:1.8mm;color:#595959;font-size:7.5pt}
+
+/* ── FOOTER ── */
+.doc-footer{position:fixed;bottom:10mm;left:14mm;right:14mm;display:flex;align-items:baseline;justify-content:space-between;font-size:7pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif}
+.doc-footer-addr{text-align:center;flex:1}
+.doc-footer-info{white-space:nowrap;font-size:6.5pt}
+@media screen{
+  .doc-footer{position:static;margin-top:auto;padding-top:8mm;display:flex}
+  .page{display:flex;flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- Control bar (screen only, not printed) -->
+<div class="ctrl">
+  <span class="ctrl-title">🌍 PJ per Mercat Destí</span>
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+  <button class="btn-close" onclick="window.close()">✕ Tancar</button>
+  <span class="ctrl-status" id="ctrl-status"></span>
+</div>
+
+<div class="page">
+
+  <!-- Logo -->
+  <div class="logo-area">
+    <img src="logo.png" alt="ACR Estruch">
+  </div>
+
+  <!-- Title -->
+  <span class="doc-title">PROJECTES PER MERCAT DESTÍ</span>
+
+  <!-- Table -->
+  <table class="fra-table">
+    <thead>
+      <tr>
+        <th>IdPJ</th>
+        <th>Descripció</th>
+        <th>Client</th>
+        <th>Origen</th>
+        <th>Destí</th>
+        <th>Entrada</th>
+        <th>Estat</th>
+      </tr>
+    </thead>
+    <tbody id="pj-tbody">
+      <tr><td colspan="7" style="padding:6mm;color:#888;text-align:center">Carregant…</td></tr>
+    </tbody>
+    <tfoot id="pj-tfoot"></tfoot>
+  </table>
+
+  <!-- Footer fixat al peu -->
+  <div class="doc-footer">
+    <div class="doc-footer-info" id="page-info"></div>
+    <div class="doc-footer-addr">Muntaner, 440, 1-1B &nbsp;|&nbsp; 08006 Barcelona &nbsp;|&nbsp; +34 609852478 &nbsp;|&nbsp; info@acrestruch.com &nbsp;|&nbsp; www.acrestruch.com</div>
+  </div>
+
+</div>
+
+<script src="js/neon-client.js"></script>
+<script>
+requireAuth();
+
+function fDate(s){
+  if(!s) return '—';
+  const [y,m,d]=s.split('T')[0].split('-');
+  return `${d}/${m}/${String(y).slice(2)}`;
+}
+
+function fmtIdPJ(id){ return id ? String(id).padStart(8,'0') : '—'; }
+
+async function loadData(){
+  const tbody=document.getElementById('pj-tbody');
+  const tfoot=document.getElementById('pj-tfoot');
+  try{
+    const rows=await sbGet('projectes','select=IdPJ,Descripcio,client,mercat_origen,mercat_desti,data_entrada,estat');
+    // Mateix criteri que altres llistats: ordenem amb el codi ja "empadded"
+    // a 8 dígits, ja que alguns IdPJ antics estan desats sense el zero inicial.
+    rows.sort((a,b)=>fmtIdPJ(a.IdPJ).localeCompare(fmtIdPJ(b.IdPJ)));
+
+    if(!rows.length){
+      tbody.innerHTML='<tr><td colspan="7" style="padding:6mm;color:#888;text-align:center">Cap projecte trobat</td></tr>';
+      tfoot.innerHTML='';
+      document.getElementById('ctrl-status').textContent='Cap projecte';
+      return;
+    }
+
+    tbody.innerHTML=rows.map(p=>`<tr>
+      <td>${fmtIdPJ(p.IdPJ)}</td>
+      <td title="${p.Descripcio||''}">${p.Descripcio||'—'}</td>
+      <td title="${p.client||''}">${p.client||'—'}</td>
+      <td>${p.mercat_origen||'—'}</td>
+      <td>${p.mercat_desti||'—'}</td>
+      <td>${fDate(p.data_entrada)}</td>
+      <td>${p.estat||'—'}</td>
+    </tr>`).join('');
+    tfoot.innerHTML=`<tr><td colspan="7" style="font-style:italic">Total projectes: ${rows.length}</td></tr>`;
+    document.getElementById('ctrl-status').textContent=`${rows.length} projectes`;
+    document.getElementById('page-info').textContent=`${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - pj_mercat_desti`;
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" style="color:#c00;padding:6mm">Error: ${e.message}</td></tr>`;
+    document.getElementById('ctrl-status').textContent='Error de càrrega';
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
