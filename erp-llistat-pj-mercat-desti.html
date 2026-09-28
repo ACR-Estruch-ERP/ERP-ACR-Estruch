@@ -35,15 +35,22 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 .fra-table td{padding:.15mm 3px;vertical-align:top;border:none;line-height:1.25;font-size:7.5pt;color:#595959}
 
 /* Column widths (7 cols) */
-.fra-table th:nth-child(1),.fra-table td:nth-child(1){width:10%}
-.fra-table th:nth-child(2),.fra-table td:nth-child(2){width:28%}
-.fra-table th:nth-child(3),.fra-table td:nth-child(3){width:18%;text-transform:uppercase}
-.fra-table th:nth-child(4),.fra-table td:nth-child(4){width:12%}
-.fra-table th:nth-child(5),.fra-table td:nth-child(5){width:12%}
-.fra-table th:nth-child(6),.fra-table td:nth-child(6){width:10%}
-.fra-table th:nth-child(7),.fra-table td:nth-child(7){width:10%}
+.fra-table th:nth-child(1),.fra-table td:nth-child(1){width:8%}
+.fra-table th:nth-child(2),.fra-table td:nth-child(2){width:34%}
+.fra-table th:nth-child(3),.fra-table td:nth-child(3){width:28%;text-transform:uppercase}
+.fra-table th:nth-child(4),.fra-table td:nth-child(4){width:6%}
+.fra-table th:nth-child(5),.fra-table td:nth-child(5){width:6%}
+.fra-table th:nth-child(6),.fra-table td:nth-child(6){width:12%}
+.fra-table th:nth-child(7),.fra-table td:nth-child(7){width:6%;text-align:center}
+.fra-table th:nth-child(7){text-align:left}
 
 .fra-table tfoot td{font-weight:700;border-top:.8px solid #888;padding-top:1.8mm;color:#595959;font-size:7.5pt}
+
+/* Estat icon (mateix patró que factures cobrades/pendents) */
+.estat-ico{display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;font-size:7.5px;font-weight:900;line-height:1;color:#fff;vertical-align:middle}
+.estat-ico.actiu,.estat-ico.completat{background:#28a745}
+.estat-ico.pausat{background:#fd7e14}
+.estat-ico.cancelat{background:#dc3545}
 
 /* ── FOOTER ── */
 .doc-footer{position:fixed;bottom:10mm;left:14mm;right:14mm;display:flex;align-items:baseline;justify-content:space-between;font-size:7pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif}
@@ -109,10 +116,18 @@ requireAuth();
 function fDate(s){
   if(!s) return '—';
   const [y,m,d]=s.split('T')[0].split('-');
-  return `${d}/${m}/${String(y).slice(2)}`;
+  return `${d}.${m}.${String(y).slice(2)}`;
 }
 
 function fmtIdPJ(id){ return id ? String(id).padStart(8,'0') : '—'; }
+
+function estatIco(estat){
+  if(estat==='ACTIU')        return '<span class="estat-ico actiu">✓</span>';
+  if(estat==='COMPLETAT')    return '<span class="estat-ico completat">✓</span>';
+  if(estat==='PAUSAT')       return '<span class="estat-ico pausat">~</span>';
+  if(estat==='CANCEL·LAT')   return '<span class="estat-ico cancelat">✗</span>';
+  return estat||'—';
+}
 
 async function loadData(){
   const tbody=document.getElementById('pj-tbody');
@@ -137,7 +152,7 @@ async function loadData(){
       <td>${p.mercat_origen||'—'}</td>
       <td>${p.mercat_desti||'—'}</td>
       <td>${fDate(p.data_entrada)}</td>
-      <td>${p.estat||'—'}</td>
+      <td>${estatIco(p.estat)}</td>
     </tr>`).join('');
     tfoot.innerHTML=`<tr><td colspan="7" style="font-style:italic">Total projectes: ${rows.length}</td></tr>`;
     document.getElementById('ctrl-status').textContent=`${rows.length} projectes`;
