@@ -8,6 +8,8 @@
 /* ── CONTROL BAR (screen only) ── */
 .ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
 .ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
+.ctrl label{color:#9aaccc}
+.ctrl select{padding:4px 8px;border-radius:5px;border:1px solid #3a4a6a;background:#2a3550;color:#fff;font-size:12.5px;cursor:pointer}
 .ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
 .btn-print{background:#0d6efd;color:#fff;font-weight:600}
 .btn-print:hover{background:#0b5ed7}
@@ -67,6 +69,8 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 <!-- Control bar (screen only, not printed) -->
 <div class="ctrl">
   <span class="ctrl-title">🌍 PJ per Mercat Destí</span>
+  <label>País Destí:</label>
+  <select id="ctrl-pais" onchange="applyFilter()"><option value="">— Tots —</option></select>
   <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
   <button class="btn-close" onclick="window.close()">✕ Tancar</button>
   <span class="ctrl-status" id="ctrl-status"></span>
@@ -80,7 +84,7 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
   </div>
 
   <!-- Title -->
-  <span class="doc-title">PROJECTES PER MERCAT DESTÍ</span>
+  <span class="doc-title" id="doc-title-txt">PROJECTES PER MERCAT DESTÍ</span>
 
   <!-- Table -->
   <table class="fra-table">
@@ -129,38 +133,60 @@ function estatIco(estat){
   return estat||'—';
 }
 
+let allRows=[];
+
 async function loadData(){
   const tbody=document.getElementById('pj-tbody');
-  const tfoot=document.getElementById('pj-tfoot');
   try{
-    const rows=await sbGet('projectes','select=IdPJ,Descripcio,client,mercat_origen,mercat_desti,data_entrada,estat');
+    allRows=await sbGet('projectes','select=IdPJ,Descripcio,client,mercat_origen,mercat_desti,data_entrada,estat');
     // Mateix criteri que altres llistats: ordenem amb el codi ja "empadded"
     // a 8 dígits, ja que alguns IdPJ antics estan desats sense el zero inicial.
-    rows.sort((a,b)=>fmtIdPJ(a.IdPJ).localeCompare(fmtIdPJ(b.IdPJ)));
+    allRows.sort((a,b)=>fmtIdPJ(a.IdPJ).localeCompare(fmtIdPJ(b.IdPJ)));
 
-    if(!rows.length){
-      tbody.innerHTML='<tr><td colspan="7" style="padding:6mm;color:#888;text-align:center">Cap projecte trobat</td></tr>';
-      tfoot.innerHTML='';
-      document.getElementById('ctrl-status').textContent='Cap projecte';
-      return;
-    }
+    const paisos=[...new Set(allRows.map(p=>p.mercat_desti).filter(Boolean))].sort();
+    const sel=document.getElementById('ctrl-pais');
+    paisos.forEach(p=>{
+      const o=document.createElement('option');
+      o.value=p; o.textContent=p;
+      sel.appendChild(o);
+    });
 
-    tbody.innerHTML=rows.map(p=>`<tr>
-      <td>${fmtIdPJ(p.IdPJ)}</td>
-      <td title="${p.Descripcio||''}">${p.Descripcio||'—'}</td>
-      <td title="${p.client||''}">${p.client||'—'}</td>
-      <td>${p.mercat_origen||'—'}</td>
-      <td>${p.mercat_desti||'—'}</td>
-      <td>${fDate(p.data_entrada)}</td>
-      <td>${estatIco(p.estat)}</td>
-    </tr>`).join('');
-    tfoot.innerHTML=`<tr><td colspan="7" style="font-style:italic">Total projectes: ${rows.length}</td></tr>`;
-    document.getElementById('ctrl-status').textContent=`${rows.length} projectes`;
-    document.getElementById('page-info').textContent=`${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - pj_mercat_desti`;
+    applyFilter();
   }catch(e){
     tbody.innerHTML=`<tr><td colspan="7" style="color:#c00;padding:6mm">Error: ${e.message}</td></tr>`;
     document.getElementById('ctrl-status').textContent='Error de càrrega';
   }
+}
+
+function applyFilter(){
+  const paisSel=document.getElementById('ctrl-pais').value;
+  const rows=paisSel ? allRows.filter(p=>p.mercat_desti===paisSel) : allRows;
+  const tbody=document.getElementById('pj-tbody');
+  const tfoot=document.getElementById('pj-tfoot');
+
+  document.getElementById('doc-title-txt').textContent = paisSel
+    ? `PROJECTES PER MERCAT DESTÍ — ${paisSel}`
+    : 'PROJECTES PER MERCAT DESTÍ';
+
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="7" style="padding:6mm;color:#888;text-align:center">Cap projecte trobat</td></tr>';
+    tfoot.innerHTML='';
+    document.getElementById('ctrl-status').textContent='Cap projecte';
+    return;
+  }
+
+  tbody.innerHTML=rows.map(p=>`<tr>
+    <td>${fmtIdPJ(p.IdPJ)}</td>
+    <td title="${p.Descripcio||''}">${p.Descripcio||'—'}</td>
+    <td title="${p.client||''}">${p.client||'—'}</td>
+    <td>${p.mercat_origen||'—'}</td>
+    <td>${p.mercat_desti||'—'}</td>
+    <td>${fDate(p.data_entrada)}</td>
+    <td>${estatIco(p.estat)}</td>
+  </tr>`).join('');
+  tfoot.innerHTML=`<tr><td colspan="7" style="font-style:italic">Total projectes: ${rows.length}</td></tr>`;
+  document.getElementById('ctrl-status').textContent=`${rows.length} projectes`;
+  document.getElementById('page-info').textContent=`${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - pj_mercat_desti`;
 }
 
 loadData();
