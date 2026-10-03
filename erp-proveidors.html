@@ -73,12 +73,13 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
 #fra-content .main-tbl td,#fra-content .main-tbl th{padding:5px 10px}
 .main-tbl tbody tr:hover td{background:var(--blue-light);cursor:pointer}
 .main-tbl tbody tr:last-child td{border-bottom:none}
-.prov-nom{font-weight:700;color:var(--blue)}
-.sit{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
-.sit-act{background:#d4edda;color:#155724}
-.sit-na{background:#e9ecef;color:#495057}
-.sit-nul{background:#f8d7da;color:#721c24}
-.notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
+.prov-nom{font-weight:700;color:var(--text)}
+.sit{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;background:#fff;border:1px solid var(--border)}
+.sit::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.sit-act{color:#236EFA}
+.sit-na{color:#9CA3AF}
+.sit-nul{color:#DC2626}
+.notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:#236EFA;color:#fff;cursor:pointer;border:none}
 .notes-badge:hover{opacity:.85}
 .note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
 .note-modal-bg.show{display:flex}
@@ -86,7 +87,7 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
 .note-modal h3{font-size:13px;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
 .note-modal p{font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:50vh;overflow-y:auto}
 .note-modal .btn{margin-top:16px}
-.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:var(--blue-light);color:var(--blue)}
+.tag{font-weight:600;color:#236EFA}
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty .eico{font-size:42px;margin-bottom:12px;opacity:.5}
 .empty p{margin-bottom:14px;font-size:14px}
