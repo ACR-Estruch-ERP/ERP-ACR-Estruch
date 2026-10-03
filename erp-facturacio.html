@@ -1024,8 +1024,7 @@ function getEstat(inv){
   const total=parseFloat(inv.total_factura)||0;
   const cobrat=parseFloat(inv.import_cobrat)||0;
   if(total>0 && cobrat>=total-0.01) return 'COB';
-  if(code==='COB')   return 'COB';
-  if(code==='PARC')  return 'PARC';
+  if(cobrat>0)       return 'PARC';
   const today=new Date(); today.setHours(0,0,0,0);
   if(!inv.data_venciment) return 'PEND';
   const venc=new Date(inv.data_venciment+'T00:00:00');
@@ -1168,12 +1167,12 @@ function renderTable(rows){
         <td class="amt" style="color:${cob>=tot&&tot>0?'var(--green)':'var(--muted)'}">${fe(cob)}</td>
         <td>${badgeHtml(inv)}</td>
         <td onclick="event.stopPropagation()" style="white-space:nowrap">
-          ${['COB','RECTF'].includes(estatCode(inv.estat))
+          ${['COB','RECTF'].includes(getEstat(inv))
             ? `<button class="btn-ico" style="margin-left:0" onclick="editProtected(${inv.id})" title="Factura cobrada — edició protegida per PIN"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>`
             : `<button class="btn-ico" style="margin-left:0" onclick="openModal(${inv.id})" title="Editar"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>`
           }
           <button class="btn-ico" onclick="duplicarFactura(${inv.id})" title="Duplicar"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
-          ${['COB','RECTF'].includes(estatCode(inv.estat))
+          ${['COB','RECTF'].includes(getEstat(inv))
             ? `<button class="btn-ico" title="No es pot eliminar" disabled><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`
             : `<button class="btn-ico" onclick="confirmDel(${inv.id})" title="Eliminar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`
           }
@@ -1292,7 +1291,7 @@ function fillForm(inv){
   s('m-no', inv.no_factura);
   s('m-data', inv.data_fra);
   s('m-venc', inv.data_venciment);
-  setEstatSel('m-estat',estatCode(inv.estat)); setEstatSel('m-estat-fin',estatCode(inv.estat));
+  setEstatSel('m-estat',getEstat(inv)); setEstatSel('m-estat-fin',getEstat(inv));
   s('m-client', inv.id_client);
   const nrefVal = String(inv.n_ref || inv.id_projecte || '').padStart(8,'0').replace(/^0{8}$/,'');
   document.getElementById('m-nref').value = nrefVal;
