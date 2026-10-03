@@ -95,7 +95,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl tbody tr:hover td{background:#FAFBFC}
 
 /* FILES DE SUBTOTAL */
-.rtbl tr.subtotal td{background:#F9FAFB;font-weight:400;font-size:11.5px;color:var(--text);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.rtbl tr.subtotal td{background:#F9FAFB;font-weight:700;font-size:11.5px;color:var(--text);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .rtbl tr.subtotal td.r{text-align:right}
 .rtbl tr.total-final td{background:#F9FAFB;color:var(--text);font-weight:700;font-size:12px;border-top:1px solid var(--border)}
 .rtbl tr.total-final td.r{text-align:right}
@@ -633,7 +633,7 @@ async function runLlistat(){
         <td class="r">${fm(bi)}</td>
         <td class="r">${fm(iva)}</td>
         <td class="r">${irpf?fm(irpf):'—'}</td>
-        <td class="r bold">${fm(imp)}</td>
+        <td class="r">${fm(imp)}</td>
       </tr>`;
     });
     html+=`</tbody><tfoot><tr class="total-final">
@@ -690,7 +690,7 @@ async function runMes(){
           <td class="r">${fm(bi)}</td>
           <td class="r">${fm(iva)}</td>
           <td class="r">${irpf?fm(irpf):'—'}</td>
-          <td class="r bold">${fm(imp)}</td>
+          <td class="r">${fm(imp)}</td>
         </tr>`;
       });
       html+=`<tr class="subtotal">
@@ -738,6 +738,7 @@ async function runClients(){
     </tr></thead><tbody>`;
     Object.values(grups).sort((a,b)=>a.codi.localeCompare(b.codi)).forEach(g=>{
       let gBase=0,gIva=0,gIrpf=0,gImp=0;
+      g.rows.sort((a,b)=>(a.data_fra||'').localeCompare(b.data_fra||'')||String(a.no_factura).localeCompare(String(b.no_factura)));
       g.rows.forEach(r=>{
         const bi=parseFloat(r.base_imposable)||0;
         const iva=parseFloat(r.import_iva)||0;
@@ -753,7 +754,7 @@ async function runClients(){
           <td class="r">${fm(bi)}</td>
           <td class="r">${fm(iva)}</td>
           <td class="r">${irpf?fm(irpf):'—'}</td>
-          <td class="r bold">${fm(imp)}</td>
+          <td class="r">${fm(imp)}</td>
         </tr>`;
       });
       html+=`<tr class="subtotal">
@@ -810,7 +811,7 @@ async function run1Client(){
         <td class="r">${fm(bi)}</td>
         <td class="r">${fm(iva)}</td>
         <td class="r">${irpf?fm(irpf):'—'}</td>
-        <td class="r bold">${fm(imp)}</td>
+        <td class="r">${fm(imp)}</td>
         <td>${fd(r.data_cob)}</td>
         <td class="r">${cob?fm(cob):'—'}</td>
       </tr>`;
