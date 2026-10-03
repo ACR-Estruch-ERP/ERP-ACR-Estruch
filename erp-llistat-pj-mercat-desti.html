@@ -6,16 +6,16 @@
 <title>PJ per Mercat Destí — ACR Estruch</title>
 <style>
 /* ── CONTROL BAR (screen only) ── */
-.ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
-.ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
-.ctrl label{color:#9aaccc}
-.ctrl select{padding:4px 8px;border-radius:5px;border:1px solid #3a4a6a;background:#2a3550;color:#fff;font-size:12.5px;cursor:pointer}
-.ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
-.btn-print{background:#0d6efd;color:#fff;font-weight:600}
-.btn-print:hover{background:#0b5ed7}
-.btn-close{background:#3a4060;color:#ccc}
-.btn-close:hover{background:#4a5070;color:#fff}
-.ctrl-status{color:#6a8aaa;font-size:11.5px;margin-left:4px}
+.ctrl{background:#fff;color:#1D2433;padding:10px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap;border-bottom:1px solid #E7E9ED}
+.ctrl-title{font-weight:700;color:#00387C;font-size:13.5px}
+.ctrl label{color:#6B7280}
+.ctrl select{padding:5px 9px;border-radius:8px;border:1px solid #E7E9ED;background:#fff;color:#1D2433;font-size:12.5px;cursor:pointer}
+.ctrl button{padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
+.btn-print{background:#00387C;color:#fff;font-weight:600}
+.btn-print:hover{background:#1a54a0}
+.btn-close{background:#fff;color:#1D2433;border:1px solid #E7E9ED}
+.btn-close:hover{background:#F9FAFB}
+.ctrl-status{color:#6B7280;font-size:11.5px;margin-left:4px}
 @media print{.ctrl{display:none}}
 
 /* ── PRINT PAGE ── */
@@ -50,9 +50,9 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 
 /* Estat icon (mateix patró que factures cobrades/pendents) */
 .estat-ico{display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;font-size:7.5px;font-weight:900;line-height:1;color:#fff;vertical-align:middle}
-.estat-ico.actiu,.estat-ico.completat{background:#28a745}
+.estat-ico.actiu,.estat-ico.completat{background:rgba(35,110,250,.5)}
 .estat-ico.pausat{background:#fd7e14}
-.estat-ico.cancelat{background:#dc3545}
+.estat-ico.cancelat{background:rgba(220,53,69,.5)}
 
 /* ── FOOTER ── */
 .doc-footer{position:fixed;bottom:10mm;left:14mm;right:14mm;display:flex;align-items:baseline;justify-content:space-between;font-size:7pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif}
@@ -68,7 +68,7 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
 
 <!-- Control bar (screen only, not printed) -->
 <div class="ctrl">
-  <span class="ctrl-title">🌍 PJ per Mercat Destí</span>
+  <span class="ctrl-title"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" style="vertical-align:-2px;margin-right:6px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>PJ per Mercat Destí</span>
   <label>País Destí:</label>
   <select id="ctrl-pais" onchange="applyFilter()"><option value="">— Tots —</option></select>
   <button class="btn-print" onclick="window.print()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M7 9V3h10v6"/><rect x="4" y="9" width="16" height="8" rx="1"/><path d="M7 14h10v7H7z"/></svg>Imprimir</button>
