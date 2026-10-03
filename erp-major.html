@@ -49,19 +49,19 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .compte-selector select,.compte-selector input{padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;font-family:inherit}
 .compte-selector select:focus,.compte-selector input:focus{outline:none;border-color:var(--blue)}
 /* Compte header */
-.compte-hdr{background:var(--blue);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:14px;display:flex;gap:24px;align-items:center}
+.compte-hdr{background:var(--white);color:var(--text);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 20px;margin-bottom:14px;display:flex;gap:24px;align-items:center}
 .compte-hdr .codi{font-size:28px;font-weight:800;font-family:monospace;opacity:.9}
 .compte-hdr .desc{font-size:16px;font-weight:600}
 .compte-hdr .saldo-box{margin-left:auto;text-align:right}
-.compte-hdr .saldo-label{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.5px}
-.compte-hdr .saldo-val{font-size:24px;font-weight:800}
-.saldo-deure{color:#a8d8a8}
-.saldo-haver{color:#ffb3b3}
+.compte-hdr .saldo-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.compte-hdr .saldo-val{font-size:24px;font-weight:500}
+.saldo-deure{color:#16A34A}
+.saldo-haver{color:#DC2626}
 /* Taula major */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px}
 .tbl-wrap{overflow-x:auto}
 table.maj-tbl{width:100%;border-collapse:collapse;font-size:13px}
-.maj-tbl th{padding:9px 14px;text-align:left;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);background:#fafbfc}
+.maj-tbl th{padding:12px 16px;text-align:left;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);background:var(--white)}
 .maj-tbl td{padding:10px 14px;border-bottom:1px solid var(--border-light);vertical-align:middle}
 .maj-tbl tbody tr:hover td{background:var(--blue-light)}
 .maj-tbl tbody tr:last-child td{border-bottom:none}
@@ -69,7 +69,7 @@ td.amt{text-align:right;font-variant-numeric:tabular-nums}
 th.amt{text-align:right}
 .saldo-pos{color:var(--green);font-weight:700}
 .saldo-neg{color:var(--red);font-weight:700}
-.total-row td{background:#f0f4f8;font-weight:700;border-top:2px solid var(--border)}
+.total-row td{background:#F9FAFB;font-weight:700;border-top:1px solid var(--border)}
 .num-ass{font-family:monospace;font-size:12px;color:var(--blue);font-weight:700}
 .empty-state{text-align:center;padding:50px;color:var(--muted)}
 .empty-state .eico{font-size:48px;margin-bottom:16px;opacity:.3}
@@ -80,7 +80,7 @@ th.amt{text-align:right}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:3px}
 /* sticky header */
 .tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px)}
-.main-tbl thead th{position:sticky;top:0;z-index:3;background:#f0f4f8;box-shadow:0 2px 0 var(--border)}
+.main-tbl thead th{position:sticky;top:0;z-index:3;background:var(--white)}
 </style>
 </head>
 <body>
