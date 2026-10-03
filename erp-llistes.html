@@ -49,7 +49,8 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .ll-grup-item:hover{background:var(--blue-light)}
 .ll-grup-item.active{background:#eff6ff;border-left-color:var(--blue);font-weight:700;color:var(--blue)}
 .ll-grup-item:last-child{border-bottom:none}
-.ll-grup-ico{font-size:18px}
+.ll-grup-ico{width:18px;height:18px;color:#9CA3AF;display:inline-flex;flex-shrink:0}
+.ll-grup-ico svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ll-grup-info{flex:1}
 .ll-grup-nom{font-size:13px;font-weight:600}
 .ll-grup-desc{font-size:11px;color:var(--muted);margin-top:2px}
@@ -60,7 +61,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 
 /* ── Blocs editables ── */
 .ll-bloc{min-width:180px;flex:0 0 auto}
-.ll-bloc-hdr{display:block;font-size:10px;font-weight:800;color:var(--blue);letter-spacing:1px;text-transform:uppercase;background:#e9ecef;border:1px solid var(--border-light);border-radius:5px;padding:4px 8px;margin-bottom:8px}
+.ll-bloc-hdr{display:block;font-size:10px;font-weight:700;color:#236EFA;letter-spacing:.7px;text-transform:uppercase;background:#fff;border:1px solid var(--border);border-radius:5px;padding:4px 8px;margin-bottom:8px}
 .ll-bloc ul{list-style:none;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
 .ll-item{display:flex;align-items:center;background:var(--white);border:1px solid var(--border-light);border-radius:5px;overflow:hidden;padding:4px 4px 4px 8px;font-size:12.5px;gap:6px}
 .ll-item span{flex:1;color:var(--text)}
@@ -146,7 +147,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 // ── DEFINICIÓ DE MÒDULS I LLISTES ──────────────────────────────────────────
 const MODULS = [
   {
-    key: 'clients', nom: 'Clients', ico: '👥', desc: 'Situació · Grup · CNCE',
+    key: 'clients', nom: 'Clients', ico: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5.5 5.5 0 0 1 5.5 5.5"/></svg>', desc: 'Situació · Grup · CNCE',
     llistes: [
       { cat: 'clients_situacio',            nom: 'Situació' },
       { cat: 'clients_grup',                nom: 'Grup / Categoria' },
@@ -154,7 +155,7 @@ const MODULS = [
     ]
   },
   {
-    key: 'projectes', nom: 'Projectes', ico: '📋', desc: 'Estat · Tipus · Provinent',
+    key: 'projectes', nom: 'Projectes', ico: '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 12h6M9 16h4"/></svg>', desc: 'Estat · Tipus · Provinent',
     llistes: [
       { cat: 'projectes_estat',     nom: 'Estat' },
       { cat: 'projectes_tipus',     nom: 'Tipus' },
@@ -162,28 +163,28 @@ const MODULS = [
     ]
   },
   {
-    key: 'facturacio', nom: 'Facturació emeses', ico: '🧾', desc: 'Estat · Forma cobrament',
+    key: 'facturacio', nom: 'Facturació emeses', ico: '<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg>', desc: 'Estat · Forma cobrament',
     llistes: [
       { cat: 'factures_estat', nom: 'Estat factura' },
       { cat: 'forma_pag',      nom: 'Forma de cobrament' },
     ]
   },
   {
-    key: 'fra_rebudes', nom: 'Factures rebudes', ico: '📥', desc: 'Estat · Divises',
+    key: 'fra_rebudes', nom: 'Factures rebudes', ico: '<svg viewBox="0 0 24 24"><path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg>', desc: 'Estat · Divises',
     llistes: [
       { cat: 'fra_rebudes_estat', nom: 'Estat' },
       { cat: 'divises',           nom: 'Divises' },
     ]
   },
   {
-    key: 'despeses', nom: 'Despeses', ico: '✈️', desc: 'Tickets · Viatges',
+    key: 'despeses', nom: 'Despeses', ico: '<svg viewBox="0 0 24 24"><path d="M3 12l18-7-7 18-2-8z"/></svg>', desc: 'Tickets · Viatges',
     llistes: [
       { cat: 'tickets_tipus',    nom: 'Tipus ticket' },
       { cat: 'viatge_categoria', nom: 'Categoria viatge' },
     ]
   },
   {
-    key: 'proveidors', nom: 'Proveïdors', ico: '🏭', desc: 'Situació · Forma pagament · CNCE',
+    key: 'proveidors', nom: 'Proveïdors', ico: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></svg>', desc: 'Situació · Forma pagament · CNCE',
     llistes: [
       { cat: 'prov_situacio', nom: 'Situació' },
       { cat: 'forma_pag',     nom: 'Forma de pagament' },
