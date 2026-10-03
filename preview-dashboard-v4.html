@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Previa v3 — Dashboard amb ombres i ajustos</title>
+<style>
+:root{
+  --bg:#F4F6F8;
+  --white:#FFFFFF;
+  --line:#E7E9ED;
+  --accent:#236EFA;
+  --accent-soft:#EAF1FF;
+  --text:#1D2433;
+  --muted:#6B7280;
+  --track:#E7E9ED;
+  --r:10px;
+  --shadow:0 4px 16px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.04);
+  --shadow-hover:0 8px 24px rgba(16,24,40,.09),0 2px 6px rgba(16,24,40,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+#app{display:flex;height:100vh}
+
+/* Sidebar: blanc de dalt a baix, sense ombra (pla) */
+#sidebar{width:232px;background:var(--white);display:flex;flex-direction:column;flex-shrink:0;padding:22px 0 16px}
+.logo{padding:0 22px 22px}
+.logo-main{font-size:18px;font-weight:700;color:#00387C;letter-spacing:-.3px}
+.logo-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
+.nav-section{padding:18px 22px 8px;font-size:9.5px;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 22px;color:#00387C;font-size:13px;cursor:pointer;border-radius:0 8px 8px 0;margin-right:12px}
+.nav-item:hover{background:#F9FAFB}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-item .ico{width:16px;height:16px;color:#9CA3AF;flex-shrink:0}
+.nav-item.active .ico{color:var(--accent)}
+.nav-sub{padding:6px 22px 6px 48px;font-size:12px;color:var(--muted);cursor:pointer}
+.nav-sub:hover{color:var(--text)}
+
+/* Main: gris de dalt a baix, capçalera inclosa */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+#topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--bg);flex-shrink:0}
+#topbar h1{font-size:18px;font-weight:700;color:#00387C}
+.top-actions{display:flex;align-items:center;gap:10px}
+.btn{padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--white);font-size:12.5px;color:var(--text);cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+#content{flex:1;overflow-y:auto;padding:4px 32px 32px}
+
+.hello{margin-bottom:22px}
+.hello h2{font-size:22px;font-weight:700;letter-spacing:-.3px;color:#00387C}
+.hello p{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* KPI: ombra suau per donar profunditat */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .15s}
+.kpi:hover{box-shadow:var(--shadow-hover)}
+.kpi-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.kpi-val{font-size:26px;font-weight:700;color:var(--text);line-height:1;margin-top:8px}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
+.ring{position:relative;width:46px;height:46px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text)}
+
+/* Targetes amb la mateixa ombra */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;transition:box-shadow .15s}
+.card:hover{box-shadow:var(--shadow-hover)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-hdr h3{font-size:13.5px;font-weight:700}
+.card-hdr a{font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+.li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px}
+.card-hdr + .li{border-top:none}
+.li .meta{color:var(--muted);font-size:11px;margin-top:2px}
+.tag{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;background:#F3F4F6;color:var(--muted)}
+.tag.red{background:#FEECEC;color:#B42318}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <aside id="sidebar">
+    <div class="logo">
+      <div class="logo-main">ACR Estruch - ERP</div>
+      <div class="logo-sub">ACR Estruch ERP v1.0</div>
+    </div>
+    <div class="nav-item active"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg> Dashboard</div>
+    <div class="nav-section">Mòduls</div>
+    <div class="nav-item"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg> Facturació</div>
+    <div class="nav-sub">Factures emeses</div>
+    <div class="nav-sub">Factures rebudes</div>
+    <div class="nav-item"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5a5.5 5.5 0 0 1 5.5 5.5"/></svg> Clients</div>
+    <div class="nav-item"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></svg> Proveïdors</div>
+    <div class="nav-item"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 12h6M9 16h4"/></svg> Projectes</div>
+  </aside>
+
+  <main id="main">
+    <header id="topbar">
+      <h1>Dashboard</h1>
+      <div class="top-actions">
+        <button class="btn">Actualitzar</button>
+        <button class="btn btn-primary">+ Nova factura</button>
+      </div>
+    </header>
+
+    <div id="content">
+      <div class="hello">
+        <h2>Benvingut, Jaume</h2>
+        <p>1 factura vençuda · 9 projectes actius · 94 clients</p>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div>
+            <div class="kpi-label">Factures vençudes</div>
+            <div class="kpi-val">3</div>
+            <div class="kpi-sub">4.490,00 € pendent</div>
+          </div>
+          <div class="ring">
+            <svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="83.6"/></svg>
+            <span>30%</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div>
+            <div class="kpi-label">Pendent de cobrar</div>
+            <div class="kpi-val">1</div>
+            <div class="kpi-sub">250,00 € pendent</div>
+          </div>
+          <div class="ring">
+            <svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="107.5"/></svg>
+            <span>10%</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div>
+            <div class="kpi-label">Pendent de pagar</div>
+            <div class="kpi-val">0</div>
+            <div class="kpi-sub">0,00 € pendent</div>
+          </div>
+          <div class="ring">
+            <svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg>
+            <span>0%</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div>
+            <div class="kpi-label">Projectes actius</div>
+            <div class="kpi-val">9</div>
+            <div class="kpi-sub">51.080,00 € valor total</div>
+          </div>
+          <div class="ring">
+            <svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="47.8"/></svg>
+            <span>60%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <div class="card-hdr"><h3>Factures emeses — alertes</h3><a href="#">Veure totes →</a></div>
+          <div class="li"><div>26017 <div class="meta">Client exemple, S.L.</div></div><span class="tag red">VENÇUDA</span></div>
+          <div class="li"><div>26015 <div class="meta">Altre client, SA</div></div><span class="tag red">VENÇUDA</span></div>
+          <div class="li"><div>26020 <div class="meta">Tercer client</div></div><span class="tag">PROPER</span></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><h3>Factures rebudes pendents</h3><a href="#">Veure totes →</a></div>
+          <div class="li"><div>F-2026-114 <div class="meta">Proveïdor exemple</div></div><span class="tag">PENDENT</span></div>
+          <div class="li"><div>F-2026-109 <div class="meta">Proveïdor dos</div></div><span class="tag">PENDENT</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+</body>
+</html>
