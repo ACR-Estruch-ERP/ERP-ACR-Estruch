@@ -1404,7 +1404,7 @@ async function runDespTickets(){
       if(!rows.length) return;
 
       // CN i CE separats
-      const cn = rows.filter(r=>r.cnce==='CN');
+      const cn = rows.filter(r=>r.cnce!=='CE');
       const ce = rows.filter(r=>r.cnce==='CE');
 
       html += `<tr><td colspan="${2+cols.length}" style="padding:6px 12px;font-weight:700;color:var(--blue);background:#f0f4fa">T${t} ${any}</td></tr>`;

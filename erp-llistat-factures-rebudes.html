@@ -5,21 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Llistat Factures Rebudes — ACR Estruch</title>
 <style>
-.ctrl{background:#1d2535;color:#fff;padding:9px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap}
-.ctrl-title{font-weight:700;color:#7eb3ff;font-size:13.5px}
-.ctrl label{color:#9aaccc}
-.ctrl select,.ctrl input[type=date]{padding:4px 8px;border-radius:5px;border:1px solid #3a4a6a;background:#2a3550;color:#fff;font-size:12.5px;cursor:pointer}
+.ctrl{background:#fff;color:#1D2433;padding:10px 18px;display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap;border-bottom:1px solid #E7E9ED}
+.ctrl-title{font-weight:700;color:#00387C;font-size:13.5px}
+.ctrl label{color:#6B7280}
+.ctrl select,.ctrl input[type=date]{padding:5px 9px;border-radius:8px;border:1px solid #E7E9ED;background:#fff;color:#1D2433;font-size:12.5px;cursor:pointer}
 .ctrl input[type=date]{cursor:text;min-width:120px}
-.ctrl input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
-.ctrl button{padding:6px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
-.btn-go{background:#28a745;color:#fff;font-weight:600}.btn-go:hover{background:#218838}
-.btn-print{background:#0d6efd;color:#fff;font-weight:600}.btn-print:hover{background:#0b5ed7}
-.btn-close{background:#3a4060;color:#ccc}.btn-close:hover{background:#4a5070;color:#fff}
-.ctrl-status{color:#6a8aaa;font-size:11.5px;margin-left:4px}
+.ctrl button{padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12.5px;font-family:inherit}
+.btn-go{background:#236EFA;color:#fff;font-weight:600}.btn-go:hover{background:#1f5fd6}
+.btn-print{background:#00387C;color:#fff;font-weight:600}.btn-print:hover{background:#1a54a0}
+.btn-close{background:#fff;color:#1D2433;border:1px solid #E7E9ED}.btn-close:hover{background:#F9FAFB}
+.ctrl-status{color:#6B7280;font-size:11.5px;margin-left:4px}
 @media print{.ctrl{display:none}}
 
 @page{size:A4 landscape;margin:10mm 12mm 14mm 12mm}
-body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ecef;color:#1a1a1a}
+body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F8;color:#1a1a1a}
 .page{background:#fff;max-width:275mm;margin:14px auto;padding:10mm 12mm 12mm;box-sizing:border-box;min-height:182mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
 @media print{body{background:#fff}.page{margin:0;padding:8mm 10mm;max-width:none;min-height:0;box-shadow:none}}
 
