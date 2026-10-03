@@ -79,13 +79,11 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout
 .year-hdr td{background:#F9FAFB;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.7px;padding:8px 16px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
 .year-hdr:hover td{background:#F3F4F6}
 .pj-codi{font-weight:600;color:var(--accent)}
-.dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
-.dot::before{content:'';width:7px;height:7px;border-radius:50%;background:#9CA3AF}
-.dot.ok::before{background:#16A34A}
-.dot.warn::before{background:#F59E0B}
-.dot.no::before{background:#DC2626}
-.dot.blue{color:var(--accent);font-weight:600}
-.dot.blue::before{background:var(--accent)}
+.est{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;background:#fff;border:1px solid var(--border)}
+.est.ok{color:#16A34A}
+.est.warn{color:#F59E0B}
+.est.no{color:#DC2626}
+.est.blue{color:#236EFA;border-color:#236EFA}
 .notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--accent);color:#fff;cursor:pointer;border:none}
 .notes-badge:hover{opacity:.85}
 .note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
@@ -639,16 +637,16 @@ const ESTAT_MAP={
   'CANCEL·LAT': ['br','CAN'],
 };
 
-const DOT_MAP={
-  'ACTIU':      ['ok','Actiu'],
-  'COMPLETAT':  ['blue','Completat'],
-  'PAUSAT':     ['warn','Pausat'],
-  'CANCEL·LAT': ['no','Cancel·lat'],
+const EST_MAP={
+  'ACTIU':      ['ok','ACT'],
+  'COMPLETAT':  ['blue','COMP'],
+  'PAUSAT':     ['warn','PEND'],
+  'CANCEL·LAT': ['no','CAN'],
 };
 
-function estatDot(estat){
-  const [cls,lbl]=DOT_MAP[estat]||['',estat];
-  return `<span class="dot ${cls}">${lbl}</span>`;
+function estatBadge(estat){
+  const [cls,lbl]=EST_MAP[estat]||['',estat];
+  return `<span class="est ${cls}">${lbl}</span>`;
 }
 
 async function init(){
@@ -854,7 +852,7 @@ function renderTable(rows){
       <td class="amt">${fe(p.import)}</td>
       <td class="amt" style="font-size:12px;color:${pv>0?'var(--amber,#d97706)':'var(--muted)'}">${pv>0?fe(pv):'—'}</td>
       <td style="font-size:12px">${p.facturar||'—'}</td>
-      <td>${estatDot(p.estat)}</td>
+      <td>${estatBadge(p.estat)}</td>
       <td onclick="event.stopPropagation()" style="white-space:nowrap">
         <button class="btn-ico" style="margin-left:0" onclick="openModal('${p.IdPJ}')" title="Editar"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
         <button class="btn-ico" onclick="duplicarProjecte('${p.IdPJ}')" title="Duplicar"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
