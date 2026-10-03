@@ -62,10 +62,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .ll-content{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
 .ll-content-hdr{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .ll-content-hdr h2{font-size:15px;font-weight:700;color:var(--blue);flex:1}
-.ll-blocs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-wrap:wrap;gap:20px;align-content:flex-start}
+.ll-blocs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start}
 
 /* ── Cada bloc (targeta) ── */
-.ll-bloc{min-width:180px;flex:0 0 auto}
+.ll-bloc{min-width:150px;flex:0 0 auto}
 .ll-bloc-hdr{display:block;font-size:10px;font-weight:700;color:#236EFA;letter-spacing:.7px;text-transform:uppercase;background:#fff;border:1px solid var(--border);border-radius:5px;padding:4px 8px;margin-bottom:8px}
 .ll-bloc ul{list-style:none;display:flex;flex-direction:column;gap:2px}
 .ll-bloc ul li{background:var(--white);border:1px solid var(--border-light);border-radius:5px;overflow:hidden}
@@ -254,7 +254,6 @@ const GRUPS = {
           { nom: 'PJ Liquidats CB' },
           { nom: 'PJ Pendent Liquidar CB' },
           { nom: 'PJ Pendent Liquidar CB tots' },
-          { nom: 'PJ per Mercat Destí', url: 'erp-llistat-pj-mercat-desti.html', target: '_blank' },
         ]
       },
       {
@@ -335,17 +334,13 @@ const GRUPS = {
           { nom: 'PJ Entitats Hist' },
           { nom: 'PJ Client' },
           { nom: 'PJ Estat 1', cls: 'c-red' },
-        ]
-      },
-      {
-        nom: 'Projectes — Més',
-        items: [
           { nom: 'PJ Representades' },
           { nom: 'PJ Provinents' },
           { nom: 'PJ Carpeta' },
           { nom: 'PJ Carpeta Pend xlsx', cls: 'c-green' },
           { nom: 'PJ País' },
           { nom: 'PJ Calendari', cls: 'c-red' },
+          { nom: 'PJ per Mercat Destí', url: 'erp-llistat-pj-mercat-desti.html', target: '_blank' },
         ]
       },
       {
