@@ -193,7 +193,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:6px}
 .stat-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
-.stat-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.12}
+.stat-icon{display:none}
+.ring{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:46px;height:46px}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text)}
 
 /* ── FILTER BAR ── */
 .filter-wrap{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 18px;margin-bottom:14px}
@@ -223,7 +226,7 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
 .search-wrap input{padding-left:32px!important}
 .main-tbl tbody tr:hover td{background:var(--blue-light);cursor:pointer}
 .main-tbl tbody tr:last-child td{border-bottom:none}
-.no-fra{font-weight:700;color:var(--blue)}
+.no-fra{font-weight:700;color:var(--accent)}
 td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
 th.amt{text-align:right}
 
@@ -431,26 +434,26 @@ input[type=number]{-moz-appearance:textfield}
       <div class="stat g">
         <div class="stat-label">COB — Cobrades</div>
         <div class="stat-value" id="s-cob">—</div>
-        <div class="stat-sub" id="s-cob-e">—</div>
-        <div class="stat-icon">✅</div>
+        <div class="stat-sub" id="s-cob-e" style="color:var(--accent)">—</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-cob-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-cob-t">0%</span></div>
       </div>
       <div class="stat r">
         <div class="stat-label">PEND — Pendents</div>
         <div class="stat-value" id="s-pen">—</div>
-        <div class="stat-sub" id="s-pen-e">—</div>
-        <div class="stat-icon">🔴</div>
+        <div class="stat-sub" id="s-pen-e" style="color:#DC2626">—</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pen-t">0%</span></div>
       </div>
       <div class="stat a">
         <div class="stat-label">VENÇ &lt;7 — Proper venc.</div>
         <div class="stat-value" id="s-prx">—</div>
         <div class="stat-sub" id="s-prx-e">—</div>
-        <div class="stat-icon">⏰</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-prx-t">0%</span></div>
       </div>
       <div class="stat" style="border-top-color:var(--grey)">
         <div class="stat-label">RECTF — Rectificatives</div>
         <div class="stat-value" id="s-ven">—</div>
         <div class="stat-sub" id="s-ven-e">—</div>
-        <div class="stat-icon">↩️</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-ven-t">0%</span></div>
       </div>
     </div>
 
@@ -468,7 +471,7 @@ input[type=number]{-moz-appearance:textfield}
         </select>
         <input type="date" id="f-de" onchange="applyFilters()" title="Des de (data factura)">
         <input type="date" id="f-fins" onchange="applyFilters()" title="Fins a (data factura)">
-        <button class="btn btn-secondary btn-sm" onclick="clearFilters()">✕ Netejar</button>
+        <button class="btn btn-secondary btn-sm" style="border-color:var(--border);color:var(--text)" onclick="clearFilters()">✕ Netejar</button>
         <span id="f-count" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
     </div>
@@ -1087,6 +1090,16 @@ function renderStats(){
   document.getElementById('s-prx-e').textContent=f(e.PROXIM);
   document.getElementById('s-ven').textContent=n.RECTF;
   document.getElementById('s-ven-e').textContent=f(e.RECTF);
+  const total=allInvoices.length;
+  const setRing=(id,c)=>{
+    const pc=total?c/total*100:0;
+    document.getElementById(`r-${id}-c`).style.strokeDashoffset=119.4*(1-pc/100);
+    document.getElementById(`r-${id}-t`).textContent=Math.round(pc)+'%';
+  };
+  setRing('cob',n.COB);
+  setRing('pen',n.PEND);
+  setRing('prx',n.PROXIM);
+  setRing('ven',n.RECTF);
 }
 
 // ════════════════════════════════════════════════
