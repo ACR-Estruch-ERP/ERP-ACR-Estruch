@@ -62,14 +62,21 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .filter-bar input:focus,.filter-bar select:focus{outline:none;border-color:var(--blue)}
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px}
 .tbl-wrap{overflow-x:auto}
-table.main-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.main-tbl th{padding:9px 14px;text-align:left;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);white-space:nowrap;background:#fafbfc}
-.main-tbl td{padding:11px 14px;border-bottom:1px solid var(--border-light);vertical-align:middle}
-.main-tbl tbody tr:hover td{background:var(--blue-light);cursor:pointer}
+table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+.main-tbl th{padding:12px 16px;text-align:left;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--white)}
+.main-tbl td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+.main-tbl tbody tr:hover td{background:#FAFBFC;cursor:pointer}
 .main-tbl tbody tr:last-child td{border-bottom:none}
-.year-hdr td{background:#eef2f8;font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.6px;padding:6px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
-.year-hdr:hover td{background:#dde6f5}
-.pj-codi{font-weight:700;color:var(--blue)}
+.year-hdr td{background:#F9FAFB;font-size:10px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.7px;padding:8px 16px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+.year-hdr:hover td{background:#F3F4F6}
+.pj-codi{font-weight:600;color:var(--accent)}
+.dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.dot::before{content:'';width:7px;height:7px;border-radius:50%;background:#9CA3AF}
+.dot.ok::before{background:#16A34A}
+.dot.warn::before{background:#F59E0B}
+.dot.no::before{background:#DC2626}
+.dot.blue{color:var(--accent);font-weight:600}
+.dot.blue::before{background:var(--accent)}
 .notes-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
 .notes-badge:hover{opacity:.85}
 .note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
@@ -219,10 +226,10 @@ input[type=number]{-moz-appearance:textfield}
       <div class="tbl-wrap">
         <table class="main-tbl">
           <colgroup>
-            <col style="width:75px"><col style="width:20%"><col style="width:13%">
-            <col style="width:100px">
-            <col style="width:90px"><col style="width:110px"><col style="width:100px">
-            <col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:110px">
+            <col style="width:80px"><col style="width:30%"><col style="width:16%">
+            <col style="width:110px">
+            <col style="width:100px"><col style="width:120px"><col style="width:100px">
+            <col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:120px">
           </colgroup>
           <thead>
             <tr>
@@ -620,9 +627,16 @@ const ESTAT_MAP={
   'CANCEL·LAT': ['br','CAN'],
 };
 
-function badgeHtml(estat){
-  const [cls,lbl]=ESTAT_MAP[estat]||['bx',estat];
-  return `<span class="badge ${cls}">${lbl}</span>`;
+const DOT_MAP={
+  'ACTIU':      ['ok','Actiu'],
+  'COMPLETAT':  ['blue','Completat'],
+  'PAUSAT':     ['warn','Pausat'],
+  'CANCEL·LAT': ['no','Cancel·lat'],
+};
+
+function estatDot(estat){
+  const [cls,lbl]=DOT_MAP[estat]||['',estat];
+  return `<span class="dot ${cls}">${lbl}</span>`;
 }
 
 async function init(){
@@ -820,7 +834,7 @@ function renderTable(rows){
       <td class="amt">${fe(p.import)}</td>
       <td class="amt" style="font-size:12px;color:${pv>0?'var(--amber,#d97706)':'var(--muted)'}">${pv>0?fe(pv):'—'}</td>
       <td style="font-size:12px">${p.facturar||'—'}</td>
-      <td>${badgeHtml(p.estat)}</td>
+      <td>${estatDot(p.estat)}</td>
       <td onclick="event.stopPropagation()" style="white-space:nowrap">
         <button class="btn btn-secondary btn-xs" onclick="openModal('${p.IdPJ}')">✏️</button>
         <button class="btn btn-xs" style="margin-left:4px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7" onclick="duplicarProjecte('${p.IdPJ}')" title="Duplicar">⧉</button>
