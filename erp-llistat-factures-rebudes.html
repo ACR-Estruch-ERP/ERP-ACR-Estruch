@@ -17,7 +17,7 @@
 .ctrl-status{color:#6B7280;font-size:11.5px;margin-left:4px}
 @media print{.ctrl{display:none}}
 
-@page{size:A4 landscape;margin:10mm 12mm 14mm 12mm}
+@page{size:A4 landscape;margin:10mm 12mm 16mm 12mm}
 body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F8;color:#1a1a1a}
 .page{background:#fff;max-width:275mm;margin:14px auto;padding:10mm 12mm 12mm;box-sizing:border-box;min-height:182mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
 @media print{body{background:#fff}.page{margin:0;padding:8mm 10mm;max-width:none;min-height:0;box-shadow:none}}
@@ -61,10 +61,6 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6
 .compt-si{color:#28a745;font-size:8pt;line-height:1}
 .compt-no{color:#ccc;font-size:8pt;line-height:1}
 
-.doc-footer{display:flex;align-items:baseline;justify-content:space-between;font-size:6.5pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif;padding-top:6mm;margin-top:auto}
-.doc-footer-addr{text-align:center;flex:1}
-.doc-footer-info{white-space:nowrap}
-@media print{.doc-footer{position:fixed;bottom:8mm;left:12mm;right:12mm}}
 @media screen{.page{display:flex;flex-direction:column}}
 </style>
 </head>
@@ -115,10 +111,6 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6
     <tfoot id="fra-tfoot"></tfoot>
   </table>
 
-  <div class="doc-footer">
-    <div class="doc-footer-info" id="page-info"></div>
-    <div class="doc-footer-addr">Muntaner, 440, 1-1B &nbsp;|&nbsp; 08006 Barcelona &nbsp;|&nbsp; +34 609852478 &nbsp;|&nbsp; info@acrestruch.com &nbsp;|&nbsp; www.acrestruch.com</div>
-  </div>
 </div>
 
 <script src="js/neon-client.js"></script>
@@ -263,7 +255,14 @@ async function loadData() {
     </tr>`;
 
     document.getElementById('ctrl-status').textContent = `${rows.length} factures`;
-    document.getElementById('page-info').textContent = new Date().toLocaleDateString('ca-ES');
+    const now = new Date();
+    const stamp = `${now.toLocaleDateString('ca-ES')} ${now.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'})}`;
+    let pf = document.getElementById('print-footer');
+    if(!pf){ pf = document.createElement('style'); pf.id = 'print-footer'; document.head.appendChild(pf); }
+    pf.textContent = `@page{
+      @bottom-left{content:"Llistat Factures Rebudes · ${stamp} · " counter(page) "/" counter(pages);font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
+      @bottom-center{content:"Muntaner, 440, 1-1B | 08006 Barcelona | +34 609852478 | info@acrestruch.com | www.acrestruch.com";font-size:8pt;color:#888;font-family:'Myriad Pro','Myriad Set Pro',Arial,sans-serif}
+    }`;
     document.getElementById('doc-title').textContent =
       `FACTURES REBUDES. TOTALS MENSUALS — ${fDate(from)} / ${fDate(to)}`;
 
