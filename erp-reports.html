@@ -95,14 +95,19 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .rtbl tbody tr:hover td{background:#FAFBFC}
 
 /* FILES DE SUBTOTAL */
-.rtbl tr.subtotal td{background:#F9FAFB;font-weight:700;font-size:11.5px;color:var(--text);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.rtbl tr.subtotal td{background:#F9FAFB;font-weight:400;font-size:11.5px;color:var(--text);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .rtbl tr.subtotal td.r{text-align:right}
 .rtbl tr.total-final td{background:#F9FAFB;color:var(--text);font-weight:700;font-size:12px;border-top:1px solid var(--border)}
 .rtbl tr.total-final td.r{text-align:right}
 
 /* P&L — files col·lapsables */
 .rtbl tr.ex-grp{cursor:pointer;user-select:none}
-.rtbl tr.ex-lvl0 td{background:#F9FAFB;font-weight:700;color:var(--text)}
+.est{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:400;white-space:nowrap;background:#fff;border:1px solid var(--border)}
+.est-act{color:#236EFA}
+.est-pend{color:#F59E0B}
+.est-comp{color:#236EFA;border-color:#236EFA}
+.est-can{color:#DC2626}
+.rtbl tr.ex-lvl0 td{background:#F9FAFB;font-weight:400;color:var(--text)}
 .rtbl tr.ex-lvl1 td{background:#f2f5fb;font-weight:600;color:var(--blue)}
 .rtbl tr.ex-lvl2 td{background:#f8fafc;font-weight:600;color:#555}
 .rtbl tr.ex-lvl3 td{color:var(--muted);font-size:11.5px}
@@ -1463,12 +1468,12 @@ async function runProjectes(){
     const fe = n => n ? Number(n).toLocaleString('ca-ES',{minimumFractionDigits:2}) : '—';
 
     const ESTAT_CFG = {
-      'ACTIU':     {cls:'bg', lbl:'Actiu'},
-      'PAUSAT':    {cls:'by', lbl:'Pausat'},
-      'COMPLETAT': {cls:'bb', lbl:'Completat'},
-      'CANCEL·LAT':{cls:'bx', lbl:'Cancel·lat'},
+      'ACTIU':     {cls:'est-act', lbl:'ACT'},
+      'PAUSAT':    {cls:'est-pend', lbl:'PEND'},
+      'COMPLETAT': {cls:'est-comp', lbl:'COMP'},
+      'CANCEL·LAT':{cls:'est-can', lbl:'CAN'},
     };
-    const badge = e => {const c=ESTAT_CFG[e]||{cls:'bx',lbl:e}; return `<span class="badge ${c.cls}">${c.lbl}</span>`;};
+    const badge = e => {const c=ESTAT_CFG[e]||{cls:'est-act',lbl:e}; return `<span class="est ${c.cls}">${c.lbl}</span>`;};
 
     // filtre per any (sobre data_inici o data_entrada)
     const rows = filtAny
@@ -1504,8 +1509,8 @@ async function runProjectes(){
       const subtotal = llista.reduce((s,p)=>s+(Number(p.import)||0),0);
       grandTotal += subtotal;
       html += `
-        <tr style="background:#eef2f8">
-          <td colspan="9" style="padding:5px 12px;font-size:11px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.5px">
+        <tr style="background:#fff">
+          <td colspan="9" style="padding:5px 12px;font-size:11px;font-weight:700;color:#236EFA;text-transform:uppercase;letter-spacing:.5px">
             ${GRUP_LBL[grupKey]} — ${llista.length} projecte${llista.length!==1?'s':''}
           </td>
         </tr>`;
