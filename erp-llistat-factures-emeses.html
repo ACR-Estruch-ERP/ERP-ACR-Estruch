@@ -67,15 +67,6 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6
 /* Una sola ratlla fina just abans dels totals */
 .fra-table tfoot td{font-weight:700;border-top:.8px solid #888;padding-top:1.8mm;color:#595959;font-size:7.5pt}
 
-/* ── FOOTER (fixat al peu de pàgina) ── */
-.doc-footer{position:fixed;bottom:10mm;left:14mm;right:14mm;display:flex;align-items:baseline;justify-content:space-between;font-size:7pt;color:#aaa;font-family:'Segoe UI',Arial,sans-serif}
-.doc-footer-addr{text-align:center;flex:1}
-.doc-footer-info{white-space:nowrap;font-size:6.5pt}
-/* Screen: empeny el footer al fons dins .page */
-@media screen{
-  .doc-footer{position:static;margin-top:auto;padding-top:8mm;display:flex}
-  .page{display:flex;flex-direction:column}
-}
 </style>
 </head>
 <body>
@@ -128,11 +119,6 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#F4F6
     <tfoot id="fra-tfoot"></tfoot>
   </table>
 
-  <!-- Footer fixat al peu -->
-  <div class="doc-footer">
-    <div class="doc-footer-info" id="page-info"></div>
-    <div class="doc-footer-addr">Muntaner, 440, 1-1B &nbsp;|&nbsp; 08006 Barcelona &nbsp;|&nbsp; +34 609852478 &nbsp;|&nbsp; info@acrestruch.com &nbsp;|&nbsp; www.acrestruch.com</div>
-  </div>
 
 </div>
 
@@ -232,8 +218,14 @@ async function loadData() {
 
     renderTable(rows);
     document.getElementById('ctrl-status').textContent = `${rows.length} factures carregades`;
-    document.getElementById('page-info').textContent =
-      `${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - qa_IN_list`;
+    const now = new Date();
+    const stamp = `${now.toLocaleDateString('ca-ES')} ${now.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'})}`;
+    let pf = document.getElementById('print-footer');
+    if(!pf){ pf = document.createElement('style'); pf.id = 'print-footer'; document.head.appendChild(pf); }
+    pf.textContent = `@page{
+      @bottom-left{content:"Llistat Factures Emeses · ${stamp} · " counter(page) "/" counter(pages);font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
+      @bottom-center{content:"Muntaner, 440, 1-1B | 08006 Barcelona | +34 609852478 | info@acrestruch.com | www.acrestruch.com";font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
+    }`;
 
   } catch(e) {
     tbody.innerHTML = `<tr><td colspan="10" style="color:#c00;padding:6mm">Error: ${e.message}</td></tr>`;
