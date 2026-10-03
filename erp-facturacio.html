@@ -1162,7 +1162,7 @@ function renderTable(rows){
         <td><span class="no-fra">${inv.no_factura}</span>${inv.notes_privades ? `<span class="notes-badge" onclick="event.stopPropagation();showNote(${inv.id})" title="Veure nota privada">NOTES</span>` : ''}</td>
         <td>${fd(inv.data_fra)}</td>
         <td>${fd(inv.data_venciment)}</td>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${cli}">${cli}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700" title="${cli}">${cli}</td>
         <td style="color:var(--muted);font-size:11px">${inv.id_projecte||'—'}</td>
         <td class="amt">${fe(invBase(inv))}</td>
         <td class="amt" style="font-weight:700">${fe(tot)}</td>
