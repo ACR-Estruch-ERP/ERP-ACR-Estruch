@@ -105,11 +105,6 @@ body{margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#e9ec
     <tfoot id="pj-tfoot"></tfoot>
   </table>
 
-  <!-- Footer fixat al peu -->
-  <div class="doc-footer">
-    <div class="doc-footer-info" id="page-info"></div>
-    <div class="doc-footer-addr">Muntaner, 440, 1-1B &nbsp;|&nbsp; 08006 Barcelona &nbsp;|&nbsp; +34 609852478 &nbsp;|&nbsp; info@acrestruch.com &nbsp;|&nbsp; www.acrestruch.com</div>
-  </div>
 
 </div>
 
@@ -186,7 +181,14 @@ function applyFilter(){
   </tr>`).join('');
   tfoot.innerHTML=`<tr><td colspan="7" style="font-style:italic">Total projectes: ${rows.length}</td></tr>`;
   document.getElementById('ctrl-status').textContent=`${rows.length} projectes`;
-  document.getElementById('page-info').textContent=`${new Date().toLocaleDateString('ca-ES')} - 1 / 1 - pj_mercat_desti`;
+  const now = new Date();
+  const stamp = `${now.toLocaleDateString('ca-ES')} ${now.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'})}`;
+  let pf = document.getElementById('print-footer');
+  if(!pf){ pf = document.createElement('style'); pf.id = 'print-footer'; document.head.appendChild(pf); }
+  pf.textContent = `@page{
+    @bottom-left{content:"Projectes per Mercat Destí · ${stamp} · " counter(page) "/" counter(pages);font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
+    @bottom-center{content:"Muntaner, 440, 1-1B | 08006 Barcelona | +34 609852478 | info@acrestruch.com | www.acrestruch.com";font-size:8pt;color:#888;font-family:'Myriad Pro','Myriad Set Pro',Arial,sans-serif}
+  }`;
 }
 
 loadData();

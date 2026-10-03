@@ -260,7 +260,7 @@ async function loadData() {
     let pf = document.getElementById('print-footer');
     if(!pf){ pf = document.createElement('style'); pf.id = 'print-footer'; document.head.appendChild(pf); }
     pf.textContent = `@page{
-      @bottom-left{content:"Llistat Factures Rebudes · ${stamp} · " counter(page) "/" counter(pages);font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
+      @bottom-left{content:"Llistat Factures Rebudes · ${stamp} · " counter(page) "/" counter(pages);padding-left:10mm;font-size:5pt;color:#888;font-family:'Segoe UI',Arial,sans-serif}
       @bottom-center{content:"Muntaner, 440, 1-1B | 08006 Barcelona | +34 609852478 | info@acrestruch.com | www.acrestruch.com";font-size:8pt;color:#888;font-family:'Myriad Pro','Myriad Set Pro',Arial,sans-serif}
     }`;
     document.getElementById('doc-title').textContent =
