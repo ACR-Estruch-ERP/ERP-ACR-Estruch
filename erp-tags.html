@@ -79,6 +79,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .tags-add input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:inherit}
 .tags-add input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,124,.08)}
 .empty-tags{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+.btn-ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;padding:0;border:1px solid var(--border);border-radius:6px;background:#fff;color:#9CA3AF;cursor:pointer}
+.btn-ico:hover{color:var(--text);border-color:#D1D5DB}
+.btn-ico svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .edit-input{flex:1;padding:5px 8px;border:1.5px solid var(--blue);border-radius:var(--r);font-size:13px;font-family:inherit}
 .edit-input:focus{outline:none}
 </style>
@@ -88,7 +91,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 
 <nav id="sidebar">
   <div id="logo-area" onclick="location.href='index.html'">
-    <div class="logo-main">ACR<span class="sep">·</span>ERP</div>
+    <div class="logo-main">ACR Estruch - ERP</div>
     <div class="logo-sub">ACR Estruch ERP v1.0</div>
   </div>
   <div id="nav">
@@ -216,8 +219,8 @@ function renderCat(cat){
     <div class="tag-item" id="tag-${t.id}">
       <span class="tag-nom" id="nom-${t.id}">${t.nom}</span>
       <div class="tag-actions">
-        <button class="btn btn-secondary btn-xs" onclick="editTag(${t.id},'${t.nom.replace(/'/g,"\\'")}')">✏️</button>
-        <button class="btn btn-danger btn-xs" onclick="delTag(${t.id},'${t.nom.replace(/'/g,"\\'")}')">✕</button>
+        <button class="btn-ico" onclick="editTag(${t.id},'${t.nom.replace(/'/g,"\\'")}')" title="Editar"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
+        <button class="btn-ico" onclick="delTag(${t.id},'${t.nom.replace(/'/g,"\\'")}')" title="Eliminar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
     </div>
   `).join('');
