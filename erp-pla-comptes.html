@@ -57,12 +57,15 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
 .main-tbl tbody tr:hover td{background:var(--blue-light);cursor:pointer}
 .main-tbl tbody tr:last-child td{border-bottom:none}
 .grup-hdr td{background:#f0f4f8;font-weight:700;color:var(--blue);font-size:12px;padding:6px 14px;border-bottom:1px solid var(--border)}
-.compte-cod{font-weight:700;color:var(--blue);font-family:monospace;font-size:13px}
+.compte-cod{font-weight:700;color:#236EFA;font-family:monospace;font-size:13px}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;fill:none;stroke:#9CA3AF;stroke-width:1.8;stroke-linecap:round;pointer-events:none}
+.search-wrap input{padding-left:32px!important}
 .badge-tipus{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:#fff;border:1px solid var(--border)}
 .btn-ico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;margin-left:4px;padding:0;border:1px solid var(--border);border-radius:6px;background:#fff;color:#9CA3AF;cursor:pointer}
 .btn-ico:hover{color:var(--text);border-color:#D1D5DB}
 .btn-ico svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.t-act{color:#16A34A}.t-pas{color:#DC2626}
+.t-act{color:#236EFA}.t-pas{color:#DC2626}
 .t-ing{color:#236EFA}.t-des{color:#F59E0B}
 .t-pat{color:#5b21b6}
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
@@ -134,7 +137,7 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:13px}
   <div id="content">
     <div class="filter-wrap">
       <div class="filter-bar">
-        <input type="text" id="f-cerca" placeholder="🔍  Cerca compte o descripció..." oninput="applyFilters()" style="min-width:220px">
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="f-cerca" placeholder="Cerca compte o descripció..." oninput="applyFilters()" style="min-width:220px"></div>
         <select id="f-grup" onchange="applyFilters()">
           <option value="">Tots els grups</option>
           <option value="4">Grup 4 — Creditors i deutors</option>
