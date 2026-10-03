@@ -47,13 +47,14 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .btn:disabled{opacity:.5;cursor:default}
 #content{flex:1;overflow-y:auto;padding:18px 22px}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
-.stat{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px;border-top:3px solid var(--blue);position:relative;overflow:hidden}
-.stat.g{border-top-color:var(--green)}.stat.y{border-top-color:var(--yellow)}
-.stat.a{border-top-color:var(--amber)}.stat.r{border-top-color:var(--red)}
-.stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:5px}
+.stat{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;position:relative;overflow:hidden;border-top:none}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:6px}
 .stat-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
-.stat-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.12}
+.stat-icon{display:none}
+.ring{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:46px;height:46px}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text)}
 .filter-wrap{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 18px;margin-bottom:14px}
 .filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .filter-bar input,.filter-bar select{padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;color:var(--text);transition:border-color .15s}
@@ -72,7 +73,7 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
 .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;fill:none;stroke:#9CA3AF;stroke-width:1.8;stroke-linecap:round;pointer-events:none}
 .search-wrap input{padding-left:32px!important}
 .main-tbl tbody tr:last-child td{border-bottom:none}
-.no-fra{font-weight:700;color:var(--blue)}
+.no-fra{font-weight:700;color:var(--accent)}
 .notes-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap;background:var(--blue);color:#fff;cursor:pointer;border:none}
 .notes-badge:hover{opacity:.85}
 .note-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;align-items:center;justify-content:center}
@@ -83,7 +84,9 @@ table.main-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
 .note-modal .btn{margin-top:16px}
 td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
 th.amt{text-align:right}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;border:1px solid var(--border)}
+.badge.bg{background:#fff;color:var(--accent)}
+.badge.br{background:#fff;color:#DC2626}
 .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
 .bg{background:var(--green-bg);color:var(--green-txt)}
 .by{background:var(--yellow-bg);color:var(--yellow-txt)}
@@ -215,26 +218,26 @@ input[type=number]{-moz-appearance:textfield}
       <div class="stat g">
         <div class="stat-label">Pagades</div>
         <div class="stat-value" id="s-pag">—</div>
-        <div class="stat-sub" id="s-pag-e">—</div>
-        <div class="stat-icon">✅</div>
+        <div class="stat-sub" id="s-pag-e" style="color:var(--accent)">—</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pag-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pag-t">0%</span></div>
       </div>
       <div class="stat y">
         <div class="stat-label">Pendents</div>
         <div class="stat-value" id="s-pen">—</div>
-        <div class="stat-sub" id="s-pen-e">—</div>
-        <div class="stat-icon">🕐</div>
+        <div class="stat-sub" id="s-pen-e" style="color:#DC2626">—</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pen-t">0%</span></div>
       </div>
       <div class="stat a">
         <div class="stat-label">Venç en &lt;7 dies</div>
         <div class="stat-value" id="s-prx">—</div>
         <div class="stat-sub" id="s-prx-e">—</div>
-        <div class="stat-icon">⏰</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-prx-t">0%</span></div>
       </div>
       <div class="stat r">
         <div class="stat-label">Vençudes</div>
         <div class="stat-value" id="s-ven">—</div>
-        <div class="stat-sub" id="s-ven-e">—</div>
-        <div class="stat-icon">⚠️</div>
+        <div class="stat-sub" id="s-ven-e" style="color:#DC2626">—</div>
+        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-ven-t">0%</span></div>
       </div>
     </div>
 
@@ -246,7 +249,7 @@ input[type=number]{-moz-appearance:textfield}
         </select>
         <input type="date" id="f-de" onchange="applyFilters()" title="Des de">
         <input type="date" id="f-fins" onchange="applyFilters()" title="Fins a">
-        <button class="btn btn-secondary btn-sm" onclick="clearFilters()">✕ Netejar</button>
+        <button class="btn btn-secondary btn-sm" style="border-color:var(--border);color:var(--text)" onclick="clearFilters()">✕ Netejar</button>
         <span id="f-count" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
     </div>
@@ -671,6 +674,16 @@ function renderStats(){
   document.getElementById('s-prx-e').textContent=f(e.PROXIM);
   document.getElementById('s-ven').textContent=n.VENC;
   document.getElementById('s-ven-e').textContent=f(e.VENC);
+  const total=allFra.length;
+  const setRing=(id,c)=>{
+    const pc=total?c/total*100:0;
+    document.getElementById(`r-${id}-c`).style.strokeDashoffset=119.4*(1-pc/100);
+    document.getElementById(`r-${id}-t`).textContent=Math.round(pc)+'%';
+  };
+  setRing('pag',n.PAG);
+  setRing('pen',n.PEND);
+  setRing('prx',n.PROXIM);
+  setRing('ven',n.VENC);
 }
 
 // ── TAULA ──
