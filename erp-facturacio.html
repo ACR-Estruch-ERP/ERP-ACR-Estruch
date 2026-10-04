@@ -954,7 +954,7 @@ async function loadClients(demo){
 function onClientChange(){
   const opt = document.getElementById('m-client').selectedOptions[0];
   if(!opt || !opt.value) return;
-  const cnce = opt.dataset.cnce || 'CN';
+  const cnce = (opt.dataset.cnce || 'CN').slice(0,2);
   const noTax = cnce === 'CE' || cnce === 'EX';
   document.getElementById('m-iva').value  = noTax ? 0 : opt.dataset.iva;
   document.getElementById('m-irpf').value = noTax ? 0 : opt.dataset.irpf;
