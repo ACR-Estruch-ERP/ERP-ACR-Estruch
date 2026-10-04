@@ -508,8 +508,11 @@ async function loadClients(){
     [allClients] = await Promise.all([
       sbGet('clients','select=*&order=codi.desc.nullslast'),
     ]);
-    const pendFras = await sbGet('factures','select=id_client&estat=in.(PENDENT,PARCIAL)&total_factura=gt.0');
-    const clientsAmbPendent = new Set(pendFras.map(f=>f.id_client)).size;
+    const pendFras = await sbGet('factures','select=id_client,estat,total_factura,import_cobrat&total_factura=gt.0');
+    const esRect = f => /^(RECT|PROF)/.test(String(f.estat||'').toUpperCase());
+    const clientsAmbPendent = new Set(pendFras
+      .filter(f=>!esRect(f) && (parseFloat(f.total_factura)||0)-(parseFloat(f.import_cobrat)||0)>0.01)
+      .map(f=>f.id_client)).size;
     renderStats(clientsAmbPendent);
     renderTable(allClients);
     populatePaisFilter();
