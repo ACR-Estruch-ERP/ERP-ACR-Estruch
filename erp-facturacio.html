@@ -194,9 +194,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .stat-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
 .stat-icon{display:none}
-.ring{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:58px;height:58px}
+.ring{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:72px;height:72px}
 .ring svg{transform:rotate(-90deg)}
-.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:var(--text)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:var(--text)}
 
 /* ── FILTER BAR ── */
 .filter-wrap{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 18px;margin-bottom:14px}
@@ -436,25 +436,25 @@ input[type=number]{-moz-appearance:textfield}
         <div class="stat-label">COB — Cobrades</div>
         <div class="stat-value" id="s-cob">—</div>
         <div class="stat-sub" id="s-cob-e" style="color:var(--accent)">—</div>
-        <div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="25" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-cob-c" cx="29" cy="29" r="25" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="157.1" stroke-dashoffset="157.1"/></svg><span id="r-cob-t">0%</span></div>
+        <div class="ring"><svg width="72" height="72"><circle cx="36" cy="36" r="31" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-cob-c" cx="36" cy="36" r="31" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="194.8"/></svg><span id="r-cob-t">0%</span></div>
       </div>
       <div class="stat r">
         <div class="stat-label">PEND — Pendents</div>
         <div class="stat-value" id="s-pen">—</div>
         <div class="stat-sub" id="s-pen-e" style="color:#DC2626">—</div>
-        <div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="25" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="29" cy="29" r="25" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="157.1" stroke-dashoffset="157.1"/></svg><span id="r-pen-t">0%</span></div>
+        <div class="ring"><svg width="72" height="72"><circle cx="36" cy="36" r="31" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="36" cy="36" r="31" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="194.8"/></svg><span id="r-pen-t">0%</span></div>
       </div>
       <div class="stat a">
         <div class="stat-label">VENÇ &lt;7 — Proper venc.</div>
         <div class="stat-value" id="s-prx">—</div>
         <div class="stat-sub" id="s-prx-e">—</div>
-        <div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="25" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="29" cy="29" r="25" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="157.1" stroke-dashoffset="157.1"/></svg><span id="r-prx-t">0%</span></div>
+        <div class="ring"><svg width="72" height="72"><circle cx="36" cy="36" r="31" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="36" cy="36" r="31" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="194.8"/></svg><span id="r-prx-t">0%</span></div>
       </div>
       <div class="stat" style="border-top-color:var(--grey)">
         <div class="stat-label">RECTF — Rectificatives</div>
         <div class="stat-value" id="s-ven">—</div>
         <div class="stat-sub" id="s-ven-e">—</div>
-        <div class="ring"><svg width="58" height="58"><circle cx="29" cy="29" r="25" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="29" cy="29" r="25" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="157.1" stroke-dashoffset="157.1"/></svg><span id="r-ven-t">0%</span></div>
+        <div class="ring"><svg width="72" height="72"><circle cx="36" cy="36" r="31" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="36" cy="36" r="31" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="194.8"/></svg><span id="r-ven-t">0%</span></div>
       </div>
     </div>
 
@@ -1094,7 +1094,7 @@ function renderStats(){
   const totalCollectible=n.COB+n.PEND+n.PROXIM;
   const setRing=(id,c,base)=>{
     const pc=base?c/base*100:0;
-    document.getElementById(`r-${id}-c`).style.strokeDashoffset=157.1*(1-pc/100);
+    document.getElementById(`r-${id}-c`).style.strokeDashoffset=194.8*(1-pc/100);
     document.getElementById(`r-${id}-t`).textContent=pc.toFixed(2)+'%';
   };
   setRing('cob',n.COB,totalCollectible);
