@@ -579,6 +579,7 @@ function renderStats(clientsAmbPendent=0){
   document.getElementById('s-total').textContent = total;
   document.getElementById('s-total-sub').textContent = total === 1 ? 'client' : 'clients';
   document.getElementById('s-amb-fra').textContent = clientsAmbPendent || '—';
+  document.getElementById('s-amb-fra').style.color = clientsAmbPendent>0 ? '#DC2626' : '';
   document.getElementById('s-paisos').textContent = paisos;
 }
 

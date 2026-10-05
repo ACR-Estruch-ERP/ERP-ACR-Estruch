@@ -45,8 +45,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .btn-sm{padding:5px 10px;font-size:12px}.btn-xs{padding:3px 8px;font-size:11px}
 .btn:disabled{opacity:.5;cursor:default}
 #content{flex:1;overflow-y:auto;padding:18px 22px}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
-.stat{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;position:relative;overflow:hidden;border-top:none}
+.stats-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+.stat{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;position:relative;overflow:hidden;border-top:none;flex:1 1 150px}
+.stat-group{display:flex;gap:36px;flex:2 1 380px}
+.stat-item{display:flex;flex-direction:column;gap:3px}
 .stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:6px}
 .stat-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
@@ -175,29 +177,59 @@ input[type=number]{-moz-appearance:textfield}
   <div id="content">
 
     <div class="stats-row">
-      <div class="stat">
-        <div class="stat-label">Total proveïdors</div>
-        <div class="stat-value" id="s-total">—</div>
-        <div class="stat-sub" id="s-sub">registrats</div>
-        <div class="stat-icon">🏭</div>
+      <div class="stat stat-group">
+        <div class="stat-item">
+          <div class="stat-label">Total proveïdors</div>
+          <div class="stat-value" id="s-total">—</div>
+          <div class="stat-sub" id="s-sub">proveïdors</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Actius</div>
+          <div class="stat-value" id="s-sit-act" style="color:#236EFA">—</div>
+          <div class="stat-sub">situació ACT</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">N/A</div>
+          <div class="stat-value" id="s-sit-na" style="color:#9CA3AF">—</div>
+          <div class="stat-sub">situació N/A</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Nuls</div>
+          <div class="stat-value" id="s-sit-nul" style="color:#DC2626">—</div>
+          <div class="stat-sub">situació NUL</div>
+        </div>
+      </div>
+      <div class="stat stat-group">
+        <div class="stat-item">
+          <div class="stat-label">CN</div>
+          <div class="stat-value" id="s-cnce-cn" style="color:#236EFA">—</div>
+          <div class="stat-sub">Nacional</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">CE</div>
+          <div class="stat-value" id="s-cnce-ce" style="color:#236EFA">—</div>
+          <div class="stat-sub">Comunitari (UE)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">EX</div>
+          <div class="stat-value" id="s-cnce-ex" style="color:#236EFA">—</div>
+          <div class="stat-sub">Extracomunitari</div>
+        </div>
       </div>
       <div class="stat">
         <div class="stat-label">Amb factures actives</div>
         <div class="stat-value" id="s-amb-fra">—</div>
         <div class="stat-sub">proveïdors amb pendent de pagar</div>
-        <div class="stat-icon">🧾</div>
       </div>
       <div class="stat">
         <div class="stat-label">Països</div>
         <div class="stat-value" id="s-paisos">—</div>
         <div class="stat-sub">orígens</div>
-        <div class="stat-icon">🌍</div>
       </div>
       <div class="stat">
         <div class="stat-label">Divises</div>
         <div class="stat-value" id="s-div">—</div>
         <div class="stat-sub">monedes actives</div>
-        <div class="stat-icon">💱</div>
       </div>
     </div>
 
@@ -488,8 +520,10 @@ async function loadCatTags(){
 async function loadProveidors(){
   try{
     allProv=await sbGet('proveidors','select=*&order=codi');
-    const pendFras=await sbGet('factures_rebudes','select=codi_prov&estat=in.(PENDENT,PARCIALMENT,VENCUDA,PROXIM)&total_factura=gt.0');
-    const provAmbPendent=new Set(pendFras.map(f=>f.codi_prov)).size;
+    const pendFras=await sbGet('factures_rebudes','select=codi_prov,total_factura,import_pagat&total_factura=gt.0');
+    const provAmbPendent=new Set(pendFras
+      .filter(f=>(parseFloat(f.total_factura)||0)-(parseFloat(f.import_pagat)||0)>0.01)
+      .map(f=>f.codi_prov)).size;
     renderStats(provAmbPendent); renderTable(allProv); populatePaisFilter();
   }catch(e){ toast('Error: '+e.message,'err'); allProv=[]; renderTable([]); }
 }
@@ -503,8 +537,17 @@ function renderStats(provAmbPendent=0){
   document.getElementById('s-total').textContent=total;
   document.getElementById('s-sub').textContent=total===1?'proveïdor':'proveïdors';
   document.getElementById('s-amb-fra').textContent=provAmbPendent||'—';
+  document.getElementById('s-amb-fra').style.color=provAmbPendent>0?'#DC2626':'';
   document.getElementById('s-paisos').textContent=paisos;
   document.getElementById('s-div').textContent=divises;
+  const sitCode = p => String(p.situacio||'ACT').split(' ')[0];
+  document.getElementById('s-sit-act').textContent = allProv.filter(p=>sitCode(p)==='ACT').length;
+  document.getElementById('s-sit-na').textContent = allProv.filter(p=>sitCode(p)==='N/A').length;
+  document.getElementById('s-sit-nul').textContent = allProv.filter(p=>sitCode(p)==='NUL').length;
+  const cnceCode = p => (p.cnce||'').slice(0,2);
+  document.getElementById('s-cnce-cn').textContent = allProv.filter(p=>cnceCode(p)==='CN').length;
+  document.getElementById('s-cnce-ce').textContent = allProv.filter(p=>cnceCode(p)==='CE').length;
+  document.getElementById('s-cnce-ex').textContent = allProv.filter(p=>cnceCode(p)==='EX').length;
 }
 
 function populatePaisFilter(){

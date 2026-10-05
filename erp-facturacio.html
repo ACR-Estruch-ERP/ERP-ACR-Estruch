@@ -1085,6 +1085,7 @@ function renderStats(){
   document.getElementById('s-cob').textContent=n.COB;
   document.getElementById('s-cob-e').textContent=f(e.COB);
   document.getElementById('s-pen').textContent=n.PEND;
+  document.getElementById('s-pen').style.color=n.PEND>0?'#DC2626':'';
   document.getElementById('s-pen-e').textContent=f(e.PEND);
   document.getElementById('s-prx').textContent=n.PROXIM;
   document.getElementById('s-prx-e').textContent=f(e.PROXIM);
