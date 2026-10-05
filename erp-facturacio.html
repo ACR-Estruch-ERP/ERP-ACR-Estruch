@@ -1727,9 +1727,9 @@ async function saveInvoice(){
   // pressupost del projecte abans de desar-la.
   if(data.n_ref){
     try{
-      const projRows = await sbGet('projectes', `select=import_a_facturar,import_facturat&IdPJ=eq.${encodeURIComponent(data.n_ref)}`);
+      const projRows = await sbGet('projectes', `select=import_a_facturar,import_facturat,facturar&IdPJ=eq.${encodeURIComponent(data.n_ref)}`);
       const proj = projRows[0];
-      if(proj){
+      if(proj && proj.facturar!=='FRA. PERIÒDICA'){
         const afac = parseFloat(proj.import_a_facturar)||0;
         const facturatActual = parseFloat(proj.import_facturat)||0;
         const baseAnterior = (oldNref===data.n_ref) ? (allInvoices.find(i=>i.id===curId)?.base_imposable||0) : 0;
