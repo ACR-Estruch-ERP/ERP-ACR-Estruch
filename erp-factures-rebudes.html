@@ -54,9 +54,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .stat-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
 .stat-icon{display:none}
-.ring{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:46px;height:46px}
+.ring{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:90px;height:90px}
 .ring svg{transform:rotate(-90deg)}
-.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text)}
 .filter-wrap{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 18px;margin-bottom:14px}
 .filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .filter-bar input,.filter-bar select{padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;background:#fff;color:var(--text);transition:border-color .15s}
@@ -220,25 +220,25 @@ input[type=number]{-moz-appearance:textfield}
         <div class="stat-label">Pagades</div>
         <div class="stat-value" id="s-pag">—</div>
         <div class="stat-sub" id="s-pag-e" style="color:#236EFA">—</div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pag-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pag-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pag-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-pag-t">0%</span></div>
       </div>
       <div class="stat y">
         <div class="stat-label">Pendents</div>
         <div class="stat-value" id="s-pen">—</div>
         <div class="stat-sub" id="s-pen-e" style="color:#DC2626">—</div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pen-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pen-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-pen-t">0%</span></div>
       </div>
       <div class="stat a">
         <div class="stat-label">Venç en &lt;7 dies</div>
         <div class="stat-value" id="s-prx">—</div>
         <div class="stat-sub" id="s-prx-e">—</div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-prx-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-prx-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-prx-t">0%</span></div>
       </div>
       <div class="stat r">
         <div class="stat-label">Vençudes</div>
         <div class="stat-value" id="s-ven">—</div>
         <div class="stat-sub" id="s-ven-e" style="color:#DC2626">—</div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-ven-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-ven-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-ven-t">0%</span></div>
       </div>
     </div>
 
@@ -678,8 +678,8 @@ function renderStats(){
   const total=allFra.length;
   const setRing=(id,c)=>{
     const pc=total?c/total*100:0;
-    document.getElementById(`r-${id}-c`).style.strokeDashoffset=119.4*(1-pc/100);
-    document.getElementById(`r-${id}-t`).textContent=Math.round(pc)+'%';
+    document.getElementById(`r-${id}-c`).style.strokeDashoffset=245.0*(1-pc/100);
+    document.getElementById(`r-${id}-t`).textContent=pc.toFixed(2)+'%';
   };
   setRing('pag',n.PAG);
   setRing('pen',n.PEND);

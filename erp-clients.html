@@ -215,6 +215,36 @@ input[type=number]{-moz-appearance:textfield}
         <div class="stat-sub">mercats actius</div>
         <div class="stat-icon">🌍</div>
       </div>
+      <div class="stat">
+        <div class="stat-label">Actius</div>
+        <div class="stat-value" id="s-sit-act" style="color:#236EFA">—</div>
+        <div class="stat-sub">situació ACT</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">N/A</div>
+        <div class="stat-value" id="s-sit-na" style="color:#9CA3AF">—</div>
+        <div class="stat-sub">situació N/A</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Nuls</div>
+        <div class="stat-value" id="s-sit-nul" style="color:#DC2626">—</div>
+        <div class="stat-sub">situació NUL</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">CN</div>
+        <div class="stat-value" id="s-cnce-cn" style="color:#236EFA">—</div>
+        <div class="stat-sub">Nacional</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">CE</div>
+        <div class="stat-value" id="s-cnce-ce" style="color:#236EFA">—</div>
+        <div class="stat-sub">Comunitari (UE)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">EX</div>
+        <div class="stat-value" id="s-cnce-ex" style="color:#236EFA">—</div>
+        <div class="stat-sub">Extracomunitari</div>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -532,6 +562,17 @@ async function refreshData(){
 function renderStats(clientsAmbPendent=0){
   const total = allClients.length;
   const paisos = new Set(allClients.map(c=>c.pais).filter(Boolean)).size;
+  const sitCode = c => String(c.situacio||'ACT').split(' ')[0];
+  const nAct = allClients.filter(c=>sitCode(c)==='ACT').length;
+  const nNA  = allClients.filter(c=>sitCode(c)==='N/A').length;
+  const nNul = allClients.filter(c=>sitCode(c)==='NUL').length;
+  document.getElementById('s-sit-act').textContent = nAct;
+  document.getElementById('s-sit-na').textContent = nNA;
+  document.getElementById('s-sit-nul').textContent = nNul;
+  const cnceCode = c => (c.cnce||'').slice(0,2);
+  document.getElementById('s-cnce-cn').textContent = allClients.filter(c=>cnceCode(c)==='CN').length;
+  document.getElementById('s-cnce-ce').textContent = allClients.filter(c=>cnceCode(c)==='CE').length;
+  document.getElementById('s-cnce-ex').textContent = allClients.filter(c=>cnceCode(c)==='EX').length;
   document.getElementById('s-total').textContent = total;
   document.getElementById('s-total-sub').textContent = total === 1 ? 'client' : 'clients';
   document.getElementById('s-amb-fra').textContent = clientsAmbPendent || '—';

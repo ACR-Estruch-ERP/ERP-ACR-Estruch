@@ -56,9 +56,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
 .kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
 .kpi-val{font-size:26px;font-weight:500;color:var(--text);line-height:1;margin-top:8px}
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
-.ring{position:relative;width:46px;height:46px;flex-shrink:0}
+.ring{position:relative;width:90px;height:90px;flex-shrink:0}
 .ring svg{transform:rotate(-90deg)}
-.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text)}
 /* Sections */
 .dash-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow)}
@@ -163,7 +163,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
           <div class="kpi-val" id="k-venc">—</div>
           <div class="kpi-sub" id="k-venc-e">—</div>
         </div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-venc-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-venc-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-venc-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-venc-t">0%</span></div>
       </a>
       <a class="kpi" href="erp-facturacio.html">
         <div class="kpi-txt">
@@ -171,7 +171,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
           <div class="kpi-val" id="k-pend">—</div>
           <div class="kpi-sub" id="k-pend-e">—</div>
         </div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pend-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pend-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pend-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-pend-t">0%</span></div>
       </a>
       <a class="kpi" href="erp-factures-rebudes.html">
         <div class="kpi-txt">
@@ -179,7 +179,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
           <div class="kpi-val" id="k-pagar">—</div>
           <div class="kpi-sub" id="k-pagar-e">—</div>
         </div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pagar-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-pagar-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-pagar-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-pagar-t">0%</span></div>
       </a>
       <a class="kpi" href="erp-projectes.html">
         <div class="kpi-txt">
@@ -187,7 +187,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;ba
           <div class="kpi-val" id="k-proj">—</div>
           <div class="kpi-sub" id="k-proj-e">—</div>
         </div>
-        <div class="ring"><svg width="46" height="46"><circle cx="23" cy="23" r="19" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-proj-c" cx="23" cy="23" r="19" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span id="r-proj-t">0%</span></div>
+        <div class="ring"><svg width="90" height="90"><circle cx="45" cy="45" r="39" fill="none" stroke="#E7E9ED" stroke-width="4"/><circle id="r-proj-c" cx="45" cy="45" r="39" fill="none" stroke="#236EFA" stroke-width="4" stroke-linecap="round" stroke-dasharray="245.0" stroke-dashoffset="245.0"/></svg><span id="r-proj-t">0%</span></div>
       </a>
     </div>
 
@@ -360,8 +360,8 @@ async function init(){
 
     const setRing=(id,p)=>{
       const pc=Math.max(0,Math.min(100,p));
-      document.getElementById(`r-${id}-c`).style.strokeDashoffset=119.4*(1-pc/100);
-      document.getElementById(`r-${id}-t`).textContent=Math.round(pc)+'%';
+      document.getElementById(`r-${id}-c`).style.strokeDashoffset=245.0*(1-pc/100);
+      document.getElementById(`r-${id}-t`).textContent=pc.toFixed(2)+'%';
     };
     setRing('venc', fra.length ? venc/fra.length*100 : 0);
     setRing('pend', fra.length ? pend/fra.length*100 : 0);
