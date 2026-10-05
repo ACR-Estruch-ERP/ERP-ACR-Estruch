@@ -201,12 +201,12 @@ input[type=number]{-moz-appearance:textfield}
       </div>
       <div class="stat stat-group">
         <div class="stat-item">
-          <div class="stat-label">CN</div>
+          <div class="stat-label">PN</div>
           <div class="stat-value" id="s-cnce-cn" style="color:#236EFA">—</div>
           <div class="stat-sub">Nacional</div>
         </div>
         <div class="stat-item">
-          <div class="stat-label">CE</div>
+          <div class="stat-label">PE</div>
           <div class="stat-value" id="s-cnce-ce" style="color:#236EFA">—</div>
           <div class="stat-sub">Comunitari (UE)</div>
         </div>
@@ -545,8 +545,8 @@ function renderStats(provAmbPendent=0){
   document.getElementById('s-sit-na').textContent = allProv.filter(p=>sitCode(p)==='N/A').length;
   document.getElementById('s-sit-nul').textContent = allProv.filter(p=>sitCode(p)==='NUL').length;
   const cnceCode = p => (p.cnce||'').slice(0,2);
-  document.getElementById('s-cnce-cn').textContent = allProv.filter(p=>cnceCode(p)==='CN').length;
-  document.getElementById('s-cnce-ce').textContent = allProv.filter(p=>cnceCode(p)==='CE').length;
+  document.getElementById('s-cnce-cn').textContent = allProv.filter(p=>cnceCode(p)==='PN').length;
+  document.getElementById('s-cnce-ce').textContent = allProv.filter(p=>cnceCode(p)==='PE').length;
   document.getElementById('s-cnce-ex').textContent = allProv.filter(p=>cnceCode(p)==='EX').length;
 }
 
