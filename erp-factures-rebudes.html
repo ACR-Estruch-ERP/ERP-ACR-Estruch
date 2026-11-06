@@ -430,9 +430,9 @@ input[type=number]{-moz-appearance:textfield}
         <div class="add-pag-row" id="add-pag-row">
           <input type="date" id="np-data">
           <select id="np-fpag"></select>
-          <input type="number" id="np-import" step="0.01" placeholder="0,00" style="text-align:right">
+          <input type="text" id="np-import" placeholder="0,00" style="text-align:right" onblur="fmtBlurAmt('np-import')">
           <input type="text" id="np-banc" placeholder="Banc">
-          <input type="number" id="np-desp" step="0.01" value="0" style="text-align:right">
+          <input type="text" id="np-desp" value="0,00" style="text-align:right" onblur="fmtBlurAmt('np-desp')">
           <button class="btn btn-green btn-xs" onclick="addPagament()" title="Afegir pagament">+</button>
         </div>
       </div>
@@ -554,6 +554,19 @@ input[type=number]{-moz-appearance:textfield}
 const PIN='1234';
 
 let allFra=[], allProv=[], curId=null, curPagaments=[], curBi=0;
+
+// Accepta tant "2.50" com "2,50" com a dos euros amb cinquanta cèntims,
+// independentment de la configuració regional del navegador/SO.
+function parseAmt(s){
+  s=String(s||'').trim().replace(/\s/g,'').replace('€','');
+  if(!s||s==='—')return 0;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  return parseFloat(s)||0;
+}
+function fmtBlurAmt(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.value=parseAmt(el.value).toLocaleString('ca-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 
 async function init(){
   if(!requireAuth()) return;
@@ -964,14 +977,14 @@ function updatePagResum(){
 
 async function addPagament(){
   const data=document.getElementById('np-data').value;
-  const imp=parseFloat(document.getElementById('np-import').value)||0;
+  const imp=parseAmt(document.getElementById('np-import').value);
   if(!data||imp<=0){ toast('Introdueix data i import','err'); return; }
   const pag={
     data_pag:data,
     forma_pag:document.getElementById('np-fpag').value,
     import:imp,
     banc:document.getElementById('np-banc').value||null,
-    despeses_banc:parseFloat(document.getElementById('np-desp').value)||0,
+    despeses_banc:parseAmt(document.getElementById('np-desp').value),
   };
   if(curId){
     try{
@@ -997,7 +1010,7 @@ async function addPagament(){
   document.getElementById('np-data').value='';
   document.getElementById('np-import').value='';
   document.getElementById('np-banc').value='';
-  document.getElementById('np-desp').value=0;
+  document.getElementById('np-desp').value='0,00';
   renderPagaments();
 }
 
